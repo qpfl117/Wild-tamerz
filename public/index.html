@@ -120,8 +120,8 @@ const MAX_TAMER_LV=50,MAX_SAME=10,MAX_DAILY_BATTLES=15,MAX_LV_DIFF=5;
 // 등급별 레벨 상한
 const GRADE_MAX_LV={
   "COMMON":15,"UNCOMMON":25,"RARE":40,"UNIQUE":60,
-  "SUPER":80,"EPIC":100,"LEGEND":100,"MUTANT":80,
-  "BOSS":100,"DIVINE":999,"HYBRID":50,
+  "EPIC":100,"LEGEND":100,"MUTANT":80,
+  "BOSS":100,"DIVINE":999,
 };
 // 계열 시스템 (도감 분류용)
 const LINEAGES={
@@ -132,9 +132,9 @@ const LINEAGES={
   "mystic": {name:"신비계",emoji:"✨",color:"#6a1b9a",desc:"빛·신성·신화 계열"},
   "chaos":  {name:"혼돈계",emoji:"💀",color:"#1a1a2e",desc:"어둠·독·혼돈 계열"},
 };
-const GRADE_ORDER=["COMMON","UNCOMMON","RARE","UNIQUE","SUPER","EPIC","LEGEND","MUTANT","BOSS","HYBRID"];
-const RCOL={"COMMON":"#607080","UNCOMMON":"#1565c0","RARE":"#00838f","UNIQUE":"#e65100","SUPER":"#ad1457","EPIC":"#6a1b9a","LEGEND":"#bf360c","MUTANT":"#00695c","BOSS":"#d84315","DIVINE":"#ff6600","HYBRID":"#7c3aed"};
-const CATCH_RATES={"COMMON":0.55,"UNCOMMON":0.20,"RARE":0.08,"UNIQUE":0.04,"SUPER":0.015,"EPIC":0.005,"LEGEND":0.001,"MUTANT":0.04};
+const GRADE_ORDER=["COMMON","UNCOMMON","RARE","UNIQUE","EPIC","LEGEND","MUTANT","BOSS"];
+const RCOL={"COMMON":"#607080","UNCOMMON":"#1565c0","RARE":"#00838f","UNIQUE":"#e65100","EPIC":"#6a1b9a","LEGEND":"#bf360c","MUTANT":"#00695c","BOSS":"#d84315","DIVINE":"#ff6600"};
+const CATCH_RATES={"COMMON":0.55,"UNCOMMON":0.20,"RARE":0.08,"UNIQUE":0.02,"EPIC":0.005,"LEGEND":0.001,"MUTANT":0.03};
 const MAX_ENHANCE=10;
 
 // 강화 확률: [성공률, 대성공률(+2)]
@@ -157,9 +157,7 @@ const ENHANCE_COST_TABLE={
   "COMMON":   [1,1,1,1,1,1,1,1,2,2],
   "UNCOMMON": [1,1,1,2,2,2,2,3,3,4],
   "RARE":     [1,2,2,2,3,3,3,4,5,6],
-  "UNIQUE":   [2,2,3,3,4,4,5,6,7,8],
-  "SUPER":    [2,3,4,5,6,7,8,10,12,15],
-  "EPIC":     [3,5,7,10,12,15,18,22,28,35],
+  "UNIQUE":   [2,2,3,3,4,4,5,6,7,8],  "EPIC":     [3,5,7,10,12,15,18,22,28,35],
   "LEGEND":   [5,8,12,18,25,32,40,50,60,80],
   "MUTANT":   [2,3,4,5,6,7,8,10,12,15],
   "BOSS":     [3,5,7,10,12,15,18,22,28,35],
@@ -262,33 +260,40 @@ function getTypeEvoMon(baseId,type){
 const FUSION_TABLE={
   "COMMON":   [{g:"UNCOMMON",r:0.50},{g:"RARE",    r:0.20},{g:"fail",r:0.30}],
   "UNCOMMON": [{g:"RARE",    r:0.50},{g:"UNIQUE",  r:0.20},{g:"fail",r:0.30}],
-  "RARE":     [{g:"UNIQUE",  r:0.45},{g:"SUPER",   r:0.20},{g:"fail",r:0.35}],
-  "UNIQUE":   [{g:"SUPER",   r:0.40},{g:"EPIC",    r:0.20},{g:"fail",r:0.40}],
-  "SUPER":    [{g:"EPIC",    r:0.35},{g:"LEGEND",  r:0.15},{g:"MUTANT",r:0.05},{g:"fail",r:0.45}],
-  "EPIC":     [{g:"LEGEND",  r:0.20},{g:"MUTANT",  r:0.05},{g:"fail",r:0.75}],
+  "RARE":     [{g:"UNIQUE",  r:0.45},{g:"EPIC",    r:0.15},{g:"fail",r:0.40}],
+  "UNIQUE":   [{g:"EPIC",    r:0.40},{g:"LEGEND",  r:0.10},{g:"fail",r:0.50}],
+  "EPIC":     [{g:"LEGEND",  r:0.25},{g:"fail",r:0.75}],
 }
 const FUSION_POOL={
   "UNCOMMON":["blaze","aqua","bolt","frostie","venom","terro","shiny","draco","thornia"],
-  "RARE":["rare_wolf","rare_phoenix","rare_golem","rare_serpent"],
-  "UNIQUE":["uniq_dragon","uniq_kraken","uniq_sphinx","uniq_wyvern"],
-  "SUPER":["sr_chimera","sr_leviathan","sr_titan","sr_fenrir"],
-  "EPIC":["epic_godslayer","epic_voidking","epic_solaris","epic_abyssal"],
-  "LEGEND":["transcend_omega","legend_aurora"],
+  "RARE":["rare_wolf","rare_phoenix","rare_golem","rare_serpent","rare_specter"],
+  "UNIQUE":["uniq_dragon","uniq_kraken","uniq_sphinx","uniq_wyvern","uniq_golemech"],
+  "EPIC":["epic_godslayer","epic_voidking","epic_solaris","epic_abyssal","epic_mechazord","epic_dragonlord","sr_chimera","sr_leviathan","sr_titan","sr_fenrir","sr_aurora","sr_mechanos"],
+  "LEGEND":["transcend_omega","legend_aurora","legend_primordial"],
 };
 
 function rollFusion(gradeA,gradeB){
-  let useGrade=gradeA,mutantBonus=false;
-  const isMutA=gradeA==="MUTANT",isMutB=gradeB==="MUTANT";
-  if(isMutA||isMutB){
-    mutantBonus=true;
-    useGrade=isMutA?gradeB:gradeA;
-    if(useGrade==="MUTANT")useGrade="EPIC";
-  }
+  const useGrade=gradeA;
   const table=FUSION_TABLE[useGrade]||FUSION_TABLE["COMMON"];
   let r=Math.random();
-  for(const row of table){r-=row.r;if(r<=0){if(row.g==="fail")return null;let g=row.g;if(mutantBonus&&Math.random()<0.5){const idx=GRADE_ORDER.indexOf(g);const up=Math.random()<0.5;if(up&&idx<GRADE_ORDER.length-3)g=GRADE_ORDER[idx+1];else if(!up&&idx>0)g=GRADE_ORDER[idx-1];}return g;}}
+  for(const row of table){
+    r-=row.r;
+    if(r<=0){
+      if(row.g==="fail")return null;
+      return row.g;
+    }
+  }
   return null;
 }
+
+// 뮤턴트 이로치 풀 (EPIC+ 합성 시 3% 확률로 등장)
+const MUTANT_POOL={
+  "epic_godslayer":"mutant_godslayer",
+  "epic_voidking":"mutant_voidking",
+  "epic_solaris":"mutant_solaris",
+  "epic_abyssal":"mutant_abyssal",
+  "epic_dragonlord":"mutant_dragonlord",
+};
 
 const FOODS=[
   {id:"food1",name:"일반 먹이",emoji:"🌾",expGain:15,desc:"EXP +15"},
@@ -309,10 +314,9 @@ const SPECIALS=[{id:"revive",name:"부활권",emoji:"💊",desc:"HP 50%로 부�
 const CONSUMABLES=[
   {id:"battle_ticket",name:"배틀권",emoji:"⚔️",desc:"배틀 횟수 +1회 추가"},
   {id:"stamina_pot",name:"스태미나포션",emoji:"⚡",desc:"스태미나 +5 즉시 회복"},
-  {id:"enhance_stone",name:"강화석",emoji:"🔩",desc:"소환수 강화에 사용"},
-  {id:"awaken_stone",name:"각성석",emoji:"💠",desc:"연구소에서 소환수 각성 전용"},
-  {id:"gender_swap",name:"성별교환권",emoji:"🔄",desc:"소환수 성별 ♂↔♀ 교환"},
-  {id:"dual_type",name:"이중속성 각인권",emoji:"🌈",desc:"소환수에 두 번째 속성 부여 (랜덤)"},
+  {id:"enhance_stone",name:"강화석",emoji:"🔩",desc:"몬스터 강화에 사용"},
+  {id:"awaken_stone",name:"각성석",emoji:"💠",desc:"몬스터 각성 - 2번째 속성 랜덤 부여/재랜덤 (최대 2회)"},
+  {id:"gender_swap",name:"성별교환권",emoji:"🔄",desc:"몬스터 성별 ♂↔♀ 교환"},
 ];
 const BOSS_ITEMS=[
   {id:"boss_crystal",name:"레이드 크리스탈",emoji:"🔴",desc:"합성 시 등급UP +30%"},
@@ -371,9 +375,7 @@ const RELEASE_REWARD={
   "COMMON":   [{id:"food1",amt:2},{id:"ball1",amt:1}],
   "UNCOMMON": [{id:"food1",amt:3},{id:"ball1",amt:2},{id:"enhance_stone",amt:1}],
   "RARE":     [{id:"food2",amt:2},{id:"ball1",amt:3},{id:"enhance_stone",amt:2}],
-  "UNIQUE":   [{id:"food2",amt:3},{id:"ball1",amt:4},{id:"enhance_stone",amt:3}],
-  "SUPER":    [{id:"food3",amt:1},{id:"ball2",amt:1},{id:"enhance_stone",amt:5}],
-  "EPIC":     [{id:"food3",amt:2},{id:"ball2",amt:2},{id:"enhance_stone",amt:8},{id:"stone1",amt:1}],
+  "UNIQUE":   [{id:"food2",amt:3},{id:"ball1",amt:4},{id:"enhance_stone",amt:3}],  "EPIC":     [{id:"food3",amt:2},{id:"ball2",amt:2},{id:"enhance_stone",amt:8},{id:"stone1",amt:1}],
   "LEGEND":   [{id:"food3",amt:3},{id:"ball3",amt:1},{id:"enhance_stone",amt:15},{id:"stone2",amt:1}],
   "MUTANT":   [{id:"food2",amt:4},{id:"ball2",amt:1},{id:"enhance_stone",amt:6}],
   "BOSS":     [{id:"food3",amt:3},{id:"ball2",amt:2},{id:"enhance_stone",amt:10}],
@@ -549,9 +551,7 @@ const EVO_RATES={
   "COMMON":   [0.20, 0.70], // 대성공20% / 성공70% / 실패10%
   "UNCOMMON": [0.15, 0.65], // 대성공15% / 성공65% / 실패20%
   "RARE":     [0.10, 0.50], // 대성공10% / 성공50% / 실패40%
-  "UNIQUE":   [0.07, 0.38], // 대성공7%  / 성공38% / 실패55%
-  "SUPER":    [0.05, 0.25], // 대성공5%  / 성공25% / 실패70%
-  "EPIC":     [0.03, 0.15], // 대성공3%  / 성공15% / 실패82%
+  "UNIQUE":   [0.07, 0.38], // 대성공7%  / 성공38% / 실패55%  "EPIC":     [0.03, 0.15], // 대성공3%  / 성공15% / 실패82%
 };
 
 // MONS - 몬스터 목록 (이모지 중복 없음, 속성·진화 계보 명확)
@@ -623,15 +623,15 @@ const MONS=[
   {id:"abyssal",      name:"어비설",      emoji:"🌊",color:"#0d47a1",rarity:"RARE",lineage:"element",hp:88,atk:25,spd:13,desc:"아쿠아 진화체. 심해의 압력 파도."},
   {id:"thunder_god",  name:"뇌신볼트",    emoji:"🌩️",color:"#f57f17",rarity:"RARE",lineage:"element",hp:62,atk:42,spd:26,desc:"볼트 진화체. 번개의 신."},
   {id:"glacier",      name:"글레이셔",    emoji:"🧊",color:"#1565c0",rarity:"RARE",lineage:"element",hp:68,atk:28,spd:17,desc:"프로스티 진화체. 움직이는 빙하."},
-  {id:"pyrovant",     name:"파이로반트",  emoji:"🔴",color:"#c62828",rarity:"RARE",lineage:"element",hp:75,atk:32,spd:12,desc:"마그마이트 진화체. 폭발하는 마그마 거인."},
-  {id:"cyclonix",     name:"사이클로닉스",emoji:"🌪️",color:"#01579b",rarity:"RARE",   lineage:"element",hp:80,atk:45,spd:35,desc:"거스터 진화체. 거대 토네이도 형태."},
-  {id:"toxicron",     name:"코브라드라",  emoji:"🐍",color:"#4a148c",rarity:"RARE",   lineage:"beast",  hp:90,atk:50,spd:25,desc:"나가 진화체. 독이 결정화된 거대 코브라."},
-  {id:"kaiser_draco", name:"카이저드라코",emoji:"🦕",color:"#b71c1c",rarity:"RARE",   lineage:"beast",  hp:110,atk:55,spd:20,desc:"드라코 진화체. 용족의 황제."},
-  {id:"saber_tigrex", name:"세이버티그렉스",emoji:"🐅",color:"#e65100",rarity:"RARE",lineage:"beast",  hp:95,atk:58,spd:28,desc:"티그렉스 진화체. 검치호 형태."},
-  {id:"velociking",   name:"벨로시킹",    emoji:"🦖",color:"#33691e",rarity:"RARE",   lineage:"beast",  hp:85,atk:60,spd:38,desc:"랩터 진화체. 속도의 왕."},
+  {id:"pyrovant",     name:"파이로반트",  emoji:"🔴",color:"#c62828",rarity:"UNCOMMON",lineage:"element",hp:75,atk:32,spd:12,desc:"마그마이트 진화체. 폭발하는 마그마 거인."},
+  {id:"cyclonix",     name:"사이클로닉스",emoji:"🌪️",color:"#01579b",rarity:"UNCOMMON",   lineage:"element",hp:80,atk:45,spd:35,desc:"거스터 진화체. 거대 토네이도 형태."},
+  {id:"toxicron",     name:"코브라드라",  emoji:"🐍",color:"#4a148c",rarity:"UNCOMMON",   lineage:"beast",  hp:90,atk:50,spd:25,desc:"나가 진화체. 독이 결정화된 거대 코브라."},
+  {id:"kaiser_draco", name:"카이저드라코",emoji:"🦕",color:"#b71c1c",rarity:"UNCOMMON",   lineage:"beast",  hp:110,atk:55,spd:20,desc:"드라코 진화체. 용족의 황제."},
+  {id:"saber_tigrex", name:"세이버티그렉스",emoji:"🐅",color:"#e65100",rarity:"UNCOMMON",lineage:"beast",  hp:95,atk:58,spd:28,desc:"티그렉스 진화체. 검치호 형태."},
+  {id:"velociking",   name:"벨로시킹",    emoji:"🦖",color:"#33691e",rarity:"UNCOMMON",   lineage:"beast",  hp:85,atk:60,spd:38,desc:"랩터 진화체. 속도의 왕."},
   {id:"void_terro",   name:"보이드테로",  emoji:"🕳️",color:"#37474f",rarity:"RARE",lineage:"chaos", hp:75,atk:32,spd:15,desc:"테로 진화체. 허공을 지배하는 어둠."},
-  {id:"celestia",     name:"셀레스티아",  emoji:"🌠",color:"#6a1b9a",rarity:"RARE",   lineage:"mystic", hp:100,atk:50,spd:30,desc:"샤이니 진화체. 별빛의 여신."},
-  {id:"spectron",     name:"스펙트론",    emoji:"👁️",color:"#4527a0",rarity:"RARE",   lineage:"chaos",  hp:90,atk:52,spd:25,desc:"팬티 진화체. 공포의 악령."},
+  {id:"celestia",     name:"셀레스티아",  emoji:"🌠",color:"#6a1b9a",rarity:"UNCOMMON",   lineage:"mystic", hp:100,atk:50,spd:30,desc:"샤이니 진화체. 별빛의 여신."},
+  {id:"spectron",     name:"스펙트론",    emoji:"👁️",color:"#4527a0",rarity:"UNCOMMON",   lineage:"chaos",  hp:90,atk:52,spd:25,desc:"팬티 진화체. 공포의 악령."},
   // ══════════════════════════════════════════
   // 각성체 (3차 진화)
   // ══════════════════════════════════════════
@@ -652,7 +652,7 @@ const MONS=[
   {id:"rare_phoenix",name:"레어피닉스",  emoji:"🦅",color:"#1976d2",rarity:"RARE",   lineage:"mystic", hp:75,atk:40,spd:32,desc:"합성 불사조. 화염 날개로 급습."},
   {id:"rare_golem",  name:"레어골렘",    emoji:"🦾",color:"#0d47a1",rarity:"RARE",   lineage:"machine",hp:100,atk:28,spd:10,desc:"합성 철갑 골렘."},
   {id:"rare_serpent",name:"레어서펜트",  emoji:"🐊",color:"#00695c",rarity:"RARE",   lineage:"beast",  hp:90,atk:32,spd:20,desc:"합성 독룡."},
-  {id:"rare_specter",name:"레어스펙터",  emoji:"🌫️",color:"#4527a0",rarity:"RARE",   lineage:"chaos",  hp:78,atk:42,spd:26,desc:"합성 유령체. 실체 없는 공포."},
+  {id:"rare_specter",name:"레어스펙터",  emoji:"🌫️",color:"#4527a0",rarity:"UNCOMMON",   lineage:"chaos",  hp:78,atk:42,spd:26,desc:"합성 유령체. 실체 없는 공포."},
   // ══════════════════════════════════════════
   // UNIQUE - 합성체
   // ══════════════════════════════════════════
@@ -664,12 +664,12 @@ const MONS=[
   // ══════════════════════════════════════════
   // SUPER
   // ══════════════════════════════════════════
-  {id:"sr_chimera",  name:"SR키메라",   emoji:"🦄",color:"#c62828",rarity:"SUPER",  lineage:"beast",  hp:170,atk:78,spd:36,desc:"사자+독수리+뱀의 혼종."},
-  {id:"sr_leviathan",name:"SR리바이어던",emoji:"🐳",color:"#b71c1c",rarity:"SUPER",  lineage:"element",hp:190,atk:70,spd:22,desc:"거대 해수. 파도를 일으키며 돌진."},
-  {id:"sr_titan",    name:"SR타이탄",   emoji:"🏛️",color:"#d32f2f",rarity:"SUPER",  lineage:"machine",hp:210,atk:62,spd:16,desc:"거인족 타이탄. 지형을 바꾸는 힘."},
-  {id:"sr_fenrir",   name:"SR펜리르",   emoji:"🐺",color:"#880e4f",rarity:"SUPER",  lineage:"beast",  hp:180,atk:85,spd:42,desc:"전설의 대형 늑대."},
-  {id:"sr_aurora",   name:"SR오로라",   emoji:"🌌",color:"#1a237e",rarity:"SUPER",  lineage:"mystic", hp:165,atk:80,spd:35,desc:"극광의 신성체. 빛과 어둠의 경계."},
-  {id:"sr_mechanos", name:"SR메카노스", emoji:"⚙️",color:"#546e7a",rarity:"SUPER",  lineage:"machine",hp:200,atk:72,spd:20,desc:"인공 전투 병기. 칠흑의 강철 갑옷."},
+  {id:"sr_chimera",  name:"SR키메라",   emoji:"🦄",color:"#c62828",rarity:"EPIC",  lineage:"beast",  hp:170,atk:78,spd:36,desc:"사자+독수리+뱀의 혼종."},
+  {id:"sr_leviathan",name:"SR리바이어던",emoji:"🐳",color:"#b71c1c",rarity:"EPIC",  lineage:"element",hp:190,atk:70,spd:22,desc:"거대 해수. 파도를 일으키며 돌진."},
+  {id:"sr_titan",    name:"SR타이탄",   emoji:"🏛️",color:"#d32f2f",rarity:"EPIC",  lineage:"machine",hp:210,atk:62,spd:16,desc:"거인족 타이탄. 지형을 바꾸는 힘."},
+  {id:"sr_fenrir",   name:"SR펜리르",   emoji:"🐺",color:"#880e4f",rarity:"EPIC",  lineage:"beast",  hp:180,atk:85,spd:42,desc:"전설의 대형 늑대."},
+  {id:"sr_aurora",   name:"SR오로라",   emoji:"🌌",color:"#1a237e",rarity:"UNIQUE",  lineage:"mystic", hp:165,atk:80,spd:35,desc:"극광의 신성체. 빛과 어둠의 경계."},
+  {id:"sr_mechanos", name:"SR메카노스", emoji:"⚙️",color:"#546e7a",rarity:"UNIQUE",  lineage:"machine",hp:200,atk:72,spd:20,desc:"인공 전투 병기. 칠흑의 강철 갑옷."},
   // ══════════════════════════════════════════
   // EPIC
   // ══════════════════════════════════════════
@@ -678,29 +678,33 @@ const MONS=[
   {id:"epic_solaris",  name:"에픽솔라리스", emoji:"🌞",color:"#880e4f",rarity:"EPIC",lineage:"mystic", hp:230,atk:96,spd:36,desc:"태양의 수호자."},
   {id:"epic_abyssal",  name:"에픽어비설",   emoji:"🌊",color:"#1a237e",rarity:"EPIC",lineage:"element",hp:235,atk:94,spd:30,desc:"심연의 신."},
   {id:"epic_mechazord",name:"에픽메카조드", emoji:"🤖",color:"#37474f",rarity:"EPIC",lineage:"machine",hp:250,atk:88,spd:24,desc:"최종 전투 병기. 행성 파괴 등급."},
-  {id:"epic_dragonlord",name:"에픽드래곤로드",emoji:"🐲",color:"#b71c1c",rarity:"EPIC",lineage:"beast",hp:245,atk:98,spd:28,desc:"용족의 최강자. 모든 용을 지배한다."},
+  {id:"epic_dragonlord",name:"에픽드래곤로드",emoji:"🐲",color:"#b71c1c",rarity:"UNIQUE",lineage:"beast",hp:245,atk:98,spd:28,desc:"용족의 최강자. 모든 용을 지배한다."},
   // ══════════════════════════════════════════
   // LEGEND
   // ══════════════════════════════════════════
   {id:"transcend_omega",name:"레전드 오메가",emoji:"🌈",color:"#d32f2f",rarity:"LEGEND",lineage:"chaos",  hp:320,atk:130,spd:52,desc:"차원을 초월한 존재. 현존 최강."},
   {id:"legend_aurora",  name:"레전드 오로라",emoji:"🌌",color:"#1a237e",rarity:"LEGEND",lineage:"mystic", hp:300,atk:120,spd:62,desc:"극광의 신. 모든 속성을 지배하는 존재."},
+  {id:"legend_primordial",name:"레전드 원시신",emoji:"🌅",color:"#6a1b9a",rarity:"LEGEND",lineage:"nature",hp:330,atk:125,spd:48,desc:"태초의 생명. 시간과 자연을 다스리는 존재."},
   // ══════════════════════════════════════════
   // 누락 진화체 보완
   // ══════════════════════════════════════════
   // COMMON 동물계 진화체
-  {id:"swiftbun",   name:"스위프트번",  emoji:"🐇",color:"#e91e63",rarity:"RARE",lineage:"beast",  hp:55,atk:28,spd:38,desc:"플로피 진화체. 빛처럼 빠른 토끼."},
-  {id:"wolfhound",  name:"울프하운드",  emoji:"🐕",color:"#795548",rarity:"RARE",lineage:"beast",  hp:72,atk:35,spd:26,desc:"웰피 진화체. 충성스러운 전투견."},
-  {id:"eaglet",     name:"이글렛",      emoji:"🦅",color:"#f57c00",rarity:"RARE",lineage:"beast",  hp:60,atk:38,spd:32,desc:"처피 진화체. 독수리로 성장한 전사."},
+  {id:"swiftbun",   name:"스위프트번",  emoji:"🐇",color:"#e91e63",rarity:"UNCOMMON",lineage:"beast",  hp:55,atk:28,spd:38,desc:"플로피 진화체. 빛처럼 빠른 토끼."},
+  {id:"wolfhound",  name:"울프하운드",  emoji:"🐕",color:"#795548",rarity:"UNCOMMON",lineage:"beast",  hp:72,atk:35,spd:26,desc:"웰피 진화체. 충성스러운 전투견."},
+  {id:"eaglet",     name:"이글렛",      emoji:"🦅",color:"#f57c00",rarity:"UNCOMMON",lineage:"beast",  hp:60,atk:38,spd:32,desc:"처피 진화체. 독수리로 성장한 전사."},
   // UNCOMMON 원소계 진화체
   // 자연계 진화체
-  {id:"thornwall",  name:"쏜월",        emoji:"🌵",color:"#2e7d32",rarity:"RARE",    lineage:"nature", hp:95,atk:38,spd:14,desc:"소르니아 진화체. 가시 요새 형태."},
+  {id:"thornwall",  name:"쏜월",        emoji:"🌵",color:"#2e7d32",rarity:"UNCOMMON",    lineage:"nature", hp:95,atk:38,spd:14,desc:"소르니아 진화체. 가시 요새 형태."},
   // RARE 계열
   // UNCOMMON→UNCOMMON 진화체 (이미 위에 정의됨, 생략)
   // 각성체
   // MUTANT
   // ══════════════════════════════════════════
-  {id:"mutant1",name:"뮤턴트 슬라임",emoji:"🧬",color:"#00acc1",rarity:"MUTANT",lineage:"chaos",hp:70,atk:30,spd:25,desc:"돌연변이 슬라임. 예측불가 형태변화."},
-  {id:"mutant2",name:"뮤턴트 드래곤",emoji:"🦠",color:"#00838f",rarity:"MUTANT",lineage:"beast",hp:90,atk:40,spd:30,desc:"돌연변이 드래곤. 결과 등급 ±1 변동!"},
+  {id:"mutant_godslayer",name:"뮤턴트 갓슬레이어",emoji:"💠",color:"#00acc1",rarity:"MUTANT",lineage:"chaos",  hp:260,atk:120,spd:45,desc:"에픽갓슬레이어의 돌연변이. 이로치 형태."},
+  {id:"mutant_voidking", name:"뮤턴트 보이드킹",  emoji:"💠",color:"#00acc1",rarity:"MUTANT",lineage:"chaos",  hp:285,atk:105,spd:38,desc:"에픽보이드킹의 돌연변이. 이로치 형태."},
+  {id:"mutant_solaris",  name:"뮤턴트 솔라리스",  emoji:"💠",color:"#00acc1",rarity:"MUTANT",lineage:"mystic", hp:275,atk:115,spd:42,desc:"에픽솔라리스의 돌연변이. 이로치 형태."},
+  {id:"mutant_abyssal",  name:"뮤턴트 어비설",    emoji:"💠",color:"#00acc1",rarity:"MUTANT",lineage:"element",hp:280,atk:110,spd:36,desc:"에픽어비설의 돌연변이. 이로치 형태."},
+  {id:"mutant_dragonlord",name:"뮤턴트 드래곤로드",emoji:"💠",color:"#00acc1",rarity:"MUTANT",lineage:"beast", hp:295,atk:118,spd:34,desc:"에픽드래곤로드의 돌연변이. 이로치 형태."},
   // ══════════════════════════════════════════
   // BOSS (레이드 전용)
   // ══════════════════════════════════════════
@@ -2673,8 +2677,11 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
         maxHp:Math.floor(eb.hp*greatBonus),hp:Math.floor(eb.hp*greatBonus),curHp:Math.floor(eb.hp*greatBonus),
         alive:true,enhance:0,
         monType:MON_BASE_TYPE[eb.id]||null,
+        monType2:null, // 진화 시 이중속성 리셋
+        awakenLv:0,   // 각성 리셋
         atkBonus:(MON_BASE_TYPE[eb.id]?TYPES[MON_BASE_TYPE[eb.id]]?.bonus?.atk||0:0),
         feedCount:0,huntWins:0,
+        gender:ci.gender, // 성별 유지
       });
       const newId=toId;
       const newDex=(ns.dexSeen||[]).includes(newId)?ns.dexSeen:[...(ns.dexSeen||[]),newId];
@@ -3150,7 +3157,18 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
       const fbt=fusionBonusTable[resultGrade]||{atk:[1,2],hp:[1,2]};
       const rndRange=(r)=>r[0]+Math.floor(Math.random()*(r[1]-r[0]+1));
       const fusionBonus={atk:rndRange(fbt.atk),hp:rndRange(fbt.hp)};
-      nc.push({id:res.id,lv:1,exp:0,maxHp:res.hp+fusionBonus.hp,hp:res.hp+fusionBonus.hp,curHp:res.hp+fusionBonus.hp,alive:true,enhance:0,fusionBonus,gender:Math.random()<0.5?"♂":"♀"});
+      // 뮤턴트 이로치: EPIC+ 결과일 때 3% 확률로 뮤턴트 버전 등장
+      let finalRes=res;
+      let isMutant=false;
+      if((resultGrade==="EPIC"||resultGrade==="LEGEND")&&MUTANT_POOL[res.id]&&Math.random()<0.03){
+        const mutantMon=MONS.find(m=>m.id===MUTANT_POOL[res.id]);
+        if(mutantMon){
+          finalRes=mutantMon;
+          isMutant=true;
+        }
+      }
+      const baseHp=finalRes.hp+fusionBonus.hp;
+      nc.push({id:finalRes.id,lv:1,exp:0,maxHp:baseHp,hp:baseHp,curHp:baseHp,alive:true,enhance:0,fusionBonus,gender:Math.random()<0.5?"♂":"♀",isMutant});
       return addTamerExp({...s,collection:nc,totalFusions:(s.totalFusions||0)+1},40);
     });
     setFusRes({res,grade:resultGrade,bonus:fusionBonus});setFa(null);setFb(null);
@@ -3541,7 +3559,7 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
         </div>
         {/* 등급 필터 버튼 */}
         <div style={{display:"flex",gap:4,flexWrap:"wrap",marginBottom:8}}>
-          {["all","COMMON","UNCOMMON","RARE","UNIQUE","SUPER","EPIC","LEGEND","MUTANT","HYBRID"].map(g=>(
+          {["all","COMMON","UNCOMMON","RARE","UNIQUE","EPIC","LEGEND","MUTANT"].map(g=>(
             <button key={g} onClick={()=>{setBulkGradeFilter(g);bulkSelectByGrade(g);}}
               style={{padding:"3px 8px",borderRadius:8,border:`1px solid ${bulkGradeFilter===g?(RCOL[g]||"var(--purple)")+"80":"rgba(0,0,0,0.1)"}`,
                 background:bulkGradeFilter===g?`${RCOL[g]||"#8b5cf6"}15`:"white",
@@ -3621,6 +3639,12 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
                     {tInfo&&<span style={{marginRight:2}}>{tInfo.emoji}</span>}{c.name||bm.name}
                   </span>
                   <Badge text={bm.rarity} color={RCOL[bm.rarity]||"#888"}/>
+                  {bm.lineage&&LINEAGES[bm.lineage]&&<span style={{fontSize:10,fontWeight:700,
+                    color:LINEAGES[bm.lineage].color,background:LINEAGES[bm.lineage].color+"15",
+                    padding:"1px 6px",borderRadius:5,border:`1px solid ${LINEAGES[bm.lineage].color}30`}}
+                    title={LINEAGES[bm.lineage].desc}>
+                    {LINEAGES[bm.lineage].emoji}{LINEAGES[bm.lineage].name}
+                  </span>}
                   {tInfo&&<span style={{fontSize:17,fontWeight:700,color:tInfo.color}}>{tInfo.name}</span>}
                 </div>
                 <div style={{fontSize:17,color:"var(--tx3)"}}>Lv.{c.lv}
@@ -3727,13 +3751,17 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
                   border:`1px solid ${condOk?"rgba(139,92,246,0.3)":"rgba(0,0,0,0.08)"}`}}>
                   {condOk?"✨ 진화 가능! (연구소)":"🔒 진화조건 미충족"}
                 </div>}
-                {c.awakened&&<div style={{fontSize:10,padding:"3px 8px",borderRadius:8,fontWeight:700,
+                {(c.awakenLv||0)>0&&<div style={{fontSize:10,padding:"3px 8px",borderRadius:8,fontWeight:700,
                   background:"rgba(6,182,212,0.1)",color:"#06b6d4",border:"1px solid rgba(6,182,212,0.25)"}}>
-                  💠 각성 {c.awakenLv||1}단계
+                  💠 각성 {c.awakenLv}/2{c.monType2&&` +${TYPES[c.monType2]?.emoji||""}`}
                 </div>}
-                {c.hybrid&&<div style={{fontSize:10,padding:"3px 8px",borderRadius:8,fontWeight:700,
-                  background:"rgba(124,58,237,0.1)",color:"#7c3aed",border:"1px solid rgba(124,58,237,0.25)"}}>
-                  🧬 HYBRID
+                {c.fromBreed&&<div style={{fontSize:10,padding:"3px 8px",borderRadius:8,fontWeight:700,
+                  background:"rgba(244,114,182,0.1)",color:"#ec4899",border:"1px solid rgba(244,114,182,0.25)"}}>
+                  🥚 교배{c.breedBonus&&` +${c.breedBonus.atk}atk +${c.breedBonus.hp}hp`}
+                </div>}
+                {c.isMutant&&<div style={{fontSize:10,padding:"3px 8px",borderRadius:8,fontWeight:700,
+                  background:"rgba(0,172,193,0.15)",color:"#00acc1",border:"1px solid rgba(0,172,193,0.35)"}}>
+                  💠 이로치
                 </div>}
                 {bm.rarity==="MUTANT"&&<div style={{fontSize:10,padding:"3px 8px",borderRadius:8,fontWeight:700,
                   background:"rgba(0,172,193,0.1)",color:"#00acc1",border:"1px solid rgba(0,172,193,0.25)"}}>
@@ -5310,9 +5338,12 @@ function SideRaid({myS,col,setMy,toast,aliveCols,acHex}){
       if(err){toast("오류 발생!","var(--red)");return;}
       const room=snap.val();
       if(room&&room.bossHp<=0){
-        // 클리어 보상 지급
+        // 클리어 보상 지급 + 30분 쿨타임 기록
         setMy(s=>{
-          let ns={...s,bossKills:{...(s.bossKills||{}),[bossId]:((s.bossKills||{})[bossId]||0)+1}};
+          let ns={...s,
+            bossKills:{...(s.bossKills||{}),[bossId]:((s.bossKills||{})[bossId]||0)+1},
+            raidCooldowns:{...(s.raidCooldowns||{}),[bossId]:Date.now()},
+          };
           Object.entries(boss.rewards).forEach(([id,amt])=>{ns=addItem(ns,id,amt);});
           (boss.randomDrops||[]).forEach(drop=>{
             if(Math.random()<drop.rate*0.5){
@@ -5323,9 +5354,9 @@ function SideRaid({myS,col,setMy,toast,aliveCols,acHex}){
           });
           return addTamerExp(ns,150);
         });
-        // 30초 후 방 삭제 (다들 보상 확인 시간)
+        // 30초 후 방 삭제
         setTimeout(()=>{db.ref(`raidRooms/${roomId}`).remove();},30000);
-        toast(`🏆 ${boss.name} 협력 레이드 클리어!`,"var(--gold)");
+        toast(`🏆 ${boss.name} 클리어! (30분 쿨타임)`,"var(--gold)");
       }else{
         toast(`⚔️ ${myDmg} 대미지!`,"var(--purple)");
       }
@@ -5337,6 +5368,21 @@ function SideRaid({myS,col,setMy,toast,aliveCols,acHex}){
     if(!db){toast("Firebase 연결 필요!","var(--red)");return;}
     const boss=RAID_BOSSES.find(b=>b.id===bossId);
     if(!boss)return;
+    // 1. 중복 방지 - 같은 보스의 진행중 방이 이미 있으면 거부
+    const existingRoom=Object.values(raidRooms).find(r=>r.bossId===bossId&&r.status==="ongoing");
+    if(existingRoom){
+      toast(`⚠️ ${boss.name} 레이드방이 이미 있습니다! 참전하세요`,"var(--orange)");
+      return;
+    }
+    // 2. 쿨타임 체크 (30분)
+    const coolDown=30*60*1000;
+    const lastClear=(myS.raidCooldowns||{})[bossId]||0;
+    const remaining=coolDown-(Date.now()-lastClear);
+    if(remaining>0){
+      const mins=Math.ceil(remaining/60000);
+      toast(`⏱️ ${boss.name} 쿨타임 ${mins}분 남음!`,"var(--orange)");
+      return;
+    }
     const roomId=`raid_${Date.now()}_${Math.random().toString(36).slice(2,6)}`;
     const room={
       id:roomId,bossId,bossHp:boss.hp,bossMaxHp:boss.hp,
@@ -5348,6 +5394,21 @@ function SideRaid({myS,col,setMy,toast,aliveCols,acHex}){
     db.ref(`raidRooms/${roomId}`).set(room);
     setMyRaidRoom(roomId);
     toast(`🌋 ${boss.name} 레이드방 개설!`,"var(--purple)");
+  };
+
+  // 레이드 떠나기
+  const leaveRaidRoom=(roomId)=>{
+    if(!db)return;
+    if(!confirm("레이드방을 떠나시겠습니까?\n(진행 중인 방은 다른 사람이 이어서 공격 가능)"))return;
+    const room=raidRooms[roomId];
+    if(room&&room.host===(myS.nickname||"테이머")){
+      // 호스트가 떠나면 방 삭제
+      db.ref(`raidRooms/${roomId}`).remove();
+      toast("🚪 레이드방 삭제됨","var(--tx3)");
+    }else{
+      toast("🚪 레이드 떠남","var(--tx3)");
+    }
+    setMyRaidRoom(null);
   };
 
   // 즐겨찾기(주력) 소환수
@@ -5657,14 +5718,22 @@ function SideRaid({myS,col,setMy,toast,aliveCols,acHex}){
           <div style={{fontSize:8,color:"var(--tx3)",marginBottom:5}}>
             {(room.log||[]).slice(-1)[0]||""}
           </div>
-          <button onClick={()=>attackCoopRaid(roomId,room.bossId)}
-            disabled={pickedIdx===null}
-            style={{width:"100%",padding:"6px 0",borderRadius:8,border:"none",
-              background:pickedIdx!==null?`linear-gradient(135deg,${boss.color},${boss.color}cc)`:"rgba(0,0,0,0.06)",
-              color:pickedIdx!==null?"white":"rgba(0,0,0,0.2)",
-              fontSize:11,fontWeight:800,cursor:pickedIdx!==null?"pointer":"default",fontFamily:"inherit"}}>
-            {pickedIdx===null?"몬스터 선택 후 참전":"⚔️ 참전 공격!"}
-          </button>
+          <div style={{display:"flex",gap:5}}>
+            <button onClick={()=>attackCoopRaid(roomId,room.bossId)}
+              disabled={pickedIdx===null}
+              style={{flex:1,padding:"6px 0",borderRadius:8,border:"none",
+                background:pickedIdx!==null?`linear-gradient(135deg,${boss.color},${boss.color}cc)`:"rgba(0,0,0,0.06)",
+                color:pickedIdx!==null?"white":"rgba(0,0,0,0.2)",
+                fontSize:11,fontWeight:800,cursor:pickedIdx!==null?"pointer":"default",fontFamily:"inherit"}}>
+              {pickedIdx===null?"몬스터 선택 후 참전":"⚔️ 참전 공격!"}
+            </button>
+            <button onClick={()=>leaveRaidRoom(roomId)}
+              style={{padding:"6px 12px",borderRadius:8,border:"1.5px solid rgba(239,68,68,0.25)",
+                background:"rgba(239,68,68,0.08)",color:"var(--red)",
+                fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"inherit",flexShrink:0}}>
+              🚪 떠나기
+            </button>
+          </div>
         </div>;
       })}
     </div>}
@@ -5762,16 +5831,32 @@ function SideRaid({myS,col,setMy,toast,aliveCols,acHex}){
           <span style={{fontWeight:700,color:"var(--purple)"}}>🎲 파밍 풀: </span>
           {(boss.randomDrops||[]).map(d=>`${d.emoji}${Math.round(d.rate*100)}%`).join(" · ")}
         </div>
-        <button onClick={()=>createRaidRoom(boss.id)}
-          disabled={pickedIdx===null}
-          style={{width:"100%",padding:"7px 0",borderRadius:9,border:"none",
-            background:pickedIdx!==null?`linear-gradient(135deg,${boss.color},${boss.color}99)`:"rgba(0,0,0,0.06)",
-            color:pickedIdx!==null?"white":"rgba(0,0,0,0.2)",
-            fontSize:11,fontWeight:800,cursor:pickedIdx!==null?"pointer":"default",
-            fontFamily:"inherit",
-            boxShadow:pickedIdx!==null?`0 3px 12px ${boss.color}40`:"none"}}>
-          {pickedIdx===null?"몬스터를 먼저 선택하세요":"🌋 새 레이드방 개설!"}
-        </button>
+        {(()=>{
+          // 쿨타임 + 중복 체크
+          const coolDown=30*60*1000;
+          const lastClear=(myS.raidCooldowns||{})[boss.id]||0;
+          const remaining=coolDown-(Date.now()-lastClear);
+          const onCooldown=remaining>0;
+          const hasActiveRoom=Object.values(raidRooms).some(r=>r.bossId===boss.id&&r.status==="ongoing");
+          const disabled=pickedIdx===null||onCooldown||hasActiveRoom;
+          let label="🌋 새 레이드방 개설!";
+          if(pickedIdx===null)label="몬스터를 먼저 선택하세요";
+          else if(hasActiveRoom)label="⚠️ 이미 진행중인 방 있음 · 참전하세요";
+          else if(onCooldown){
+            const mins=Math.ceil(remaining/60000);
+            label=`⏱️ 쿨타임 ${mins}분 남음`;
+          }
+          return <button onClick={()=>createRaidRoom(boss.id)}
+            disabled={disabled}
+            style={{width:"100%",padding:"7px 0",borderRadius:9,border:"none",
+              background:!disabled?`linear-gradient(135deg,${boss.color},${boss.color}99)`:"rgba(0,0,0,0.06)",
+              color:!disabled?"white":"rgba(0,0,0,0.35)",
+              fontSize:11,fontWeight:800,cursor:!disabled?"pointer":"default",
+              fontFamily:"inherit",
+              boxShadow:!disabled?`0 3px 12px ${boss.color}40`:"none"}}>
+            {label}
+          </button>;
+        })()}
       </div>;
     })}
   </div>;
@@ -5808,37 +5893,37 @@ function SideBreed({myS,col,setMy,toast,aliveCols,acHex}){
 
   const hatchEgg=()=>{
     if(!egg||egg.hatch<egg.need)return;
-    const bmA=MONS.find(m=>m.id===egg.fatherMon)||{rarity:"UNCOMMON",hp:40,atk:15,name:"아빠",emoji:"🧬"};
-    const bmB=MONS.find(m=>m.id===egg.motherMon)||{rarity:"UNCOMMON",hp:40,atk:15,name:"엄마",emoji:"🧬"};
-    const gA=GRADE_ORDER.indexOf(bmA.rarity),gB=GRADE_ORDER.indexOf(bmB.rarity);
-    const hybridGradeIdx=Math.min(GRADE_ORDER.length-3,Math.floor((gA+gB)/2+0.7)+1);
-    const hybridRarity=GRADE_ORDER[hybridGradeIdx]||"RARE";
+    const bmA=MONS.find(m=>m.id===egg.fatherMon)||{rarity:"UNCOMMON",hp:40,atk:15,name:"아빠"};
+    const bmB=MONS.find(m=>m.id===egg.motherMon)||{rarity:"UNCOMMON",hp:40,atk:15,name:"엄마"};
+    // 낮은 등급 쪽을 베이스로 (부모 중 낮은 등급 기준)
+    const gA=GRADE_ORDER.indexOf(bmA.rarity);
+    const gB=GRADE_ORDER.indexOf(bmB.rarity);
+    const baseMon = gA<=gB?bmA:bmB;
+    // 스탯 우성유전: 좋은 쪽 70%, 나쁜 쪽 30% (스탯 뽑기 보너스)
     const domHp=Math.max(bmA.hp,bmB.hp),recHp=Math.min(bmA.hp,bmB.hp);
     const domAtk=Math.max(bmA.atk,bmB.atk),recAtk=Math.min(bmA.atk,bmB.atk);
-    const baseHp=Math.floor((domHp*0.7+recHp*0.3)*1.15);
-    const baseAtk=Math.floor((domAtk*0.7+recAtk*0.3)*1.15);
-    const typeA=MON_BASE_TYPE[egg.fatherMon]||null;
-    const typeB=MON_BASE_TYPE[egg.motherMon]||null;
-    const hybridType=typeA===typeB?typeA:(Math.random()<0.6?typeA:typeB);
-    const tBonus=hybridType?TYPES[hybridType]?.bonus||{}:{};
+    const bonusHp=Math.floor((domHp*0.7+recHp*0.3)-baseMon.hp);
+    const bonusAtk=Math.floor((domAtk*0.7+recAtk*0.3)-baseMon.atk);
+    const hpBonus=Math.max(0,bonusHp);
+    const atkBonus=Math.max(0,bonusAtk);
+    const baseType=MON_BASE_TYPE[baseMon.id]||null;
+    const tBonus=baseType?TYPES[baseType]?.bonus||{}:{};
     const gender=Math.random()<0.5?"♂":"♀";
-    // HYBRID 이름: 부모 이름의 앞 2~3글자 조합
-    const nameA=bmA.name.replace(/[^가-힣a-zA-Z]/g,'').slice(0,3);
-    const nameB=bmB.name.replace(/[^가-힣a-zA-Z]/g,'').slice(0,3);
-    const hybridMon={
-      id:`hybrid_${Date.now()}`,
-      name:`${nameA}${nameB}`,
-      emoji:"🧬",rarity:hybridRarity,lv:1,exp:0,
-      maxHp:Math.floor(baseHp*(1+(tBonus.hp||0))),hp:Math.floor(baseHp*(1+(tBonus.hp||0))),curHp:Math.floor(baseHp*(1+(tBonus.hp||0))),
-      atk:Math.floor(baseAtk*(1+(tBonus.atk||0))),alive:true,enhance:0,
-      monType:hybridType,atkBonus:tBonus.atk||0,isHybrid:true,gender,
-      fatherMon:egg.fatherMon,motherMon:egg.motherMon,
+    const maxHp=Math.floor((baseMon.hp+hpBonus)*(1+(tBonus.hp||0)));
+    const newMon={
+      id:baseMon.id,lv:1,exp:0,
+      maxHp,hp:maxHp,curHp:maxHp,
+      alive:true,enhance:0,
+      monType:baseType,atkBonus:(tBonus.atk||0),
+      gender,
+      breedBonus:{atk:atkBonus,hp:hpBonus}, // 교배 보너스 표시용
+      fromBreed:true,
     };
     setMy(s=>{
-      const nc=[...(s.collection||[]),hybridMon];
+      const nc=[...(s.collection||[]),newMon];
       return addTamerExp({...s,collection:nc,breedEgg:null},60);
     });
-    toast(`🧬 ${gender} HYBRID [${hybridRarity}] ${hybridMon.name} 탄생!`,"var(--purple)");
+    toast(`🥚 ${gender} ${baseMon.name} 탄생! (교배 보너스 ATK+${atkBonus} HP+${hpBonus})`,"var(--purple)");
     setEgg(null);setParentMale(null);setParentFemale(null);setBreedTab("select");
   };
 
@@ -5862,12 +5947,12 @@ function SideBreed({myS,col,setMy,toast,aliveCols,acHex}){
   };
 
   return <div>
-    <div style={{fontSize:11,fontWeight:800,color:"var(--tx1)",marginBottom:6}}>🥚 HYBRID 교배/육아</div>
+    <div style={{fontSize:11,fontWeight:800,color:"var(--tx1)",marginBottom:6}}>🥚 교배/육아</div>
     <div style={{fontSize:9,color:"var(--tx3)",marginBottom:6,padding:"4px 7px",background:"rgba(139,92,246,0.05)",borderRadius:6}}>
       UNCOMMON↑ · Lv3↑ · 암수한쌍 · 우성유전(높은스탯70%) · 등급결정식
     </div>
     <div style={{display:"flex",gap:4,marginBottom:8}}>
-      {[["select","👫선택"],["nurse","🥚육아"],["hybrid","🧬목록"]].map(([k,l])=>(
+      {[["select","👫선택"],["nurse","🥚육아"]].map(([k,l])=>(
         <button key={k} onClick={()=>setBreedTab(k)}
           style={{flex:1,padding:"5px 0",borderRadius:8,border:`1.5px solid ${breedTab===k?acHex:"rgba(0,0,0,0.08)"}`,
             background:breedTab===k?`${acHex}12`:"white",cursor:"pointer",fontFamily:"inherit",
@@ -5956,32 +6041,10 @@ function SideBreed({myS,col,setMy,toast,aliveCols,acHex}){
             background:"transparent",color:"var(--red)",fontSize:10,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>
           ✕ 알 포기
         </button>
-      </>:<div style={{padding:"20px 0",color:"var(--tx3)"}}>
+      </>:<div style={{padding:"20px 0",color:"var(--tx3)",textAlign:"center"}}>
         <div style={{fontSize:24,marginBottom:6}}>🥚</div>
         <div style={{fontSize:11}}>선택 탭에서 교배를 시작하세요</div>
       </div>}
-    </div>}
-
-    {breedTab==="hybrid"&&<div>
-      {(myS.collection||[]).filter(c=>c.isHybrid).length===0
-        ?<div style={{textAlign:"center",padding:"16px 0",color:"var(--tx3)",fontSize:10}}>보유 HYBRID 없음</div>
-        :(myS.collection||[]).filter(c=>c.isHybrid).map((c,i)=>{
-          const bmF=MONS.find(m=>m.id===c.fatherMon)||{emoji:"❓"};
-          const bmM=MONS.find(m=>m.id===c.motherMon)||{emoji:"❓"};
-          return <div key={i} style={{display:"flex",alignItems:"center",gap:6,padding:"7px 8px",borderRadius:9,
-            background:"rgba(139,92,246,0.05)",border:"1px solid rgba(139,92,246,0.15)",marginBottom:4}}>
-            <span style={{fontSize:18}}>🧬</span>
-            <div style={{flex:1}}>
-              <div style={{display:"flex",alignItems:"center",gap:4}}>
-                <span style={{fontSize:10,fontWeight:700,color:"var(--purple)"}}>{c.name}</span>
-                <span style={{fontSize:9,color:c.gender==="♂"?"#3b82f6":"#ec4899",fontWeight:700}}>{c.gender}</span>
-              </div>
-              <div style={{fontSize:9,color:"var(--tx3)"}}>{bmF.emoji}×{bmM.emoji} · Lv{c.lv} · [{c.rarity}]</div>
-            </div>
-            {c.monType&&<span style={{fontSize:11}}>{TYPES[c.monType]?.emoji}</span>}
-          </div>;
-        })
-      }
     </div>}
   </div>;
 }
@@ -6374,106 +6437,121 @@ function SideLab({myS,col,setMy,toast,acHex,aliveCols}){
     {labTab==="awaken"&&<div>
       <div style={{fontSize:11,color:"var(--tx3)",marginBottom:10,padding:"7px 9px",
         background:"rgba(6,182,212,0.05)",borderRadius:8,border:"1px solid rgba(6,182,212,0.15)"}}>
-        💠 각성은 <b>진화체</b>만 가능! 각성석(1~3단계) · 🌀초월석(4~5단계) 소모
+        💠 <b>각성</b>: 2번째 속성을 랜덤 부여 · 각성석 1개 소모 · <b>최대 2회</b><br/>
+        ⚠️ 합성/진화 시 이중속성은 <b>리셋</b>됩니다
       </div>
-      <div style={{fontSize:12,fontWeight:700,color:"var(--tx2)",marginBottom:6}}>진화체 몬스터</div>
+      <div style={{fontSize:12,fontWeight:700,color:"var(--tx2)",marginBottom:6}}>몬스터 선택</div>
       {(()=>{
-        // 진화체 ID 목록: EVO_CHAIN의 to/altTo에 해당하는 것들
-        const evoTargetIds=new Set(Object.values(EVO_CHAIN).flatMap(c=>[c.to,c.altTo].filter(Boolean)));
-        const awakenableCols=aliveCols.filter(c=>{
-          const id=c.baseId||c.id;
-          return evoTargetIds.has(id);
-        });
+        // 속성이 있는 모든 몬스터가 각성 대상
+        const awakenableCols=aliveCols.filter(c=>c.monType);
         if(awakenableCols.length===0)return <div style={{textAlign:"center",padding:"16px 0",color:"var(--tx3)",fontSize:11}}>
-          진화체 몬스터가 없습니다.<br/>먼저 소환수를 진화시켜주세요!
+          속성이 있는 몬스터가 없습니다.<br/>속성 진화석으로 속성을 먼저 부여하세요!
         </div>;
         return <div style={{display:"flex",flexWrap:"wrap",gap:4,marginBottom:10}}>
           {awakenableCols.map((c2)=>{
             const i=aliveCols.indexOf(c2);
             const bm2=MONS.find(m=>m.id===(c2.baseId||c2.id))||{emoji:"❓"};
-            const isAwakened=c2.awakened||false;
+            const awLv=c2.awakenLv||0;
             return <button key={i} onClick={()=>setTargetIdx(targetIdx===i?null:i)}
               style={{padding:"5px 4px",borderRadius:8,border:`1.5px solid ${targetIdx===i?"#06b6d4":"rgba(0,0,0,0.08)"}`,
                 background:targetIdx===i?"rgba(6,182,212,0.1)":"white",cursor:"pointer",fontFamily:"inherit",textAlign:"center",
-                position:"relative"}}>
+                position:"relative",minWidth:50}}>
               <div style={{fontSize:16}}>{bm2.emoji}</div>
               <div style={{fontSize:7,color:"var(--tx3)"}}>Lv{c2.lv}</div>
-              {isAwakened&&<div style={{position:"absolute",top:-2,right:-2,fontSize:8}}>💠</div>}
+              {awLv>0&&<div style={{position:"absolute",top:-2,right:-2,fontSize:9,background:"#06b6d4",
+                color:"white",borderRadius:"50%",width:14,height:14,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800}}>{awLv}</div>}
+              {c2.monType2&&<div style={{position:"absolute",bottom:-2,right:-2,fontSize:10}}>{TYPES[c2.monType2]?.emoji||""}</div>}
             </button>;
           })}
         </div>;
       })()}
       {targetIdx!==null&&(()=>{
         const c=aliveCols[targetIdx];
-        const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{emoji:"❓",name:"??",atk:10,hp:30};
+        if(!c)return null;
+        const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{emoji:"❓",name:"??"};
         const awakenLv=c.awakenLv||0;
-        const maxAwakenLv=5;
-        // 단계별 재료: 1~3단계=각성석💠, 4~5단계=초월석🌀
-        const isHighLv=awakenLv>=3;
-        const stoneId=isHighLv?"stone3":"awaken_stone";
-        const stoneEmoji=isHighLv?"🌀":"💠";
-        const stoneName=isHighLv?"초월석":"각성석";
-        const have=isHighLv?(myS.stones?.stone3||0):(myS.consumables?.awaken_stone||0);
-        const needStone=awakenLv+1;
-        const canAwaken=have>=needStone&&awakenLv<maxAwakenLv;
-        // 각성 단계별 색상
-        const stageColors=["#06b6d4","#06b6d4","#06b6d4","#8b5cf6","#f59e0b"];
-        const stageColor=stageColors[awakenLv]||"#06b6d4";
+        const maxAwakenLv=2;
+        const have=myS.consumables?.awaken_stone||0;
+        const canAwaken=have>=1&&awakenLv<maxAwakenLv;
+        const curType=c.monType?TYPES[c.monType]:null;
+        const curType2=c.monType2?TYPES[c.monType2]:null;
         return <div style={{padding:"10px 12px",borderRadius:12,
-          background:`${stageColor}08`,border:`1.5px solid ${stageColor}30`}}>
-          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
-            <span style={{fontSize:22}}>{bm.emoji}</span>
+          background:"rgba(6,182,212,0.05)",border:"1.5px solid rgba(6,182,212,0.25)"}}>
+          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
+            <span style={{fontSize:26}}>{bm.emoji}</span>
             <div style={{flex:1}}>
-              <div style={{fontSize:12,fontWeight:700}}>{c.name||bm.name}</div>
-              <div style={{fontSize:10,color:"var(--tx3)"}}>
-                각성 {awakenLv}/{maxAwakenLv}단계
-                {awakenLv>0&&<span style={{color:stageColor,marginLeft:4,fontWeight:700}}>ATK+{awakenLv*8}% HP+{awakenLv*5}%</span>}
-              </div>
+              <div style={{fontSize:13,fontWeight:800}}>{bm.name}</div>
+              <div style={{fontSize:10,color:"var(--tx3)",marginTop:2}}>각성 {awakenLv}/{maxAwakenLv}회</div>
             </div>
-            <div style={{fontSize:9,color:have>=needStone?stageColor:"var(--red)",fontWeight:700}}>
-              {stoneEmoji}×{needStone}<br/>(보유:{have})
+            <div style={{fontSize:10,color:have>=1?"#06b6d4":"var(--red)",fontWeight:700,textAlign:"right"}}>
+              💠×1 필요<br/>(보유:{have})
             </div>
           </div>
-          {/* 각성 단계 바 */}
-          <div style={{display:"flex",gap:3,marginBottom:6}}>
+          {/* 현재 속성 표시 */}
+          <div style={{background:"white",borderRadius:10,padding:"8px 10px",marginBottom:8,
+            border:"1px solid rgba(0,0,0,0.06)"}}>
+            <div style={{fontSize:10,color:"var(--tx3)",marginBottom:5,fontWeight:700}}>현재 속성</div>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              {curType&&<span style={{fontSize:13,fontWeight:700,color:curType.color,padding:"4px 10px",
+                background:curType.color+"15",borderRadius:8,border:`1.5px solid ${curType.color}40`}}>
+                {curType.emoji} {curType.name}
+              </span>}
+              <span style={{fontSize:14,color:"var(--tx3)"}}>+</span>
+              {curType2
+                ?<span style={{fontSize:13,fontWeight:700,color:curType2.color,padding:"4px 10px",
+                  background:curType2.color+"15",borderRadius:8,border:`1.5px solid ${curType2.color}40`}}>
+                  {curType2.emoji} {curType2.name} <span style={{fontSize:9,opacity:0.7}}>(각성)</span>
+                </span>
+                :<span style={{fontSize:12,color:"var(--tx3)",padding:"4px 10px",
+                  background:"rgba(0,0,0,0.04)",borderRadius:8,border:"1.5px dashed rgba(0,0,0,0.1)"}}>
+                  ??? (각성 시 랜덤 부여)
+                </span>}
+            </div>
+          </div>
+          {/* 각성 단계 표시 */}
+          <div style={{display:"flex",gap:3,marginBottom:8}}>
             {[...Array(maxAwakenLv)].map((_,i)=>(
-              <div key={i} style={{flex:1,height:7,borderRadius:3,
-                background:i<awakenLv?(i>=3?"#8b5cf6":i>=1?"#06b6d4":"#06b6d4"):"rgba(0,0,0,0.08)"}}/>
+              <div key={i} style={{flex:1,height:8,borderRadius:4,
+                background:i<awakenLv?"#06b6d4":"rgba(0,0,0,0.08)"}}/>
             ))}
           </div>
-          {/* 단계 안내 */}
-          <div style={{fontSize:9,color:"var(--tx3)",marginBottom:8,padding:"4px 7px",
-            background:"rgba(0,0,0,0.03)",borderRadius:6}}>
-            1~3단계: 💠각성석 소모 · 4~5단계: 🌀초월석 소모 (고단계)
+          {/* 안내 텍스트 */}
+          <div style={{fontSize:10,color:"var(--tx3)",marginBottom:8,padding:"6px 9px",
+            background:"rgba(0,0,0,0.03)",borderRadius:7,lineHeight:1.5}}>
+            {awakenLv===0&&<>🔮 첫 각성: 2번째 속성 <b>랜덤 부여</b> (현재 속성 제외)</>}
+            {awakenLv===1&&<>🎲 재각성: 2번째 속성 <b>다시 랜덤화</b> (맘에 안들 때 리롤용)</>}
+            {awakenLv>=maxAwakenLv&&<>✅ <b>최대 각성 완료!</b> 더 이상 각성 불가</>}
           </div>
           <button onClick={()=>{
-            if(!canAwaken){toast(awakenLv>=maxAwakenLv?"최대 각성!":have<needStone?`${stoneName} ${needStone}개 필요!`:"조건 불충족","var(--red)");return;}
+            if(!canAwaken){toast(awakenLv>=maxAwakenLv?"최대 각성!":"각성석 1개 필요!","var(--red)");return;}
             setMy(s=>{
-              let ns;
-              if(isHighLv){
-                ns={...s,stones:{...s.stones,stone3:Math.max(0,(s.stones?.stone3||0)-needStone)}};
-              }else{
-                ns={...s,consumables:{...s.consumables,awaken_stone:Math.max(0,(s.consumables?.awaken_stone||0)-needStone)}};
-              }
-              const nc=(ns.collection||[]).map((cc,ci)=>{
+              // 현재 속성 제외한 나머지 중 랜덤 선택
+              const availableTypes=Object.keys(TYPES).filter(t=>t!==c.monType);
+              const newType2=availableTypes[Math.floor(Math.random()*availableTypes.length)];
+              const nc=(s.collection||[]).map((cc,ci)=>{
                 if(cc!==aliveCols[targetIdx])return cc;
-                const newLv=(cc.awakenLv||0)+1;
-                const bm3=MONS.find(m=>m.id===(cc.baseId||cc.id))||{atk:10,hp:30};
-                const atkBonus=(cc.atkBonus||0)+0.08;
-                const newHp=Math.floor((bm3.hp+(cc.lv-1)*5)*(1+newLv*0.05));
-                return{...cc,awakened:true,awakenLv:newLv,atkBonus,maxHp:newHp,curHp:Math.min(cc.curHp+10,newHp)};
+                return{...cc,monType2:newType2,awakenLv:(cc.awakenLv||0)+1};
               });
-              return addTamerExp({...ns,collection:nc},30);
+              return addTamerExp({...s,collection:nc,consumables:{...s.consumables,awaken_stone:Math.max(0,(s.consumables?.awaken_stone||0)-1)}},25);
             });
-            toast(`${stoneEmoji} ${c.name||bm.name} 각성 ${awakenLv+1}단계!`,stageColor);
+            // 결과 토스트는 딜레이 후 표시
+            setTimeout(()=>{
+              const updated=(myS.collection||[]).find(cc=>cc===aliveCols[targetIdx]);
+              if(updated&&updated.monType2){
+                const t2=TYPES[updated.monType2];
+                toast(`💠 ${bm.name} 각성 성공! ${t2.emoji}${t2.name} 추가`,"#06b6d4");
+              }else{
+                toast(`💠 ${bm.name} 각성 완료!`,"#06b6d4");
+              }
+            },100);
           }} disabled={!canAwaken}
-            style={{width:"100%",padding:"9px 0",borderRadius:10,border:"none",
-              background:canAwaken?`linear-gradient(135deg,${stageColor},${stageColor}cc)`:"rgba(0,0,0,0.06)",
+            style={{width:"100%",padding:"10px 0",borderRadius:10,border:"none",
+              background:canAwaken?"linear-gradient(135deg,#06b6d4,#0284c7)":"rgba(0,0,0,0.06)",
               color:canAwaken?"white":"rgba(0,0,0,0.2)",
-              fontSize:12,fontWeight:800,cursor:canAwaken?"pointer":"default",fontFamily:"inherit"}}>
+              fontSize:13,fontWeight:800,cursor:canAwaken?"pointer":"default",fontFamily:"inherit"}}>
             {awakenLv>=maxAwakenLv?"✅ 최대 각성 완료!":
-             canAwaken?`${stoneEmoji} 각성 ${awakenLv+1}단계 실행`:
-             `${stoneEmoji}${stoneName} ${needStone}개 필요`}
+             !canAwaken?"💠 각성석 1개 필요":
+             awakenLv===0?"💠 각성 시작 (2번째 속성 부여)":"🎲 재각성 (속성 다시 랜덤화)"}
           </button>
         </div>;
       })()}
@@ -6503,7 +6581,7 @@ function SideHelp({acHex}){
       {q:"⚡ 스태미나",a:"던전 입장에 소모. 1시간마다 1 자동 충전. 스태미나 포션으로 즉시 회복."},
       {q:"🔩 강화",a:"강화석 소모로 몬스터 스탯 UP. COMMON~RARE는 안전(실패=유지), UNIQUE는 하락, EPIC+는 파괴 위험."},
       {q:"✨ 진화",a:"조건 충족 + 진화석 소모. 4단계: 🌟대성공(다른진화체)/✨성공/💔실패(🔩×3)/💀대실패(사망)."},
-      {q:"🧬 HYBRID",a:"교배 탭에서 몬스터 2마리로 알 생성. 먹이로 육아 후 부화. 부모 속성·등급 혼합 새 소환수 탄생."},
+      {q:"🥚 교배",a:"몬스터 2마리(♂♀)로 알 생성 → 먹이로 부화. 부모의 좋은 스탯을 물려받은 새 몬스터 탄생! (등급은 부모 중 낮은 쪽 기준)"},
       {q:"💎 진화석 활용",a:"연구소에서 부스터(EXP)/각인(스탯영구UP)/리롤(속성변경)로 활용 가능."},
       {q:"⚔️ 레이드",a:"강력한 레이드 보스 도전. 페이즈별 패턴 변화. 클리어 시 세트 장비 획득."},
     ],
@@ -6511,7 +6589,7 @@ function SideHelp({acHex}){
       {q:"등급 순서",a:"COMMON → UNCOMMON → RARE → UNIQUE → SUPER → EPIC → LEGEND (합성으로 성장)"},
       {q:"MUTANT",a:"야생에서 드물게 등장. 다른 등급과 합성 시 결과 등급 ±1단계 변동 효과."},
       {q:"BOSS",a:"사냥터 특정 조건 달성 시 등장. 포획 불가, 소환수로 토벌. 특수 장비 드롭."},
-      {q:"HYBRID 🧬",a:"교배 시스템으로만 탄생. 부모 등급의 중간 + 1단계. 독자적인 혼합 스탯."},
+      {q:"🥚 교배 결과",a:"부모 중 낮은 등급 기준으로 탄생. 스탯은 부모 우성(70%) + 열성(30%)로 계산. 진화트리를 따라 진화 가능."},
       {q:"DIVINE 🍊",a:"매우 낮은 확률의 이스터에그. 조건 4가지 동시 충족 시 0.3% 확률로 출현."},
     ],
   };
@@ -6563,7 +6641,7 @@ function SideDex({myS,col,acHex,setMy}){
     });
   };
 
-  const gradeFilters=["all","COMMON","UNCOMMON","RARE","UNIQUE","SUPER","EPIC","LEGEND","MUTANT","HYBRID"];
+  const gradeFilters=["all","COMMON","UNCOMMON","RARE","UNIQUE","EPIC","LEGEND","MUTANT"];
 
   return <div>
     <div style={{fontSize:11,fontWeight:800,color:"var(--tx1)",marginBottom:6}}>
@@ -6608,30 +6686,8 @@ function SideDex({myS,col,acHex,setMy}){
       ))}
     </div>
 
-    {/* HYBRID 섹션 */}
-    {(dexF==="all"||dexF==="HYBRID")&&hybridOwned.length>0&&<div style={{marginBottom:12}}>
-      <div style={{fontSize:10,fontWeight:800,color:"#7c3aed",marginBottom:6}}>
-        🧬 HYBRID 보유 ({hybridOwned.length}마리)
-      </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:5,marginBottom:8}}>
-        {hybridOwned.map((c,i)=>(
-          <div key={i} style={{border:"1.5px solid rgba(124,58,237,0.35)",borderRadius:10,
-            padding:"8px 4px",textAlign:"center",background:"rgba(124,58,237,0.06)"}}>
-            <div style={{fontSize:18}}>{c.emoji||"🧬"}</div>
-            <div style={{fontSize:10,fontWeight:700,color:"var(--tx1)",marginTop:1,
-              whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{c.name||"하이브리드"}</div>
-            <span style={{fontSize:9,fontWeight:800,padding:"1px 4px",borderRadius:6,
-              background:"rgba(124,58,237,0.15)",color:"#7c3aed",border:"1px solid rgba(124,58,237,0.25)"}}>
-              HYBRID
-            </span>
-            <div style={{fontSize:8,color:"var(--tx3)",marginTop:2}}>Lv{c.lv}</div>
-          </div>
-        ))}
-      </div>
-    </div>}
-
     {/* 일반 도감 */}
-    {dexF!=="HYBRID"&&<div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:5}}>
+    {<div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:5}}>
       {MONS.filter(m=>{
         if(m.rarity==="DIVINE") return dexF==="all";
         if(dexF==="all") return true;
@@ -6868,11 +6924,11 @@ function SideHelpProb({acHex}){
       {q:"✅ 기본진화",a:"진화석 N개 소모. 무조건 100% 성공. 안전하게 진화하고 싶을 때 사용."},
       {q:"🌟 강화진화",a:"진화석 N+추가 소모. 대성공 시 더 강한 진화체(altTo)로 변신! COMMON 대성공 20%, EPIC 대성공 3%."},
       {q:"💔 강화진화 실패",a:"실패해도 소환수는 유지, 진화석만 소모됨. 고등급일수록 실패 확률 높음."},
-      {q:"💠 각성",a:"진화체 몬스터만 가능. 연구소 각성 탭. 1~3단계: 각성석💠, 4~5단계: 초월석🌀. 단계당 ATK+8% HP+5%."},
+      {q:"💠 각성",a:"몬스터의 2번째 속성을 랜덤 부여! 각성석 1개 소모, 최대 2회 (1회차=부여, 2회차=리롤). 합성/진화 시 각성 속성 리셋됨."},
       {q:"🌿 COMMON 진화 트리",a:"탱귤이→네오탱귤→프라임탱귤 / 포멜로→메가포멜로→울트라포멜로 / 리피→실반→고대실반 / 로키→타이탄록키→콜로서스 / 브리지→폭풍브리지→템페스트 / 글리머→래디언트→루미노스"},
       {q:"🔥 UNCOMMON 진화 트리",a:"블레이즈→인페르노→라그나로스 / 아쿠아→어비설→리바이어던 / 볼트→뇌신볼트→제우스 / 프로스티→글레이셔→퍼마프로스트 / 나가→코브라드라→나가로드 / 테로→보이드테로→어비스로드 / 샤이니→셀레스티아→디바이니티 / 드라코→카이저드라코→드래곤갓"},
       {q:"🐺 합성체 진화 트리",a:"레어울프→SR키메라 / 레어피닉스→SR리바이어던 / 레어골렘→SR타이탄 (RARE→SUPER) / 유니크드래곤→에픽갓슬레이어 / 유니크크라켄→에픽보이드킹 / 유니크스핑크스→에픽솔라리스 (UNIQUE→EPIC)"},
-      {q:"🧬 교배 HYBRID",a:"부모 평균 등급 기반으로 등급 결정. 스탯 뽑기 개념 - 부모 우성유전 70%+30% 반영. 이름은 부모 이름 조합."},
+      {q:"🥚 교배 개요",a:"부모 몬스터의 스탯을 물려받은 새 몬스터 탄생. 스탯 뽑기용! 부모 둘 중 낮은 등급 기준."},
     ],
     raid:[
       {q:"🌋 레이드 기본",a:"3종 레이드 보스. 보스 HP 700~800. 내 몬스터도 HP 소모! 몬스터가 죽으면 전사."},
@@ -6885,7 +6941,7 @@ function SideHelpProb({acHex}){
     breed:[
       {q:"🥚 교배 조건",a:"UNCOMMON 이상 + Lv.3 이상 + 암수(♂♀) 한 쌍 필요. COMMON은 교배 불가."},
       {q:"🧬 유전 방식",a:"우성유전: 높은 스탯 70% + 낮은 스탯 30% 계산. 부모 중 좋은 스탯을 가진 쪽이 유리."},
-      {q:"📊 등급 결정",a:"부모 등급 합산 기반으로 결정. 두 부모가 모두 높은 등급이면 더 높은 등급의 HYBRID 탄생 가능."},
+      {q:"📊 교배 등급",a:"결과 몬스터 등급은 부모 중 낮은 쪽과 동일. (하향 안전)"},
       {q:"🍖 육아",a:"교배 후 알 생성 → 먹이로 육아 필요. 후반(50% 이후)은 고급먹이(🍖) 필요. 알 진행도 표시됨."},
       {q:"♂♀ 성별",a:"포획 시 랜덤으로 부여. 교배는 반드시 암수 한 쌍. 성별 표시: ♂파란색 ♀분홍색."},
     ],
@@ -6912,17 +6968,16 @@ function SideHelpProb({acHex}){
     {title:"🔮 합성 확률 (실제 적용값)",rows:[
       ["COMMON+COMMON",  "UNCOMMON 50% / RARE 20% / 실패 30%",                "#607080"],
       ["UNCOMMON+UNCOMMON","RARE 50% / UNIQUE 20% / 실패 30%",                 "#1565c0"],
-      ["RARE+RARE",      "UNIQUE 45% / SUPER 20% / 실패 35%",                  "#00838f"],
-      ["UNIQUE+UNIQUE",  "SUPER 40% / EPIC 20% / 실패 40%",                    "#e65100"],
-      ["한쪽 SUPER이상", "EPIC 35% / LEGEND 15% / MUTANT 5% / 실패 45%",      "#ad1457"],
-      ["EPIC+EPIC",      "LEGEND 20% / MUTANT 5% / 실패 75%",                  "#6a1b9a"],
+      ["RARE+RARE",      "UNIQUE 45% / EPIC 15% / 실패 40%",                   "#00838f"],
+      ["UNIQUE+UNIQUE",  "EPIC 40% / LEGEND 10% / 실패 50%",                   "#e65100"],
+      ["EPIC+EPIC",      "LEGEND 25% / 실패 75%",                               "#6a1b9a"],
+      ["💠 뮤턴트 이로치","EPIC+ 결과 시 3% 확률 뮤턴트 등장 (스탯 +30%)",    "#00acc1"],
     ]},
     {title:"💎 강화진화 확률 (기본진화=100% 성공)",rows:[
       ["COMMON",  "🌟대성공 20% / ✅성공 70% / 💔실패 10%","#607080"],
       ["UNCOMMON","🌟대성공 15% / ✅성공 65% / 💔실패 20%","#1565c0"],
       ["RARE",    "🌟대성공 10% / ✅성공 50% / 💔실패 40%","#00838f"],
       ["UNIQUE",  "🌟대성공 7%  / ✅성공 38% / 💔실패 55%","#e65100"],
-      ["SUPER",   "🌟대성공 5%  / ✅성공 25% / 💔실패 70%","#ad1457"],
       ["EPIC",    "🌟대성공 3%  / ✅성공 15% / 💔실패 82%","#6a1b9a"],
     ]},
     {title:"💎 진화 결과",rows:[
