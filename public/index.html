@@ -60,7 +60,7 @@
     .game-col{width:100%;max-width:600px;height:100%;display:flex;flex-direction:column;background:#f7f3ff;overflow:hidden;box-shadow:0 0 40px rgba(139,92,246,0.15);}
     .side-col{display:none;}
     @media(min-width:900px){
-    .side-col{display:flex;flex-direction:column;width:340px;min-width:300px;height:100%;background:#ffffff;border-left:2px solid rgba(139,92,246,0.10);overflow:hidden;position:relative;}
+    .side-col{display:flex;flex-direction:column;width:400px;min-width:360px;height:100%;background:#ffffff;border-left:2px solid rgba(139,92,246,0.10);overflow:hidden;position:relative;}
       .menu-btn-hide{display:none !important;}
       .mobile-panel-btn{display:none !important;}
     }
@@ -299,24 +299,16 @@ const BOSS_ITEMS=[
 ];
 
 // 보스 장비 아이템 5부위 (착용 시 소환수 ATK/DEF 보너스)
-// 레이드 세트 장비 - 보스별 독립 5부위
-// 이그나스(🌋): 용암 세트 - 투구/건틀릿
-// 보이드로드(🌑): 허공 세트 - 갑옷/망토
-// 스톰킹(⛈️): 폭풍 세트 - 장화/무기
-// 5부위 모두: 풀셋 효과 발동
+// 레이드 세트 장비 - 5부위 (3보스에서 각각 파밍, 세트 완성 시 보너스)
 const BOSS_EQUIPS=[
-  // 이그나스 세트 (불꽃+빙하)
-  {id:"eq_lava_helm",   name:"용암의 투구",    emoji:"🪖",slot:"helm",   boss:"raid_dragon", atk:5, def:8,  desc:"ATK+5% DEF+8%"},
-  {id:"eq_lava_glove",  name:"용암의 건틀릿",  emoji:"🧤",slot:"glove",  boss:"raid_dragon", atk:9, def:4,  desc:"ATK+9% DEF+4%"},
-  // 보이드로드 세트 (어둠+빛)
-  {id:"eq_void_armor",  name:"허공의 갑옷",    emoji:"🥋",slot:"armor",  boss:"raid_void",   atk:4, def:12, desc:"ATK+4% DEF+12%"},
-  {id:"eq_void_cloak",  name:"심연의 망토",    emoji:"🧥",slot:"cloak",  boss:"raid_void",   atk:3, def:9,  desc:"ATK+3% DEF+9%"},
-  // 스톰킹 세트 (번개+대지)
-  {id:"eq_storm_boots", name:"폭풍의 장화",    emoji:"👟",slot:"boots",  boss:"raid_storm",  atk:6, def:5,  desc:"ATK+6% DEF+5%"},
-  {id:"eq_storm_wpn",   name:"뇌격 무기",      emoji:"🗡️",slot:"weapon", boss:"raid_storm",  atk:12,def:2,  desc:"ATK+12% DEF+2%"},
+  {id:"eq_helm",   name:"탐험가의 투구",   emoji:"🪖",slot:"helm",   atk:3, def:4, desc:"ATK+3% DEF+4%"},
+  {id:"eq_armor",  name:"탐험가의 갑옷",   emoji:"🥋",slot:"armor",  atk:2, def:6, desc:"ATK+2% DEF+6%"},
+  {id:"eq_glove",  name:"탐험가의 건틀릿", emoji:"🧤",slot:"glove",  atk:5, def:2, desc:"ATK+5% DEF+2%"},
+  {id:"eq_boots",  name:"탐험가의 장화",   emoji:"👟",slot:"boots",  atk:3, def:3, desc:"ATK+3% DEF+3%"},
+  {id:"eq_weapon", name:"탐험가의 무기",   emoji:"🗡️",slot:"weapon", atk:7, def:1, desc:"ATK+7% DEF+1%"},
 ];
-// 풀셋 완성 보너스 (6부위 모두)
-const FULL_SET_BONUS={atk:10,def:10,name:"전설의 테이머 세트",desc:"모든 레이드 장비 착용 시 추가 ATK+10% DEF+10%"};
+// 5부위 완성 시 세트 보너스
+const FULL_SET_BONUS={atk:5,def:5,name:"탐험가 풀셋",desc:"5부위 완성 시 추가 ATK+5% DEF+5%"};
 
 // 배틀 전용 아이템
 const BATTLE_ITEMS=[
@@ -480,7 +472,7 @@ const EVO_CHAIN={
   frostie:    {to:"glacier",      altTo:"permafrost",    name:"글레이셔",       altName:"퍼마프로스트(대성공!)",stone:"stone1",
     conds:[{type:"lv",val:8},{type:"feed",val:5}],
     condDesc:"Lv.8 + 먹이 5회"},
-  venom:      {to:"toxicron",     altTo:"omega_venom",   name:"톡시크론",       altName:"오메가베놈(대성공!)",  stone:"stone1",
+  venom:      {to:"toxicron",     altTo:"omega_venom",   name:"코브라드라",     altName:"나가로드(대성공!)",    stone:"stone1",
     conds:[{type:"lv",val:8},{type:"pvp",val:2}],
     condDesc:"Lv.8 + 배틀 2승"},
   terro:      {to:"void_terro",   altTo:"abyss_lord",    name:"보이드테로",     altName:"어비스로드(대성공!)",  stone:"stone1",
@@ -520,7 +512,7 @@ const EVO_CHAIN={
   glacier:    {to:"permafrost",   altTo:null,            name:"퍼마프로스트",   altName:null,                  stone:"stone2",
     conds:[{type:"lv",val:14},{type:"enhance",val:3},{type:"dungeon",val:8}],
     condDesc:"Lv.14 + +3강 + 던전 8회"},
-  toxicron:   {to:"omega_venom",  altTo:null,            name:"오메가베놈",     altName:null,                  stone:"stone2",
+  toxicron:   {to:"omega_venom",  altTo:null,            name:"나가로드",       altName:null,                  stone:"stone2",
     conds:[{type:"lv",val:14},{type:"enhance",val:5},{type:"pvp",val:5}],
     condDesc:"Lv.14 + +5강 + 배틀 5승"},
   void_terro: {to:"abyss_lord",   altTo:null,            name:"어비스로드",     altName:null,                  stone:"stone2",
@@ -599,7 +591,7 @@ const MONS=[
   {id:"aqua",       name:"아쿠아",    emoji:"💧",color:"#1976d2",rarity:"UNCOMMON",hp:50, atk:12,spd:8, desc:"물 정령. 고압 물줄기 공격."},
   {id:"bolt",       name:"볼트",      emoji:"⚡",color:"#f9a825",rarity:"UNCOMMON",hp:35, atk:22,spd:18,desc:"번개 정령. 순간 전격 공격."},
   {id:"frostie",    name:"프로스티",  emoji:"❄️",color:"#82b1ff",rarity:"UNCOMMON",hp:38, atk:15,spd:11,desc:"얼음 정령. 냉기로 적을 둔화."},
-  {id:"venom",      name:"베놈",      emoji:"🐍",color:"#7b1fa2",rarity:"UNCOMMON",hp:33, atk:20,spd:14,desc:"독 정령. 독액으로 적을 서서히 약화."},
+  {id:"venom",      name:"나가",      emoji:"🐍",color:"#7b1fa2",rarity:"UNCOMMON",hp:33, atk:20,spd:14,desc:"뱀 정령. 독 속성. 교활한 독액 공격."},
   {id:"terro",      name:"테로",      emoji:"🌑",color:"#37474f",rarity:"UNCOMMON",hp:42, atk:16,spd:9, desc:"어둠 정령. 암흑 에너지로 주변 잠식."},
   {id:"shiny",      name:"샤이니",    emoji:"✨",color:"#ab47bc",rarity:"UNCOMMON",hp:45, atk:20,spd:16,desc:"빛 정령. 눈부신 빛으로 혼란 유발."},
   {id:"draco",      name:"드라코",    emoji:"🐉",color:"#d32f2f",rarity:"UNCOMMON",hp:50, atk:22,spd:12,desc:"드래곤 계열. 불꽃 숨결 공격."},
@@ -618,7 +610,7 @@ const MONS=[
   {id:"abyssal",    name:"어비설",    emoji:"🌊",color:"#0d47a1",rarity:"UNCOMMON",hp:88, atk:25,spd:13,desc:"아쿠아 진화체. 심해의 압력 파도."},
   {id:"thunder_god",name:"뇌신볼트",  emoji:"🌩️",color:"#f57f17",rarity:"UNCOMMON",hp:62, atk:42,spd:26,desc:"볼트 진화체. 번개의 신."},
   {id:"glacier",    name:"글레이셔",  emoji:"🧊",color:"#1565c0",rarity:"UNCOMMON",hp:68, atk:28,spd:17,desc:"프로스티 진화체. 움직이는 빙하."},
-  {id:"toxicron",   name:"톡시크론",  emoji:"🧪",color:"#4a148c",rarity:"UNCOMMON",hp:58, atk:38,spd:22,desc:"베놈 진화체. 독소 결정체."},
+  {id:"toxicron",   name:"코브라드라",emoji:"🐍",color:"#4a148c",rarity:"UNCOMMON",hp:58, atk:38,spd:22,desc:"나가 진화체. 독이 결정화된 거대 코브라."},
   {id:"void_terro", name:"보이드테로",emoji:"🕳️",color:"#37474f",rarity:"UNCOMMON",hp:75, atk:32,spd:15,desc:"테로 진화체. 허공을 지배하는 어둠."},
   {id:"celestia",   name:"셀레스티아",emoji:"🌠",color:"#6a1b9a",rarity:"UNCOMMON",hp:130,atk:52,spd:32,desc:"샤이니 진화체. 별빛의 여신."},
   {id:"kaiser_draco",name:"카이저드라코",emoji:"🦕",color:"#b71c1c",rarity:"UNCOMMON",hp:150,atk:60,spd:22,desc:"드라코 진화체. 용족의 황제."},
@@ -629,7 +621,7 @@ const MONS=[
   {id:"leviathan",  name:"리바이어던",emoji:"🐋",color:"#0a237a",rarity:"UNCOMMON",hp:140,atk:45,spd:18,desc:"어비설 각성체. 심연의 왕."},
   {id:"zeus",       name:"제우스",    emoji:"⚡",color:"#f57f17",rarity:"UNCOMMON",hp:100,atk:70,spd:40,desc:"뇌신볼트 각성체. 번개의 신"},
   {id:"permafrost", name:"퍼마프로스트",emoji:"🏔️",color:"#1a237e",rarity:"UNCOMMON",hp:115,atk:50,spd:26,desc:"글레이셔 각성체. 영원한 빙하."},
-  {id:"omega_venom",name:"오메가베놈",emoji:"💀",color:"#4a0050",rarity:"UNCOMMON",hp:95, atk:65,spd:35,desc:"톡시크론 각성체. 독의 신."},
+  {id:"omega_venom",name:"나가로드",  emoji:"👑",color:"#4a0050",rarity:"UNCOMMON",hp:95, atk:65,spd:35,desc:"코브라드라 각성체. 뱀족의 왕. 독의 지배자."},
   {id:"abyss_lord", name:"어비스로드",emoji:"🌌",color:"#1a237e",rarity:"UNCOMMON",hp:120,atk:55,spd:28,desc:"보이드테로 각성체. 어둠의 군주."},
   // ── RARE (합성체) ──
   {id:"rare_wolf",  name:"레어울프",  emoji:"🐺",color:"#1565c0",rarity:"RARE",   hp:80, atk:35,spd:28,desc:"합성 야수. 날카로운 발톱의 늑대."},
@@ -787,10 +779,13 @@ function resetDaily(s){
 function refillStamina(s){
   const now=Date.now();
   const last=s.lastStaminaRefill||now;
-  const elapsed=Math.floor((now-last)/3600000);
+  // 24시간에 15개 = 96분마다 1개 회복
+  const REGEN_MS=96*60*1000; // 96분
+  const elapsed=Math.floor((now-last)/REGEN_MS);
   if(elapsed<=0)return s;
-  const ns=Math.min(s.maxStamina||10,(s.stamina||0)+elapsed);
-  return{...s,stamina:ns,lastStaminaRefill:now};
+  const maxSt=s.maxStamina||15;
+  const ns=Math.min(maxSt,(s.stamina||0)+elapsed);
+  return{...s,stamina:ns,lastStaminaRefill:last+elapsed*REGEN_MS};
 }
 
 function checkAch(s){
@@ -1933,8 +1928,8 @@ function SidePanel({sideTabTop,setSideTabTop,
         </button>
       ))}
     </div>
-    <div style={{flex:1,minHeight:0,overflowY:"auto",overflowX:"hidden",padding:"12px",
-      WebkitOverflowScrolling:"touch",overscrollBehavior:"contain",fontSize:12}}
+    <div style={{flex:1,minHeight:0,overflowY:"auto",overflowX:"hidden",padding:"14px",
+      WebkitOverflowScrolling:"touch",overscrollBehavior:"contain",fontSize:13}}
       ref={el=>{if(el)sideScrollRef.current=el;}}
       onScroll={e=>{sideScrollPos.current=e.currentTarget.scrollTop;}}
       onWheel={e=>e.stopPropagation()}>
@@ -3589,36 +3584,32 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
                   </div>
                 }
               </div>}
-              <div style={{display:"flex",alignItems:"center",gap:4,marginBottom:3}}>
-                <span style={{fontSize:17,color:"var(--tx3)"}}>속성:</span>
+              <div style={{marginBottom:5}}>
+                <span style={{fontSize:13,color:"var(--tx3)",fontWeight:600}}>속성: </span>
                 {c.monType
-                  ?<span style={{fontSize:17,fontWeight:700,color:TYPES[c.monType]?.color}}>{TYPES[c.monType]?.emoji}{TYPES[c.monType]?.name}</span>
-                  :<span style={{fontSize:17,color:"var(--tx3)"}}>없음</span>}
+                  ?<span style={{fontSize:13,fontWeight:700,color:TYPES[c.monType]?.color}}>{TYPES[c.monType]?.emoji} {TYPES[c.monType]?.name}</span>
+                  :<span style={{fontSize:13,color:"var(--tx3)"}}>없음 (속성진화석으로 부여)</span>}
               </div>
-              <div style={{display:"flex",flexWrap:"wrap",gap:3,marginBottom:3}}>
+              <div style={{display:"flex",flexWrap:"wrap",gap:4,marginBottom:3}}>
                 {Object.entries(TYPES).map(([type,info])=>{
                   const stoneId=`tstone_${type}`;
                   const have=(myS.typeStones?.[stoneId]||0);
                   const isOn=c.monType===type;
                   return <button key={type} onClick={()=>have>0&&!isOn&&typeEvolve(i,type)}
-                    disabled={have<=0||isOn} title={`${info.name} 속성진화`}
-                    style={{padding:"2px 5px",borderRadius:6,fontFamily:"inherit",
-                      border:`1px solid ${isOn?info.color+"80":have>0?info.color+"40":"rgba(0,0,0,0.07)"}`,
-                      background:isOn?`${info.color}20`:have>0?`${info.color}08`:"transparent",
-                      fontSize:16,cursor:have>0&&!isOn?"pointer":"default",
-                      color:isOn?info.color:have>0?info.color:"var(--tx3)",fontWeight:isOn?700:400}}>
-                    {info.emoji}{have>0&&!isOn?<span style={{fontSize:16}}>{have}</span>:null}
+                    disabled={have<=0||isOn} title={`${info.name} 속성진화석 ×${have}`}
+                    style={{padding:"4px 8px",borderRadius:8,fontFamily:"inherit",
+                      border:`1.5px solid ${isOn?info.color:have>0?info.color+"60":"rgba(0,0,0,0.08)"}`,
+                      background:isOn?`${info.color}20`:have>0?`${info.color}10`:"transparent",
+                      fontSize:14,cursor:have>0&&!isOn?"pointer":"default",
+                      color:isOn?info.color:have>0?info.color:"var(--tx3)",
+                      fontWeight:isOn?800:400,
+                      opacity:have<=0&&!isOn?0.35:1}}>
+                    {info.emoji}
+                    {isOn&&<span style={{fontSize:9,marginLeft:2}}>✓</span>}
+                    {have>0&&!isOn&&<span style={{fontSize:9,marginLeft:2,color:info.color}}>×{have}</span>}
                   </button>;
                 })}
               </div>
-              <button onClick={()=>typeEvolveRandom(i)}
-                disabled={(myS.stones?.stone1||0)<5}
-                style={{padding:"3px 0",borderRadius:7,width:"100%",fontFamily:"inherit",
-                  border:"1px solid rgba(100,100,200,0.25)",background:"rgba(100,100,200,0.05)",
-                  fontSize:17,cursor:(myS.stones?.stone1||0)>=5?"pointer":"default",
-                  color:(myS.stones?.stone1||0)>=5?"var(--purple)":"var(--tx3)"}}>
-                🎲 랜덤 속성 변환 (💠×5) 보유:{myS.stones?.stone1||0}
-              </button>
             </>}
             {isDead&&<div style={{display:"flex",gap:6,marginTop:4}}>
               <div style={{flex:1}}>
@@ -4620,76 +4611,68 @@ function SideTamer({myS,tLv,tExpNeed,col,maxStorage,acHex,setMy}){
         ))}
       </div>
     </div>}
-    {/* 레이드 장비 슬롯 UI */}
+    {/* 레이드 장비 슬롯 UI - 5부위 통합 */}
     <div style={{marginTop:10}}>
-      <div style={{fontSize:11,fontWeight:700,color:"var(--tx2)",marginBottom:5}}>⚔️ 레이드 장비</div>
+      <div style={{fontSize:12,fontWeight:700,color:"var(--tx2)",marginBottom:6}}>⚔️ 레이드 장비</div>
       {/* 장착 효과 요약 */}
       {(()=>{
-        const bonus=getEquipBonus(myS.equipsOn,myS.equips);
-        const equippedAll=BOSS_EQUIPS.every(e=>(myS.equipsOn||{})[e.slot]&&(myS.equips||{})[e.id]);
-        const fullBonus=equippedAll?FULL_SET_BONUS:{atk:0,def:0};
+        const myEquips=myS.equips||{};
+        const myOn=myS.equipsOn||{};
+        const equippedCount=BOSS_EQUIPS.filter(e=>myOn[e.slot]&&myEquips[e.id]).length;
+        const ownedCount=BOSS_EQUIPS.filter(e=>myEquips[e.id]).length;
+        const bonus=getEquipBonus(myOn,myEquips);
+        const fullBonus=equippedCount===BOSS_EQUIPS.length?FULL_SET_BONUS:{atk:0,def:0};
         const totalAtk=bonus.atk+(fullBonus.atk||0);
         const totalDef=bonus.def+(fullBonus.def||0);
-        return <div style={{padding:"6px 10px",borderRadius:9,marginBottom:8,
-          background:equippedAll?"rgba(245,158,11,0.1)":"rgba(0,0,0,0.04)",
-          border:`1px solid ${equippedAll?"rgba(245,158,11,0.35)":"rgba(0,0,0,0.08)"}`}}>
-          <div style={{fontSize:10,fontWeight:700,color:equippedAll?"var(--gold)":"var(--tx2)"}}>
-            {equippedAll?"✨ 풀셋 완성! "+FULL_SET_BONUS.name:"장착 스탯 보너스"}
+        const isFullSet=equippedCount===BOSS_EQUIPS.length;
+        return <div style={{padding:"8px 10px",borderRadius:10,marginBottom:8,
+          background:isFullSet?"rgba(245,158,11,0.1)":"rgba(0,0,0,0.04)",
+          border:`1.5px solid ${isFullSet?"rgba(245,158,11,0.4)":"rgba(0,0,0,0.08)"}`}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <div style={{fontSize:11,fontWeight:700,color:isFullSet?"var(--gold)":"var(--tx2)"}}>
+              {isFullSet?"✨ 풀셋 완성!":"⚔️ 장착 보너스"}
+            </div>
+            <div style={{fontSize:10,color:"var(--tx3)"}}>보유 {ownedCount}/{BOSS_EQUIPS.length}</div>
           </div>
-          <div style={{fontSize:9,color:"var(--tx3)",marginTop:2}}>
-            ATK +{totalAtk}% · DEF +{totalDef}%
-            {equippedAll&&<span style={{color:"var(--gold)",marginLeft:4}}>+풀셋 ATK+{FULL_SET_BONUS.atk}% DEF+{FULL_SET_BONUS.def}%</span>}
+          <div style={{fontSize:10,color:"var(--tx3)",marginTop:2}}>
+            <span style={{color:"var(--red)",fontWeight:700}}>ATK +{totalAtk}%</span>
+            <span style={{marginLeft:6,color:"var(--blue)",fontWeight:700}}>DEF +{totalDef}%</span>
+            {isFullSet&&<span style={{color:"var(--gold)",marginLeft:6}}>+풀셋 {FULL_SET_BONUS.desc}</span>}
           </div>
         </div>;
       })()}
-      {/* 부위별 슬롯 */}
-      {[
-        {boss:"raid_dragon", name:"이그나스 세트", color:"#bf360c", emoji:"🌋"},
-        {boss:"raid_void",   name:"보이드 세트",   color:"#311b92", emoji:"🌑"},
-        {boss:"raid_storm",  name:"스톰킹 세트",   color:"#01579b", emoji:"⛈️"},
-      ].map(bossInfo=>{
-        const bossEquips=BOSS_EQUIPS.filter(e=>e.boss===bossInfo.boss);
-        const myEquips=myS.equips||{};
-        const ownedCnt=bossEquips.filter(e=>myEquips[e.id]).length;
-        return <div key={bossInfo.boss} style={{marginBottom:8,padding:"7px 9px",borderRadius:10,
-          background:`${bossInfo.color}06`,border:`1px solid ${bossInfo.color}20`}}>
-          <div style={{fontSize:9,fontWeight:700,color:bossInfo.color,marginBottom:5}}>
-            {bossInfo.emoji} {bossInfo.name} ({ownedCnt}/{bossEquips.length})
-          </div>
-          <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
-            {bossEquips.map(eq=>{
-              const have=myEquips[eq.id];
-              const on=(myS.equipsOn||{})[eq.slot];
-              return <div key={eq.id} style={{flex:"1 0 44%",padding:"5px 6px",borderRadius:8,
-                background:on?"rgba(245,158,11,0.12)":have?"white":"rgba(0,0,0,0.03)",
-                border:`1px solid ${on?"rgba(245,158,11,0.4)":have?"rgba(0,0,0,0.12)":"rgba(0,0,0,0.05)"}`,
-                opacity:have?1:0.45}}>
-                <div style={{display:"flex",alignItems:"center",gap:4}}>
-                  <span style={{fontSize:14}}>{have?eq.emoji:"❓"}</span>
-                  <div style={{flex:1}}>
-                    <div style={{fontSize:8,fontWeight:700,color:have?"var(--tx1)":"var(--tx3)"}}>
-                      {have?eq.name:"미획득"}
-                    </div>
-                    {have&&<div style={{fontSize:7,color:"var(--tx3)"}}>{eq.desc}</div>}
-                  </div>
-                  {have&&<button onClick={()=>{
-                    const cur=(myS.equipsOn||{})[eq.slot];
-                    setMy(s=>({...s,equipsOn:{...(s.equipsOn||{}),[eq.slot]:cur?undefined:eq.id}}));
-                  }} style={{padding:"2px 7px",borderRadius:6,border:"none",fontFamily:"inherit",
-                    background:on?"var(--gold)":"rgba(139,92,246,0.12)",
-                    color:on?"#000":"var(--purple)",fontSize:8,fontWeight:700,cursor:"pointer",
-                    flexShrink:0}}>
-                    {on?"해제":"착용"}
-                  </button>}
+      {/* 5부위 슬롯 */}
+      <div style={{display:"grid",gridTemplateColumns:"repeat(1,1fr)",gap:4}}>
+        {BOSS_EQUIPS.map(eq=>{
+          const have=(myS.equips||{})[eq.id];
+          const on=(myS.equipsOn||{})[eq.slot]===eq.id;
+          return <div key={eq.id} style={{padding:"7px 10px",borderRadius:10,
+            background:on?"rgba(245,158,11,0.08)":have?"white":"rgba(0,0,0,0.02)",
+            border:`1.5px solid ${on?"rgba(245,158,11,0.4)":have?"rgba(0,0,0,0.12)":"rgba(0,0,0,0.05)"}`,
+            opacity:have?1:0.4}}>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <span style={{fontSize:18}}>{have?eq.emoji:"❓"}</span>
+              <div style={{flex:1}}>
+                <div style={{fontSize:11,fontWeight:700,color:have?"var(--tx1)":"var(--tx3)"}}>
+                  {have?eq.name:"미획득 - 레이드 클리어 시 드롭"}
                 </div>
-              </div>;
-            })}
-          </div>
-        </div>;
-      })}
-      {Object.keys(myS.equips||{}).length===0&&<div style={{textAlign:"center",padding:"12px 0",
+                {have&&<div style={{fontSize:10,color:"var(--tx3)"}}>{eq.desc}</div>}
+              </div>
+              {have&&<button onClick={()=>{
+                const cur=(myS.equipsOn||{})[eq.slot];
+                setMy(s=>({...s,equipsOn:{...(s.equipsOn||{}),[eq.slot]:cur===eq.id?undefined:eq.id}}));
+              }} style={{padding:"4px 10px",borderRadius:8,border:"none",fontFamily:"inherit",
+                background:on?"var(--gold)":"rgba(139,92,246,0.12)",
+                color:on?"#000":"var(--purple)",fontSize:10,fontWeight:700,cursor:"pointer",flexShrink:0}}>
+                {on?"해제":"착용"}
+              </button>}
+            </div>
+          </div>;
+        })}
+      </div>
+      {Object.keys(myS.equips||{}).length===0&&<div style={{textAlign:"center",padding:"14px 0",
         color:"var(--tx3)",fontSize:10}}>
-        레이드 클리어 시 장비가 랜덤으로 드롭됩니다
+        레이드 클리어 시 장비 랜덤 드롭 · 3개 보스 각각 다른 아이템 파밍
       </div>}
     </div>
   </div>;
@@ -4813,8 +4796,8 @@ const RAID_BOSSES=[
       {id:"boss_crystal", name:"레이드 크리스탈",emoji:"💎",amt:1, rate:0.20, desc:"합성 등급UP +30%"},
       {id:"awaken_stone", name:"각성석",       emoji:"💠", amt:1, rate:0.15, desc:"소환수 각성 전용"},
       {id:"enhance_stone",name:"강화석",       emoji:"🔩", amt:10,rate:0.65, desc:"보너스 강화석"},
-      {id:"eq_lava_helm", name:"용암의 투구",  emoji:"🪖", amt:1, rate:0.18, desc:"이그나스 세트 - 투구"},
-      {id:"eq_lava_glove",name:"용암의 건틀릿",emoji:"🧤", amt:1, rate:0.18, desc:"이그나스 세트 - 건틀릿"},
+      {id:"eq_helm",   name:"탐험가의 투구",   emoji:"🪖", amt:1, rate:0.20, desc:"세트 장비 - 투구"},
+      {id:"eq_glove",  name:"탐험가의 건틀릿", emoji:"🧤", amt:1, rate:0.20, desc:"세트 장비 - 건틀릿"},
     ],
     setBonus:{atk:14, def:12, name:"이그나스 세트", desc:"ATK+14% DEF+12% · 화염/빙하 저항"},
   },
@@ -4839,8 +4822,8 @@ const RAID_BOSSES=[
       {id:"ancient_shard", name:"고대의 파편",   emoji:"💎", amt:1, rate:0.18, desc:"진화 100% 보장 (1회용)"},
       {id:"awaken_stone",  name:"각성석",        emoji:"💠", amt:1, rate:0.15, desc:"소환수 각성 전용"},
       {id:"enhance_stone", name:"강화석",        emoji:"🔩", amt:8, rate:0.60, desc:"보너스 강화석"},
-      {id:"eq_void_armor", name:"허공의 갑옷",   emoji:"🥋", amt:1, rate:0.18, desc:"보이드로드 세트 - 갑옷"},
-      {id:"eq_void_cloak", name:"심연의 망토",   emoji:"🧥", amt:1, rate:0.18, desc:"보이드로드 세트 - 망토"},
+      {id:"eq_armor",  name:"탐험가의 갑옷",   emoji:"🥋", amt:1, rate:0.20, desc:"세트 장비 - 갑옷"},
+      {id:"eq_weapon", name:"탐험가의 무기",   emoji:"🗡️", amt:1, rate:0.20, desc:"세트 장비 - 무기"},
     ],
     setBonus:{atk:7, def:21, name:"보이드 세트", desc:"ATK+7% DEF+21% · 어둠/빛 저항"},
   },
@@ -4865,8 +4848,8 @@ const RAID_BOSSES=[
       {id:"boss_eye",      name:"보스의 눈",    emoji:"👁️", amt:1, rate:0.18, desc:"미포획 몬스터 포획률 2배"},
       {id:"awaken_stone",  name:"각성석",       emoji:"💠", amt:1, rate:0.15, desc:"소환수 각성 전용"},
       {id:"enhance_stone", name:"강화석",       emoji:"🔩", amt:12,rate:0.65, desc:"보너스 강화석"},
-      {id:"eq_storm_boots",name:"폭풍의 장화",  emoji:"👟", amt:1, rate:0.18, desc:"스톰킹 세트 - 장화"},
-      {id:"eq_storm_wpn",  name:"뇌격 무기",   emoji:"🗡️", amt:1, rate:0.18, desc:"스톰킹 세트 - 무기"},
+      {id:"eq_boots",  name:"탐험가의 장화",   emoji:"👟", amt:1, rate:0.20, desc:"세트 장비 - 장화"},
+      {id:"eq_weapon", name:"탐험가의 무기",   emoji:"🗡️", amt:1, rate:0.20, desc:"세트 장비 - 무기"},
     ],
     setBonus:{atk:18, def:7, name:"스톰킹 세트", desc:"ATK+18% DEF+7% · 번개/대지 저항"},
   },
@@ -5412,16 +5395,45 @@ function SideRaid({myS,col,setMy,toast,aliveCols,acHex}){
     </div>
 
     {/* 레이드 보스 목록 */}
+    {/* 전체 5부위 세트 현황 */}
+    {(()=>{
+      const myEquips=myS.equips||{};
+      const ownedCount=BOSS_EQUIPS.filter(e=>myEquips[e.id]).length;
+      const isFullSet=ownedCount===BOSS_EQUIPS.length;
+      return <div style={{padding:"8px 10px",borderRadius:10,marginBottom:10,
+        background:isFullSet?"rgba(245,158,11,0.08)":"rgba(0,0,0,0.03)",
+        border:`1.5px solid ${isFullSet?"rgba(245,158,11,0.4)":"rgba(0,0,0,0.08)"}`}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:5}}>
+          <div style={{fontSize:11,fontWeight:800,color:isFullSet?"var(--gold)":"var(--tx2)"}}>
+            ⚔️ 탐험가 세트 {ownedCount}/{BOSS_EQUIPS.length}부위
+            {isFullSet&&<span style={{marginLeft:4}}>✨ 풀셋!</span>}
+          </div>
+        </div>
+        <div style={{display:"flex",gap:4}}>
+          {BOSS_EQUIPS.map(eq=>(
+            <div key={eq.id} style={{flex:1,padding:"5px 4px",borderRadius:8,textAlign:"center",
+              background:myEquips[eq.id]?"rgba(245,158,11,0.1)":"rgba(0,0,0,0.03)",
+              border:`1px solid ${myEquips[eq.id]?"rgba(245,158,11,0.4)":"rgba(0,0,0,0.07)"}`,
+              opacity:myEquips[eq.id]?1:0.5}}>
+              <div style={{fontSize:16}}>{myEquips[eq.id]?eq.emoji:"❓"}</div>
+              <div style={{fontSize:7,color:myEquips[eq.id]?"var(--gold)":"var(--tx3)",marginTop:1}}>
+                {eq.slot}
+              </div>
+            </div>
+          ))}
+        </div>
+        {isFullSet&&<div style={{fontSize:9,color:"var(--gold)",fontWeight:700,marginTop:5,textAlign:"center"}}>
+          풀셋 효과: ATK+{FULL_SET_BONUS.atk}% DEF+{FULL_SET_BONUS.def}% 추가
+        </div>}
+      </div>;
+    })()}
+
     {RAID_BOSSES.map(boss=>{
       const killCnt=(myS.bossKills||{})[boss.id]||0;
-      // 이 보스 세트 장비 보유 현황
       const myEquips=myS.equips||{};
-      const bossEquips=BOSS_EQUIPS.filter(e=>e.boss===boss.id);
-      const ownedEquips=bossEquips.filter(e=>myEquips[e.id]);
-      const setComplete=ownedEquips.length===bossEquips.length&&bossEquips.length>0;
       return <div key={boss.id} style={{border:`1.5px solid ${boss.color}35`,borderRadius:12,
         padding:"10px 12px",marginBottom:8,
-        background:setComplete?"rgba(245,158,11,0.04)":"white",
+        background:"white",
         boxShadow:`0 2px 10px ${boss.color}12`}}>
         {/* 보스 헤더 */}
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
@@ -5442,23 +5454,6 @@ function SideRaid({myS,col,setMy,toast,aliveCols,acHex}){
           <span style={{fontSize:9,padding:"2px 6px",borderRadius:5,background:"rgba(16,185,129,0.08)",color:"var(--green)",fontWeight:700}}>
             💡{boss.weakness}
           </span>
-        </div>
-        {/* 세트 장비 현황 */}
-        <div style={{marginBottom:5}}>
-          <div style={{fontSize:9,fontWeight:700,color:"var(--tx2)",marginBottom:3}}>
-            ⚔️ 세트 장비 {ownedEquips.length}/{bossEquips.length}
-            {setComplete&&<span style={{color:"var(--gold)",marginLeft:4}}>✨세트 완성!</span>}
-          </div>
-          <div style={{display:"flex",gap:3}}>
-            {bossEquips.map(eq=>(
-              <div key={eq.id} style={{padding:"3px 6px",borderRadius:6,fontSize:9,
-                background:myEquips[eq.id]?"rgba(245,158,11,0.12)":"rgba(0,0,0,0.04)",
-                border:`1px solid ${myEquips[eq.id]?"rgba(245,158,11,0.4)":"rgba(0,0,0,0.08)"}`,
-                color:myEquips[eq.id]?"var(--gold)":"var(--tx3)",fontWeight:myEquips[eq.id]?700:400}}>
-                {eq.emoji}{myEquips[eq.id]?"":"?"}
-              </div>
-            ))}
-          </div>
         </div>
         {/* 랜덤 파밍 미리보기 */}
         <div style={{fontSize:9,color:"var(--tx3)",marginBottom:6,padding:"4px 7px",
@@ -5942,29 +5937,29 @@ function SideLab({myS,col,setMy,toast,acHex,aliveCols}){
   };
 
   return <div>
-    <div style={{fontSize:11,fontWeight:800,color:"var(--tx1)",marginBottom:6}}>🔬 연구소</div>
-    <div style={{fontSize:9,color:"var(--tx3)",marginBottom:8,padding:"4px 7px",
-      background:"rgba(139,92,246,0.05)",borderRadius:6,border:"1px solid rgba(139,92,246,0.12)"}}>
+    <div style={{fontSize:14,fontWeight:800,color:"var(--tx1)",marginBottom:8}}>🔬 연구소</div>
+    <div style={{fontSize:11,color:"var(--tx3)",marginBottom:10,padding:"7px 10px",
+      background:"rgba(139,92,246,0.05)",borderRadius:8,border:"1px solid rgba(139,92,246,0.12)"}}>
       진화석을 활용해 소환수를 강화하고 진화시키는 연구소입니다
     </div>
-    <div style={{display:"flex",gap:4,marginBottom:10}}>
+    <div style={{display:"flex",gap:5,marginBottom:12}}>
       {[["evo","⚗️ 즉시진화"],["awaken","💠 각성"],["research","🔬 속성연구"]].map(([k,l])=>(
         <button key={k} onClick={()=>setLabTab(k)}
-          style={{flex:1,padding:"6px 0",borderRadius:9,border:`1.5px solid ${labTab===k?acHex:"rgba(0,0,0,0.08)"}`,
+          style={{flex:1,padding:"8px 0",borderRadius:10,border:`1.5px solid ${labTab===k?acHex:"rgba(0,0,0,0.08)"}`,
             background:labTab===k?`${acHex}12`:"white",cursor:"pointer",fontFamily:"inherit",
-            fontSize:9,fontWeight:labTab===k?800:500,color:labTab===k?acHex:"var(--tx2)"}}>
+            fontSize:11,fontWeight:labTab===k?800:500,color:labTab===k?acHex:"var(--tx2)"}}>
           {l}
         </button>
       ))}
     </div>
     {labTab==="evo"&&renderEvo()}
     {labTab==="awaken"&&<div>
-      <div style={{fontSize:9,color:"var(--tx3)",marginBottom:8,padding:"5px 7px",
-        background:"rgba(6,182,212,0.05)",borderRadius:7,border:"1px solid rgba(6,182,212,0.15)"}}>
-        💠 각성석 소모 → 소환수 스탯 영구 강화 · 각성 전용 이름/이모지 변화
+      <div style={{fontSize:11,color:"var(--tx3)",marginBottom:10,padding:"7px 9px",
+        background:"rgba(6,182,212,0.05)",borderRadius:8,border:"1px solid rgba(6,182,212,0.15)"}}>
+        💠 각성석(1~3단계) · 🌀초월석(4~5단계) 소모 → 소환수 스탯 영구 강화
       </div>
-      <div style={{fontSize:10,fontWeight:700,color:"var(--tx2)",marginBottom:5}}>대상 소환수</div>
-      <div style={{display:"flex",flexWrap:"wrap",gap:3,marginBottom:8}}>
+      <div style={{fontSize:12,fontWeight:700,color:"var(--tx2)",marginBottom:6}}>대상 소환수</div>
+      <div style={{display:"flex",flexWrap:"wrap",gap:4,marginBottom:10}}>
         {aliveCols.map((c2,i)=>{
           const bm2=MONS.find(m=>m.id===(c2.baseId||c2.id))||{emoji:"❓"};
           const isAwakened=c2.awakened||false;
@@ -5981,59 +5976,78 @@ function SideLab({myS,col,setMy,toast,acHex,aliveCols}){
       {targetIdx!==null&&(()=>{
         const c=aliveCols[targetIdx];
         const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{emoji:"❓",name:"??",atk:10,hp:30};
-        const have=myS.consumables?.awaken_stone||0;
-        const isAwakened=c.awakened||false;
         const awakenLv=c.awakenLv||0;
         const maxAwakenLv=5;
+        // 단계별 재료: 1~3단계=각성석💠, 4~5단계=초월석🌀
+        const isHighLv=awakenLv>=3;
+        const stoneId=isHighLv?"stone3":"awaken_stone";
+        const stoneEmoji=isHighLv?"🌀":"💠";
+        const stoneName=isHighLv?"초월석":"각성석";
+        const have=isHighLv?(myS.stones?.stone3||0):(myS.consumables?.awaken_stone||0);
         const needStone=awakenLv+1;
         const canAwaken=have>=needStone&&awakenLv<maxAwakenLv;
-        return <div style={{padding:"10px 12px",borderRadius:12,background:"rgba(6,182,212,0.06)",
-          border:"1.5px solid rgba(6,182,212,0.2)"}}>
+        // 각성 단계별 색상
+        const stageColors=["#06b6d4","#06b6d4","#06b6d4","#8b5cf6","#f59e0b"];
+        const stageColor=stageColors[awakenLv]||"#06b6d4";
+        return <div style={{padding:"10px 12px",borderRadius:12,
+          background:`${stageColor}08`,border:`1.5px solid ${stageColor}30`}}>
           <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
             <span style={{fontSize:22}}>{bm.emoji}</span>
             <div style={{flex:1}}>
-              <div style={{fontSize:11,fontWeight:700}}>{c.name||bm.name}</div>
-              <div style={{fontSize:9,color:"var(--tx3)"}}>
+              <div style={{fontSize:12,fontWeight:700}}>{c.name||bm.name}</div>
+              <div style={{fontSize:10,color:"var(--tx3)"}}>
                 각성 {awakenLv}/{maxAwakenLv}단계
-                {awakenLv>0&&<span style={{color:"#06b6d4",marginLeft:4}}>ATK+{awakenLv*8}% HP+{awakenLv*5}%</span>}
+                {awakenLv>0&&<span style={{color:stageColor,marginLeft:4,fontWeight:700}}>ATK+{awakenLv*8}% HP+{awakenLv*5}%</span>}
               </div>
             </div>
-            <div style={{fontSize:9,color:have>=needStone?"#06b6d4":"var(--red)"}}>
-              💠×{needStone} (보유:{have})
+            <div style={{fontSize:9,color:have>=needStone?stageColor:"var(--red)",fontWeight:700}}>
+              {stoneEmoji}×{needStone}<br/>(보유:{have})
             </div>
           </div>
           {/* 각성 단계 바 */}
-          <div style={{display:"flex",gap:3,marginBottom:8}}>
+          <div style={{display:"flex",gap:3,marginBottom:6}}>
             {[...Array(maxAwakenLv)].map((_,i)=>(
-              <div key={i} style={{flex:1,height:6,borderRadius:3,
-                background:i<awakenLv?"#06b6d4":"rgba(0,0,0,0.08)"}}/>
+              <div key={i} style={{flex:1,height:7,borderRadius:3,
+                background:i<awakenLv?(i>=3?"#8b5cf6":i>=1?"#06b6d4":"#06b6d4"):"rgba(0,0,0,0.08)"}}/>
             ))}
           </div>
+          {/* 단계 안내 */}
+          <div style={{fontSize:9,color:"var(--tx3)",marginBottom:8,padding:"4px 7px",
+            background:"rgba(0,0,0,0.03)",borderRadius:6}}>
+            1~3단계: 💠각성석 소모 · 4~5단계: 🌀초월석 소모 (고단계)
+          </div>
           <button onClick={()=>{
-            if(!canAwaken){toast(needStone>have?`💠각성석 ${needStone}개 필요!`:"최대 각성!","var(--red)");return;}
+            if(!canAwaken){toast(awakenLv>=maxAwakenLv?"최대 각성!":have<needStone?`${stoneName} ${needStone}개 필요!`:"조건 불충족","var(--red)");return;}
             setMy(s=>{
-              const ns={...s,consumables:{...s.consumables,awaken_stone:Math.max(0,(s.consumables?.awaken_stone||0)-needStone)}};
+              let ns;
+              if(isHighLv){
+                ns={...s,stones:{...s.stones,stone3:Math.max(0,(s.stones?.stone3||0)-needStone)}};
+              }else{
+                ns={...s,consumables:{...s.consumables,awaken_stone:Math.max(0,(s.consumables?.awaken_stone||0)-needStone)}};
+              }
               const nc=(ns.collection||[]).map((cc,ci)=>{
                 if(cc!==aliveCols[targetIdx])return cc;
                 const newLv=(cc.awakenLv||0)+1;
                 const bm3=MONS.find(m=>m.id===(cc.baseId||cc.id))||{atk:10,hp:30};
                 const atkBonus=(cc.atkBonus||0)+0.08;
-                const newHp=Math.floor((bm3.hp+(cc.lv-1)*5)*1.05);
+                const newHp=Math.floor((bm3.hp+(cc.lv-1)*5)*(1+newLv*0.05));
                 return{...cc,awakened:true,awakenLv:newLv,atkBonus,maxHp:newHp,curHp:Math.min(cc.curHp+10,newHp)};
               });
               return addTamerExp({...ns,collection:nc},30);
             });
-            toast(`💠 ${c.name||bm.name} 각성 ${awakenLv+1}단계!`,"#06b6d4");
+            toast(`${stoneEmoji} ${c.name||bm.name} 각성 ${awakenLv+1}단계!`,stageColor);
           }} disabled={!canAwaken}
-            style={{width:"100%",padding:"8px 0",borderRadius:10,border:"none",
-              background:canAwaken?"linear-gradient(135deg,#06b6d4,#0891b2)":"rgba(0,0,0,0.06)",
+            style={{width:"100%",padding:"9px 0",borderRadius:10,border:"none",
+              background:canAwaken?`linear-gradient(135deg,${stageColor},${stageColor}cc)`:"rgba(0,0,0,0.06)",
               color:canAwaken?"white":"rgba(0,0,0,0.2)",
-              fontSize:11,fontWeight:800,cursor:canAwaken?"pointer":"default",fontFamily:"inherit"}}>
-            {awakenLv>=maxAwakenLv?"✅ 최대 각성 완료!":canAwaken?`💠 각성 ${awakenLv+1}단계 실행`:`💠각성석 ${needStone}개 필요`}
+              fontSize:12,fontWeight:800,cursor:canAwaken?"pointer":"default",fontFamily:"inherit"}}>
+            {awakenLv>=maxAwakenLv?"✅ 최대 각성 완료!":
+             canAwaken?`${stoneEmoji} 각성 ${awakenLv+1}단계 실행`:
+             `${stoneEmoji}${stoneName} ${needStone}개 필요`}
           </button>
         </div>;
       })()}
-      {targetIdx===null&&<div style={{textAlign:"center",padding:"16px 0",color:"var(--tx3)",fontSize:10}}>
+      {targetIdx===null&&<div style={{textAlign:"center",padding:"20px 0",color:"var(--tx3)",fontSize:11}}>
         위에서 소환수를 선택하세요
       </div>}
     </div>}
@@ -6495,10 +6509,10 @@ function SideHelpProb({acHex}){
       ))}
     </div>
     {tab!=="prob"&&(helps[tab]||[]).map((h,i)=>(
-      <div key={i} style={{padding:"7px 9px",borderRadius:9,border:"1px solid rgba(139,92,246,0.08)",
-        marginBottom:5,background:"rgba(139,92,246,0.02)"}}>
-        <div style={{fontSize:10,fontWeight:800,color:acHex,marginBottom:2}}>{h.q}</div>
-        <div style={{fontSize:9,color:"var(--tx2)",lineHeight:1.6}}>{h.a}</div>
+      <div key={i} style={{padding:"10px 12px",borderRadius:10,border:"1px solid rgba(139,92,246,0.10)",
+        marginBottom:7,background:"rgba(139,92,246,0.02)"}}>
+        <div style={{fontSize:13,fontWeight:800,color:acHex,marginBottom:4}}>{h.q}</div>
+        <div style={{fontSize:12,color:"var(--tx2)",lineHeight:1.7}}>{h.a}</div>
       </div>
     ))}
     {tab==="prob"&&probSections.map(sec=>(
