@@ -1862,64 +1862,65 @@ function App(){
 }
 
 
-function SidePanel({sideTabTop,setSideTabTop,sideTabBot,setSideTabBot,
+function SidePanel({sideTabTop,setSideTabTop,
   SIDE_TABS_TOP,SIDE_TABS_BOT,myS,col,tLv,tExpNeed,maxStorage,acHex,isSik,
   todayDay,claimMonthly,dgExploring,dgRes,setDgRes,runDungeon,DUNGEONS,unlocks,aliveCols,
   useStaminaPot,fa,fb,setFa,setFb,fuse,fusRes,fusAnim,bs,blog,lr,attack,resetB,
   oppS,myPick,setMyPick,oppPick,setOppPick,oppHas,battleLeft,startPvp,claimAchReward,
   MAX_ENHANCE,MONS,RCOL,sideScrollRef,sideScrollPos,setMy,toast}){
 
-  // ── 위쪽 탭 콘텐츠 렌더 ──
-  const renderTop=()=>{
+  // 모든 탭을 1줄로 통합
+  const ALL_TABS=[
+    ["tamer","🏅","테이머"],
+    ["dungeon","🏰","던전"],
+    ["monthly","📅","출석"],
+    ["battle","⚔️","배틀"],
+    ["raid","🌋","레이드"],
+    ["breed","🥚","교배"],
+    ["dex","📖","도감"],
+    ["ach","🏆","업적"],
+    ["lab","🔬","연구소"],
+    ["help","❓","도움말"],
+    ["prob","📊","확률표"],
+  ];
+
+  const renderContent=()=>{
     if(sideTabTop==="tamer") return <SideTamer myS={myS} tLv={tLv} tExpNeed={tExpNeed} col={col} maxStorage={maxStorage} acHex={acHex} setMy={setMy}/>;
     if(sideTabTop==="monthly") return <SideMonthly myS={myS} todayDay={todayDay} claimMonthly={claimMonthly}/>;
     if(sideTabTop==="dungeon") return <SideDungeon myS={myS} dgExploring={dgExploring} dgRes={dgRes} setDgRes={setDgRes} runDungeon={runDungeon} DUNGEONS={DUNGEONS} unlocks={unlocks} aliveCols={aliveCols} useStaminaPot={useStaminaPot}/>;
+    if(sideTabTop==="battle") return <SideBattle myS={myS} col={col} setMy={setMy} toast={toast} aliveCols={aliveCols} acHex={acHex} oppS={oppS} myPick={myPick} setMyPick={setMyPick} oppPick={oppPick} setOppPick={setOppPick} oppHas={oppHas} battleLeft={battleLeft} startPvp={startPvp} bs={bs} blog={blog} lr={lr} attack={attack} resetB={resetB}/>;
     if(sideTabTop==="raid") return <SideRaid myS={myS} col={col} setMy={setMy} toast={toast} aliveCols={aliveCols} acHex={acHex}/>;
     if(sideTabTop==="breed") return <SideBreed myS={myS} col={col} setMy={setMy} toast={toast} aliveCols={aliveCols} acHex={acHex}/>;
-    return null;
-  };
-  // ── 아래쪽 탭 콘텐츠 렌더 ──
-  const renderBot=()=>{
-    if(sideTabBot==="dex") return <SideDex myS={myS} col={col} acHex={acHex} setMy={setMy}/>;
-    if(sideTabBot==="ach") return <SideAch myS={myS} acHex={acHex} claimAchReward={claimAchReward}/>;
-    if(sideTabBot==="stonelab") return <SideStoneLab myS={myS} col={col} setMy={setMy} toast={toast} acHex={acHex}/>;
-    if(sideTabBot==="help") return <SideHelp acHex={acHex}/>;
-    if(sideTabBot==="prob") return <SideProb/>;
+    if(sideTabTop==="dex") return <SideDex myS={myS} col={col} acHex={acHex} setMy={setMy}/>;
+    if(sideTabTop==="ach") return <SideAch myS={myS} acHex={acHex} claimAchReward={claimAchReward}/>;
+    if(sideTabTop==="lab") return <SideLab myS={myS} col={col} setMy={setMy} toast={toast} acHex={acHex} aliveCols={aliveCols}/>;
+    if(sideTabTop==="help") return <SideHelp acHex={acHex}/>;
+    if(sideTabTop==="prob") return <SideProb/>;
     return null;
   };
 
   return <>
-    {/* ── 위 영역 ── */}
-    <div className="side-top">
-      <div className="side-top-tabs">
-        {SIDE_TABS_TOP.map(([k,icon,name])=>(
-          <button key={k} className={`side-tab${sideTabTop===k?" active":""}`}
-            onMouseDown={e=>{e.preventDefault();setSideTabTop(k);}}>
-            {icon}<br/>{name}
-          </button>
-        ))}
-      </div>
-      <div className="side-top-content"
-        ref={el=>{if(el)sideScrollRef.current=el;}}
-        onScroll={e=>{sideScrollPos.current=e.currentTarget.scrollTop;}}
-        onWheel={e=>e.stopPropagation()}>
-        {renderTop()}
-      </div>
+    <div style={{display:"flex",borderBottom:"1.5px solid rgba(139,92,246,0.10)",background:"white",
+      flexShrink:0,overflowX:"auto",scrollbarWidth:"none",msOverflowStyle:"none"}}>
+      {ALL_TABS.map(([k,icon,name])=>(
+        <button key={k}
+          style={{flexShrink:0,minWidth:48,padding:"9px 6px 7px",border:"none",
+            background:"transparent",fontSize:10,fontWeight:sideTabTop===k?800:500,
+            color:sideTabTop===k?acHex:"#b0a8cc",cursor:"pointer",fontFamily:"inherit",
+            borderBottom:`3px solid ${sideTabTop===k?acHex:"transparent"}`,
+            transition:"all 0.1s",userSelect:"none",WebkitUserSelect:"none"}}
+          onMouseDown={e=>{e.preventDefault();setSideTabTop(k);}}>
+          <span style={{fontSize:17,display:"block",marginBottom:2}}>{icon}</span>
+          {name}
+        </button>
+      ))}
     </div>
-    {/* ── 아래 영역 ── */}
-    <div className="side-bottom">
-      <div className="side-bottom-tabs">
-        {SIDE_TABS_BOT.map(([k,icon,name])=>(
-          <button key={k} className={`side-tab${sideTabBot===k?" active":""}`}
-            onMouseDown={e=>{e.preventDefault();setSideTabBot(k);}}>
-            {icon}<br/>{name}
-          </button>
-        ))}
-      </div>
-      <div className="side-bottom-content"
-        onWheel={e=>e.stopPropagation()}>
-        {renderBot()}
-      </div>
+    <div style={{flex:1,minHeight:0,overflowY:"auto",overflowX:"hidden",padding:"12px",
+      WebkitOverflowScrolling:"touch",overscrollBehavior:"contain",fontSize:12}}
+      ref={el=>{if(el)sideScrollRef.current=el;}}
+      onScroll={e=>{sideScrollPos.current=e.currentTarget.scrollTop;}}
+      onWheel={e=>e.stopPropagation()}>
+      {renderContent()}
     </div>
   </>;
 }
@@ -3238,13 +3239,18 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
           </span>
           {myS.activeTitle&&<span style={{fontSize:17,color:"var(--gold)",background:"rgba(245,158,11,0.1)",
             padding:"1px 6px",borderRadius:6,border:"1px solid rgba(245,158,11,0.2)"}}>{myS.activeTitle}</span>}
-          <span style={{fontSize:16,color:oppS?.online?"var(--green)":"var(--tx3)"}}>{oppS?.online?"🟢":"⚫"}</span>
+          {oppS?.online&&<span style={{fontSize:11,color:"var(--green)",fontWeight:700,
+            background:"rgba(16,185,129,0.1)",padding:"1px 6px",borderRadius:6}}>🟢 상대접속</span>}
         </div>
-        <div style={{display:"flex",gap:6,alignItems:"center"}}>
-          <span style={{fontSize:16,color:"var(--cyan)"}}>⚡{myS.stamina||0}</span>
-          <span style={{fontSize:16,color:battleLeft>0?"var(--green)":"var(--red)"}}>⚔{battleLeft}</span>
+        <div style={{display:"flex",gap:5,alignItems:"center"}}>
+          <span style={{fontSize:11,color:"var(--cyan)",background:"rgba(6,182,212,0.1)",
+            padding:"2px 7px",borderRadius:7,fontWeight:700}}>⚡ {myS.stamina||0}</span>
+          <span style={{fontSize:11,color:battleLeft>0?"var(--green)":"var(--red)",
+            background:battleLeft>0?"rgba(16,185,129,0.1)":"rgba(239,68,68,0.1)",
+            padding:"2px 7px",borderRadius:7,fontWeight:700}}>⚔ {battleLeft}회</span>
           {BALLS.filter(b=>unlocks.balls.includes(b.id)).map(b=>(
-            <span key={b.id} style={{color:"var(--tx2)",fontSize:16}}>{b.emoji}{myS.balls[b.id]||0}</span>
+            <span key={b.id} style={{color:"var(--tx2)",fontSize:11,background:"rgba(0,0,0,0.05)",
+              padding:"2px 6px",borderRadius:7,fontWeight:600}}>{b.emoji}{myS.balls[b.id]||0}</span>
           ))}
           <button onClick={()=>setMenuOpen(true)} className="menu-btn-hide" style={{background:"rgba(139,92,246,0.1)",border:"none",
             borderRadius:8,color:"var(--purple)",fontSize:16,padding:"2px 8px",cursor:"pointer",fontFamily:"inherit"}}>☰</button>
@@ -4027,19 +4033,41 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
           <div style={{fontSize:13,fontWeight:700,color:acHex,marginBottom:5}}>⚔️ 출전 소환수 선택</div>
           {aliveCols.length===0
             ?<div style={{color:"var(--tx3)",fontSize:13,marginBottom:10}}>살아있는 소환수 없음</div>
-            :<div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:12}}>
-              {aliveCols.map(c=>{
+            :<div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:5,marginBottom:12}}>
+              {/* 즐겨찾기 먼저 */}
+              {[...aliveCols].sort((a,b)=>{
+                const fi=(myS.favMons||[]).includes(col.indexOf(a));
+                const fj=(myS.favMons||[]).includes(col.indexOf(b));
+                return fj-fi;
+              }).map(c=>{
                 const ri=col.indexOf(c);
                 const bm=MONS.find(m=>m.id===(c.baseId||c.id))||c;
+                const enh=c.enhance||0;
+                const enhColor=enh>=7?"var(--gold)":enh>=4?"var(--purple)":"var(--blue)";
+                const isFav=(myS.favMons||[]).includes(ri);
+                const myAtk=Math.floor((bm.atk+(c.lv||1)*2)*(1+(c.atkBonus||0))*(1+enh*3/100));
                 const tInfo=c.monType?TYPES[c.monType]:null;
                 return <div key={ri} onClick={()=>setMyPick(ri===myPick?null:ri)} style={{
-                  border:myPick===ri?`2px solid ${acHex}`:"1px solid rgba(0,0,0,0.08)",
-                  borderRadius:12,padding:"7px 9px",cursor:"pointer",textAlign:"center",
-                  minWidth:62,background:myPick===ri?`${acHex}15`:"white",boxShadow:"var(--shadow)"}}>
-                  <div style={{fontSize:20}}>{bm.emoji}</div>
-                  <div style={{fontSize:11,fontWeight:600}}>{bm.name}</div>
-                  <div style={{fontSize:10,color:"var(--tx3)"}}>Lv{c.lv}{c.gender&&<span style={{color:c.gender==="♂"?"#3b82f6":"#ec4899"}}> {c.gender}</span>}</div>
-                  {tInfo&&<div style={{fontSize:9,color:tInfo.color}}>{tInfo.emoji}</div>}
+                  border:`2px solid ${myPick===ri?(RCOL[bm.rarity]||acHex):"rgba(0,0,0,0.08)"}`,
+                  borderRadius:11,padding:"7px 6px",cursor:"pointer",textAlign:"center",
+                  background:myPick===ri?`${RCOL[bm.rarity]||acHex}10`:"white",
+                  boxShadow:myPick===ri?`0 2px 10px ${RCOL[bm.rarity]||acHex}30`:"0 1px 4px rgba(0,0,0,0.05)",
+                  position:"relative",transition:"all 0.15s"}}>
+                  {isFav&&<span style={{position:"absolute",top:2,left:4,fontSize:9}}>⭐</span>}
+                  <div style={{position:"absolute",top:2,right:4,fontSize:7,fontWeight:800,
+                    color:RCOL[bm.rarity]||"#888"}}>{bm.rarity?.slice(0,3)}</div>
+                  <div style={{fontSize:20,marginTop:2}}>{bm.emoji}</div>
+                  <div style={{fontSize:9,fontWeight:700,marginBottom:1,
+                    whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{c.name||bm.name}</div>
+                  <div style={{display:"flex",justifyContent:"center",gap:3,fontSize:8,marginBottom:2}}>
+                    <span style={{color:"var(--tx3)"}}>Lv{c.lv}</span>
+                    {enh>0&&<span style={{color:enhColor,fontWeight:800}}>+{enh}</span>}
+                    {c.gender&&<span style={{color:c.gender==="♂"?"#3b82f6":"#ec4899"}}>{c.gender}</span>}
+                  </div>
+                  <div style={{display:"flex",justifyContent:"center",gap:4,fontSize:8}}>
+                    <span style={{color:"var(--red)"}}>⚔{myAtk}</span>
+                    {tInfo&&<span style={{color:tInfo.color}}>{tInfo.emoji}</span>}
+                  </div>
                 </div>;
               })}
             </div>
@@ -4085,26 +4113,6 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
             {battleLeft<=0&&<div style={{fontSize:12,color:"var(--red)",textAlign:"center",marginTop:6}}>배틀권⚔️으로 추가 가능!</div>}
           </div>
 
-          {/* 기존 로컬 대전 (같은 기기) */}
-          {oppS&&<div style={{marginTop:10,padding:"10px 12px",borderRadius:12,
-            background:"rgba(59,130,246,0.05)",border:"1px solid rgba(59,130,246,0.15)"}}>
-            <div style={{fontSize:12,fontWeight:700,color:"var(--blue)",marginBottom:6}}>🔧 로컬 대전 (같은 기기)</div>
-            <div style={{display:"flex",gap:6,marginBottom:6}}>
-              {(oppS?.collection||[]).filter(c=>c.alive!==false).map(c=>{
-                const ri=(oppS?.collection||[]).indexOf(c);
-                const bm=MONS.find(m=>m.id===c.id)||c;
-                return <div key={ri} onClick={()=>setOppPick(ri)} style={{
-                  border:oppPick===ri?"2px solid var(--blue)":"1px solid rgba(0,0,0,0.08)",
-                  borderRadius:10,padding:"5px 7px",cursor:"pointer",textAlign:"center",
-                  minWidth:52,background:oppPick===ri?"rgba(59,130,246,0.1)":"white"}}>
-                  <div style={{fontSize:16}}>{bm.emoji}</div>
-                  <div style={{fontSize:10,fontWeight:600}}>{bm.name}</div>
-                  <div style={{fontSize:9,color:"var(--tx3)"}}>Lv{c.lv}</div>
-                </div>;
-              })}
-            </div>
-            <Btn onClick={startPvp} disabled={myPick===null||oppPick===null||battleLeft<=0} color="var(--blue)" sm>⚔ 로컬 배틀!</Btn>
-          </div>}
           {bs&&<BV bs={bs} log={blog} lr={lr} ac={acHex} attack={attack} resetB={resetB}/>}
         </>}
       </div>
@@ -4278,7 +4286,10 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
         </span>
       </div>
       <div className="mobile-panel-tabs">
-        {[...SIDE_TABS_TOP,...SIDE_TABS_BOT].map(([k,icon,name])=>(
+        {[["tamer","🏅","테이머"],["dungeon","🏰","던전"],["monthly","📅","출석"],
+          ["battle","⚔️","배틀"],["raid","🌋","레이드"],["breed","🥚","교배"],
+          ["dex","📖","도감"],["ach","🏆","업적"],["lab","🔬","연구소"],
+          ["help","❓","도움말"],["prob","📊","확률표"]].map(([k,icon,name])=>(
           <button key={k} className={`side-tab${mobilePanelTab===k?" active":""}`}
             onClick={()=>setMobilePanelTab(k)}>
             {icon}<br/>{name}
@@ -4289,11 +4300,12 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
         {mobilePanelTab==="tamer"&&<SideTamer myS={myS} tLv={tLv} tExpNeed={tExpNeed} col={col} maxStorage={maxStorage} acHex={acHex} setMy={setMy}/>}
         {mobilePanelTab==="dungeon"&&<SideDungeon myS={myS} dgExploring={dgExploring} dgRes={dgRes} setDgRes={setDgRes} runDungeon={runDungeon} DUNGEONS={DUNGEONS} unlocks={unlocks} aliveCols={aliveCols} useStaminaPot={useStaminaPot}/>}
         {mobilePanelTab==="monthly"&&<SideMonthly myS={myS} todayDay={todayDay} claimMonthly={claimMonthly}/>}
+        {mobilePanelTab==="battle"&&<SideBattle myS={myS} col={col} setMy={setMy} toast={toast} aliveCols={aliveCols} acHex={acHex} oppS={oppS} myPick={myPick} setMyPick={setMyPick} oppPick={oppPick} setOppPick={setOppPick} oppHas={oppHas} battleLeft={battleLeft} startPvp={startPvp} bs={bs} blog={blog} lr={lr} attack={attack} resetB={resetB}/>}
         {mobilePanelTab==="raid"&&<SideRaid myS={myS} col={col} setMy={setMy} toast={toast} aliveCols={aliveCols} acHex={acHex}/>}
         {mobilePanelTab==="breed"&&<SideBreed myS={myS} col={col} setMy={setMy} toast={toast} aliveCols={aliveCols} acHex={acHex}/>}
         {mobilePanelTab==="dex"&&<SideDex myS={myS} col={col} acHex={acHex} setMy={setMy}/>}
         {mobilePanelTab==="ach"&&<SideAch myS={myS} acHex={acHex} claimAchReward={claimAchReward}/>}
-        {mobilePanelTab==="stonelab"&&<SideStoneLab myS={myS} col={col} setMy={setMy} toast={toast} acHex={acHex}/>}
+        {mobilePanelTab==="lab"&&<SideLab myS={myS} col={col} setMy={setMy} toast={toast} acHex={acHex} aliveCols={aliveCols}/>}
         {mobilePanelTab==="help"&&<SideHelp acHex={acHex}/>}
         {mobilePanelTab==="prob"&&<SideProb/>}
       </div>
@@ -4303,21 +4315,18 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
     <div className="side-col" id="side-col-panel">
       <SidePanel
         sideTabTop={sideTabTop} setSideTabTop={setSideTabTop}
-        sideTabBot={sideTabBot} setSideTabBot={setSideTabBot}
-        SIDE_TABS_TOP={SIDE_TABS_TOP} SIDE_TABS_BOT={SIDE_TABS_BOT}
         myS={myS} col={col} tLv={tLv} tExpNeed={tExpNeed} maxStorage={maxStorage}
         acHex={acHex} isSik={isSik}
         todayDay={todayDay} claimMonthly={claimMonthly}
         dgExploring={dgExploring} dgRes={dgRes} setDgRes={setDgRes}
         runDungeon={runDungeon} DUNGEONS={DUNGEONS} unlocks={unlocks} aliveCols={aliveCols}
-        useStaminaPot={useStaminaPot} fa={fa} fb={fb} setFa={setFa} setFb={setFb}
-        fuse={fuse} fusRes={fusRes} fusAnim={fusAnim}
+        useStaminaPot={useStaminaPot}
         bs={bs} blog={blog} lr={lr} attack={attack} resetB={resetB}
         oppS={oppS} myPick={myPick} setMyPick={setMyPick}
         oppPick={oppPick} setOppPick={setOppPick} oppHas={oppHas}
         battleLeft={battleLeft} startPvp={startPvp}
         claimAchReward={claimAchReward}
-        MAX_ENHANCE={MAX_ENHANCE} MONS={MONS} RCOL={RCOL}
+        MONS={MONS} RCOL={RCOL}
         sideScrollRef={sideScrollRef} sideScrollPos={sideScrollPos}
         setMy={setMy} toast={toast}
       />
@@ -4840,120 +4849,296 @@ const RAID_BOSSES=[
 ];
 
 function SideRaid({myS,col,setMy,toast,aliveCols,acHex}){
-  const [raidState,setRaidState]=React.useState(null); // null | {bossId,bossHp,phase,log,over,win}
+  const [raidState,setRaidState]=React.useState(null);
   const [pickedIdx,setPickedIdx]=React.useState(null);
+
+  // 즐겨찾기(주력) 소환수
+  const favs=myS.favMons||[];
+  const toggleFav=(origIdx)=>{
+    setMy(s=>{
+      const cur=s.favMons||[];
+      const next=cur.includes(origIdx)?cur.filter(x=>x!==origIdx):[...cur,origIdx];
+      return{...s,favMons:next};
+    });
+  };
+
+  // 소환수 카드 렌더 (강화/등급/스탯 압축 표시)
+  const MonCard=({c,i,origIdx,selected,onSelect})=>{
+    const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{emoji:"❓",name:"??",rarity:"COMMON",atk:10,hp:30,color:"#888"};
+    const enh=c.enhance||0;
+    const enhColor=enh>=7?"var(--gold)":enh>=4?"var(--purple)":"var(--blue)";
+    const isFav=favs.includes(origIdx);
+    const myAtk=Math.floor((bm.atk+(c.lv||1)*2)*(1+(c.atkBonus||0))*(1+enh*3/100));
+    const myHp=bm.hp+((c.lv||1)-1)*5;
+    const tInfo=c.monType?TYPES[c.monType]:null;
+    return <div onClick={onSelect} style={{
+      borderRadius:11,padding:"8px 9px",cursor:"pointer",
+      border:`2px solid ${selected?(RCOL[bm.rarity]||acHex):"rgba(0,0,0,0.08)"}`,
+      background:selected?`${RCOL[bm.rarity]||acHex}10`:"white",
+      boxShadow:selected?`0 2px 12px ${RCOL[bm.rarity]||acHex}30`:"0 1px 5px rgba(0,0,0,0.05)",
+      position:"relative",transition:"all 0.15s"}}>
+      {/* 즐겨찾기 버튼 */}
+      <div onClick={e=>{e.stopPropagation();toggleFav(origIdx);}}
+        style={{position:"absolute",top:4,right:5,fontSize:11,cursor:"pointer",opacity:isFav?1:0.3}}>
+        {isFav?"⭐":"☆"}
+      </div>
+      {/* 등급 배지 */}
+      <div style={{position:"absolute",top:4,left:6,fontSize:7,fontWeight:800,
+        color:RCOL[bm.rarity]||"#888",background:`${RCOL[bm.rarity]||"#888"}15`,
+        padding:"1px 4px",borderRadius:4,border:`1px solid ${RCOL[bm.rarity]||"#888"}30`}}>
+        {bm.rarity?.slice(0,3)}
+      </div>
+      {/* 이모지 */}
+      <div style={{textAlign:"center",fontSize:22,marginTop:4,marginBottom:3}}>{bm.emoji}</div>
+      {/* 이름 */}
+      <div style={{fontSize:9,fontWeight:700,textAlign:"center",color:"var(--tx1)",marginBottom:2,
+        whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>
+        {c.name||bm.name}
+      </div>
+      {/* Lv + 강화 */}
+      <div style={{display:"flex",justifyContent:"center",gap:3,marginBottom:3,alignItems:"center"}}>
+        <span style={{fontSize:8,color:"var(--tx3)"}}>Lv{c.lv}</span>
+        {enh>0&&<span style={{fontSize:8,fontWeight:800,color:enhColor}}>+{enh}</span>}
+        {c.gender&&<span style={{fontSize:8,color:c.gender==="♂"?"#3b82f6":"#ec4899"}}>{c.gender}</span>}
+      </div>
+      {/* 스탯 */}
+      <div style={{display:"flex",justifyContent:"center",gap:4,fontSize:8,color:"var(--tx3)"}}>
+        <span style={{color:"var(--red)"}}>⚔{myAtk}</span>
+        <span style={{color:"var(--green)"}}>❤{myHp}</span>
+        {tInfo&&<span style={{color:tInfo.color}}>{tInfo.emoji}</span>}
+      </div>
+    </div>;
+  };
 
   const startRaid=(bossId)=>{
     if(pickedIdx===null){toast("소환수를 선택하세요!","var(--red)");return;}
     const boss=RAID_BOSSES.find(b=>b.id===bossId);
     if(!boss)return;
-    setRaidState({bossId,bossHp:boss.hp,myHp:null,phase:0,log:[`⚔️ ${boss.emoji}${boss.name} 레이드 시작!`],over:false,win:false});
+    const c=aliveCols[pickedIdx];
+    const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{hp:30,atk:10};
+    const myMaxHp=bm.hp+((c.lv||1)-1)*5;
+    // 레이드 보스 HP = 원본의 5배 (진짜 레이드 난이도)
+    setRaidState({
+      bossId,
+      bossHp:boss.hp*5, bossMaxHp:boss.hp*5,
+      myHp:myMaxHp, myMaxHp,
+      phase:0,
+      log:[`🌋 ${boss.emoji}${boss.name} 레이드 시작!`],
+      over:false,win:false,
+    });
   };
 
   const attackRaid=()=>{
     if(!raidState||raidState.over||pickedIdx===null)return;
     const boss=RAID_BOSSES.find(b=>b.id===raidState.bossId);
-    const c=aliveCols[pickedIdx];if(!c||!boss)return;
+    const c=aliveCols[pickedIdx];
+    if(!c||!boss)return;
     const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{atk:10,hp:30};
-    const myAtk=Math.floor((bm.atk+(c.lv||1)*2)*(1+(c.atkBonus||0))*(1+((c.enhance||0)*3)/100));
-    // 페이즈 체크
-    let curPhase=raidState.phase;
+
+    // 내 공격력 계산 (강화+장비+타입 반영)
+    const enh=c.enhance||0;
+    const equipBonus=getEquipBonus(myS.equipsOn,myS.equips);
+    const myAtk=Math.floor((bm.atk+(c.lv||1)*2)*(1+(c.atkBonus||0))*(1+enh*3/100)*(1+equipBonus.atk/100));
+
+    // 페이즈
+    const curPhase=raidState.phase;
     const phaseInfo=boss.phases[curPhase];
     const atkMult=phaseInfo?.atkMult||1;
     const defMult=phaseInfo?.defMult||1;
-    // 내 공격
-    const myDmg=Math.max(1,Math.floor(myAtk*(0.8+Math.random()*0.4)/defMult));
-    // 보스 반격
-    const bDmg=Math.max(1,Math.floor(boss.atk*atkMult*(0.8+Math.random()*0.4)));
+
+    // 타입 상성 보너스
+    const myType=c.monType||(MON_BASE_TYPE[c.baseId||c.id]);
+    const bossType=MON_BASE_TYPE[boss.id]||"fire";
+    const typeMult=getTypeMult(myType,bossType);
+
+    const myDmg=Math.max(1,Math.floor(myAtk*(0.85+Math.random()*0.3)*typeMult/defMult));
+    // 보스 반격 - 플레이어 HP 소모!
+    const defBonus=1-Math.min(0.6,(getEquipBonus(myS.equipsOn,myS.equips).def/100));
+    const bDmg=Math.max(1,Math.floor(boss.atk*atkMult*(0.85+Math.random()*0.3)*defBonus));
+
     const newBossHp=Math.max(0,raidState.bossHp-myDmg);
-    const newLog=[...raidState.log,`⚔️ ${myDmg}dmg → 보스HP:${newBossHp}/${boss.hp}`,`💢 보스반격 ${bDmg}dmg`];
+    const newMyHp=Math.max(0,raidState.myHp-bDmg);
+
+    const typeMsg=typeMult>1?"⚡효과적!":typeMult<1?"💤비효과...":"";
+    const newLog=[...raidState.log.slice(-7),
+      `⚔ 내공격 ${myDmg}dmg${typeMsg} → 보스HP ${newBossHp}/${raidState.bossMaxHp}`,
+      `💢 보스반격 ${bDmg}dmg → 내HP ${newMyHp}/${raidState.myMaxHp}`,
+    ];
+
     // 페이즈 전환
     let newPhase=curPhase;
     const nextPhase=boss.phases[curPhase+1];
-    if(nextPhase&&newBossHp/boss.hp<=nextPhase.hp){
+    if(nextPhase&&newBossHp/raidState.bossMaxHp<=nextPhase.hp){
       newPhase=curPhase+1;
-      newLog.push(`⚠️ ${boss.phases[newPhase].msg}`);
+      newLog.push(`🔥 ${boss.phases[newPhase].msg}`);
     }
-    if(newBossHp<=0){
-      // 승리
+
+    // 내 소환수 사망 체크
+    if(newMyHp<=0){
+      // 소환수 전사!
       setMy(s=>{
-        let ns={...s};
-        Object.entries(boss.rewards).forEach(([id,amt])=>{ns=addItem(ns,id,amt);});
-        // 세트 장비 획득
-        ns={...ns,equips:{...(ns.equips||{}),[boss.id+"_set"]:true}};
-        return addTamerExp(ns,150);
+        const nc=(s.collection||[]).map((cc,ci)=>{
+          const origIdx=col.indexOf(aliveCols[pickedIdx]);
+          return ci===origIdx?{...cc,alive:false,curHp:0}:cc;
+        });
+        return{...s,collection:nc,losses:(s.losses||0)+1};
       });
-      newLog.push(`🏆 레이드 클리어! 세트 장비 [${boss.setBonus.name}] 획득!`);
-      setRaidState(s=>({...s,bossHp:0,phase:newPhase,log:newLog,over:true,win:true}));
+      newLog.push(`💀 ${c.name||bm.name} 전사! 레이드 실패...`);
+      setRaidState(s=>({...s,bossHp:newBossHp,myHp:0,phase:newPhase,log:newLog,over:true,win:false}));
+      toast(`💀 ${c.name||bm.name} 전사!`,"var(--red)");
+      return;
+    }
+
+    if(newBossHp<=0){
+      setMy(s=>{
+        let ns={...s,bossKills:{...(s.bossKills||{}),[boss.id]:((s.bossKills||{})[boss.id]||0)+1}};
+        Object.entries(boss.rewards).forEach(([id,amt])=>{ns=addItem(ns,id,amt);});
+        ns={...ns,equips:{...(ns.equips||{}),[boss.id+"_set"]:true}};
+        return addTamerExp(ns,200);
+      });
+      newLog.push(`🏆 ${boss.name} 레이드 클리어! 세트 장비 [${boss.setBonus.name}] 획득!`);
+      setRaidState(s=>({...s,bossHp:0,myHp:newMyHp,phase:newPhase,log:newLog,over:true,win:true}));
     }else{
-      setRaidState(s=>({...s,bossHp:newBossHp,phase:newPhase,log:newLog}));
+      setRaidState(s=>({...s,bossHp:newBossHp,myHp:newMyHp,phase:newPhase,log:newLog}));
     }
   };
 
   if(raidState){
     const boss=RAID_BOSSES.find(b=>b.id===raidState.bossId);
-    const pct=Math.max(0,raidState.bossHp/boss.hp*100);
+    const bossPct=Math.max(0,raidState.bossHp/raidState.bossMaxHp*100);
+    const myPct=Math.max(0,raidState.myHp/raidState.myMaxHp*100);
+    const c=aliveCols[pickedIdx];
+    const bm=c?MONS.find(m=>m.id===(c.baseId||c.id)):null;
     return <div>
-      <div style={{fontSize:11,fontWeight:800,color:"var(--tx1)",marginBottom:8}}>⚔️ 레이드 진행중</div>
-      <div style={{textAlign:"center",fontSize:28,marginBottom:4}}>{boss.emoji}</div>
-      <div style={{fontSize:11,fontWeight:700,color:boss.color,textAlign:"center",marginBottom:6}}>{boss.name}</div>
-      <div style={{background:"rgba(0,0,0,0.08)",borderRadius:6,height:10,marginBottom:4,overflow:"hidden"}}>
-        <div style={{width:`${pct}%`,height:"100%",background:pct>50?"var(--green)":pct>25?"var(--gold)":"var(--red)",borderRadius:6,transition:"width 0.3s"}}/>
+      <div style={{fontSize:11,fontWeight:800,color:"var(--tx1)",marginBottom:8}}>🌋 레이드 진행중</div>
+      {/* 보스 */}
+      <div style={{textAlign:"center",fontSize:30,marginBottom:2,
+        filter:raidState.bossHp<raidState.bossMaxHp*0.3?"drop-shadow(0 0 8px red)":"none"}}>
+        {boss.emoji}
       </div>
-      <div style={{fontSize:10,color:"var(--tx3)",textAlign:"right",marginBottom:8}}>{raidState.bossHp}/{boss.hp}</div>
-      <div style={{maxHeight:90,overflowY:"auto",background:"rgba(0,0,0,0.04)",borderRadius:8,padding:"6px 8px",marginBottom:8,fontSize:9,lineHeight:1.6,color:"var(--tx2)"}}>
-        {raidState.log.slice(-6).map((l,i)=><div key={i} style={{color:l.includes("🏆")?"var(--gold)":l.includes("⚠️")?"var(--red)":"var(--tx2)"}}>{l}</div>)}
+      <div style={{fontSize:11,fontWeight:700,color:boss.color,textAlign:"center",marginBottom:4}}>{boss.name}</div>
+      <div style={{background:"rgba(0,0,0,0.08)",borderRadius:5,height:8,marginBottom:2,overflow:"hidden"}}>
+        <div style={{width:`${bossPct}%`,height:"100%",
+          background:bossPct>50?"var(--green)":bossPct>25?"var(--gold)":"var(--red)",
+          borderRadius:5,transition:"width 0.3s"}}/>
+      </div>
+      <div style={{fontSize:9,color:"var(--tx3)",textAlign:"right",marginBottom:8}}>
+        보스 {raidState.bossHp}/{raidState.bossMaxHp}
+      </div>
+      {/* 내 소환수 HP */}
+      {c&&bm&&<div style={{display:"flex",alignItems:"center",gap:6,padding:"5px 7px",
+        borderRadius:8,background:"rgba(239,68,68,0.06)",border:"1px solid rgba(239,68,68,0.15)",marginBottom:8}}>
+        <span style={{fontSize:16}}>{bm.emoji}</span>
+        <div style={{flex:1}}>
+          <div style={{background:"rgba(0,0,0,0.06)",borderRadius:4,height:5,overflow:"hidden"}}>
+            <div style={{width:`${myPct}%`,height:"100%",
+              background:myPct>50?"var(--green)":myPct>25?"var(--gold)":"var(--red)",
+              borderRadius:4,transition:"width 0.3s"}}/>
+          </div>
+        </div>
+        <span style={{fontSize:9,color:myPct>25?"var(--green)":"var(--red)",fontWeight:700}}>
+          {raidState.myHp}/{raidState.myMaxHp}
+        </span>
+      </div>}
+      {/* 로그 */}
+      <div style={{maxHeight:80,overflowY:"auto",background:"rgba(0,0,0,0.04)",borderRadius:8,
+        padding:"6px 8px",marginBottom:8,fontSize:8,lineHeight:1.7,color:"var(--tx2)"}}>
+        {raidState.log.slice(-6).map((l,i)=>(
+          <div key={i} style={{color:l.includes("🏆")?"var(--gold)":l.includes("💀")||l.includes("실패")?"var(--red)":l.includes("🔥")?"var(--orange)":"var(--tx2)"}}>{l}</div>
+        ))}
       </div>
       {!raidState.over
-        ?<button onClick={attackRaid} style={{width:"100%",padding:"8px 0",borderRadius:10,border:"none",background:`linear-gradient(135deg,${boss.color},${boss.color}cc)`,color:"white",fontSize:11,fontWeight:800,cursor:"pointer",fontFamily:"inherit"}}>⚔️ 공격!</button>
+        ?<button onClick={attackRaid} style={{width:"100%",padding:"9px 0",borderRadius:10,border:"none",
+            background:`linear-gradient(135deg,${boss.color},${boss.color}cc)`,color:"white",
+            fontSize:12,fontWeight:800,cursor:"pointer",fontFamily:"inherit",
+            boxShadow:`0 4px 14px ${boss.color}50`}}>
+            ⚔️ 공격!
+          </button>
         :<div>
-          {raidState.win&&<div style={{padding:"8px",borderRadius:9,background:"rgba(245,158,11,0.1)",border:"1px solid rgba(245,158,11,0.3)",marginBottom:6,fontSize:10,color:"var(--gold)",textAlign:"center",fontWeight:700}}>
-            🎁 {Object.entries(boss.rewards).map(([id,amt])=>{const it=[...CONSUMABLES,...EVO_STONES,...BOSS_ITEMS,...FOODS].find(x=>x.id===id)||{emoji:"📦"};return `${it.emoji}×${amt}`;}).join(" ")}
+          {raidState.win&&<div style={{padding:"8px",borderRadius:9,background:"rgba(245,158,11,0.1)",
+            border:"1px solid rgba(245,158,11,0.3)",marginBottom:6,fontSize:10,color:"var(--gold)",
+            textAlign:"center",fontWeight:700}}>
+            🎁 {Object.entries(boss.rewards).map(([id,amt])=>{
+              const it=[...CONSUMABLES,...EVO_STONES,...BOSS_ITEMS,...FOODS].find(x=>x.id===id)||{emoji:"📦"};
+              return `${it.emoji}×${amt}`;
+            }).join(" ")}
           </div>}
-          <button onClick={()=>{setRaidState(null);setPickedIdx(null);}} style={{width:"100%",padding:"7px 0",borderRadius:9,border:"1px solid rgba(139,92,246,0.2)",background:"transparent",color:"var(--purple)",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>← 돌아가기</button>
-        </div>
-      }
+          {!raidState.win&&<div style={{padding:"6px",borderRadius:8,background:"rgba(239,68,68,0.08)",
+            border:"1px solid rgba(239,68,68,0.2)",marginBottom:6,fontSize:10,color:"var(--red)",
+            textAlign:"center",fontWeight:700}}>💀 소환수 전사... 다시 도전하세요</div>}
+          <button onClick={()=>{setRaidState(null);setPickedIdx(null);}}
+            style={{width:"100%",padding:"7px 0",borderRadius:9,border:"1px solid rgba(139,92,246,0.2)",
+              background:"transparent",color:"var(--purple)",fontSize:11,fontWeight:700,
+              cursor:"pointer",fontFamily:"inherit"}}>← 돌아가기</button>
+        </div>}
     </div>;
   }
 
   return <div>
-    <div style={{fontSize:11,fontWeight:800,color:"var(--tx1)",marginBottom:4}}>⚔️ 2인 레이드</div>
-    <div style={{fontSize:9,color:"var(--tx3)",marginBottom:8,padding:"5px 8px",background:"rgba(239,68,68,0.05)",borderRadius:7,border:"1px solid rgba(239,68,68,0.15)"}}>
-      강력한 레이드 보스 도전! 클리어 시 <b>세트 장비</b> 획득
+    <div style={{fontSize:11,fontWeight:800,color:"var(--tx1)",marginBottom:4}}>🌋 레이드</div>
+    <div style={{fontSize:9,color:"var(--tx3)",marginBottom:8,padding:"5px 8px",
+      background:"rgba(239,68,68,0.05)",borderRadius:7,border:"1px solid rgba(239,68,68,0.15)"}}>
+      ⚠️ 보스가 강력하게 반격합니다 · 소환수가 쓰러지면 전사! · 강화된 소환수를 추천
     </div>
-    {/* 소환수 선택 */}
-    <div style={{fontSize:10,fontWeight:700,color:"var(--tx2)",marginBottom:5}}>출전 소환수</div>
-    <div style={{display:"flex",gap:4,flexWrap:"wrap",marginBottom:10}}>
+
+    {/* 소환수 선택 - 개선된 카드 */}
+    <div style={{fontSize:10,fontWeight:700,color:"var(--tx2)",marginBottom:4}}>
+      출전 소환수 선택 <span style={{fontSize:8,color:"var(--tx3)",fontWeight:400}}>(⭐누르면 주력 설정)</span>
+    </div>
+    {/* 즐겨찾기 먼저 표시 */}
+    {favs.length>0&&<div style={{fontSize:9,color:"var(--gold)",fontWeight:700,marginBottom:3}}>⭐ 주력 소환수</div>}
+    <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:5,marginBottom:10}}>
       {aliveCols.map((c,i)=>{
-        const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{emoji:"❓"};
-        return <button key={i} onClick={()=>setPickedIdx(i)}
-          style={{padding:"4px 6px",borderRadius:8,border:`1.5px solid ${pickedIdx===i?acHex:"rgba(0,0,0,0.1)"}`,
-            background:pickedIdx===i?`${acHex}15`:"white",cursor:"pointer",fontFamily:"inherit",fontSize:13}}>
-          {bm.emoji}<span style={{fontSize:8,color:"var(--tx3)",marginLeft:2}}>Lv{c.lv}</span>
-        </button>;
+        const origIdx=col.indexOf(c);
+        const isFav=favs.includes(origIdx);
+        if(!isFav)return null;
+        return <MonCard key={i} c={c} i={i} origIdx={origIdx} selected={pickedIdx===i} onSelect={()=>setPickedIdx(pickedIdx===i?null:i)}/>;
+      })}
+      {aliveCols.map((c,i)=>{
+        const origIdx=col.indexOf(c);
+        const isFav=favs.includes(origIdx);
+        if(isFav)return null;
+        return <MonCard key={i} c={c} i={i} origIdx={origIdx} selected={pickedIdx===i} onSelect={()=>setPickedIdx(pickedIdx===i?null:i)}/>;
       })}
     </div>
+
     {/* 레이드 보스 목록 */}
     {RAID_BOSSES.map(boss=>{
       const cleared=(myS.equips||{})[boss.id+"_set"];
-      return <div key={boss.id} style={{border:`1.5px solid ${boss.color}30`,borderRadius:11,padding:"9px 11px",marginBottom:7,
-        background:cleared?"rgba(245,158,11,0.04)":"white"}}>
+      const killCnt=(myS.bossKills||{})[boss.id]||0;
+      return <div key={boss.id} style={{border:`1.5px solid ${boss.color}35`,borderRadius:12,
+        padding:"10px 12px",marginBottom:8,
+        background:cleared?"rgba(245,158,11,0.04)":"white",
+        boxShadow:`0 2px 10px ${boss.color}12`}}>
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:5}}>
-          <span style={{fontSize:22}}>{boss.emoji}</span>
+          <span style={{fontSize:24}}>{boss.emoji}</span>
           <div style={{flex:1}}>
-            <div style={{fontSize:11,fontWeight:800,color:boss.color}}>{boss.name}</div>
-            <div style={{fontSize:9,color:"var(--tx3)"}}>HP:{boss.hp} · ATK:{boss.atk} · {boss.phases.length}페이즈</div>
+            <div style={{fontSize:12,fontWeight:800,color:boss.color}}>{boss.name}</div>
+            <div style={{fontSize:9,color:"var(--tx3)"}}>
+              HP:{boss.hp*5} · ATK:{boss.atk} · {boss.phases.length}페이즈
+              {killCnt>0&&<span style={{color:"var(--gold)",marginLeft:4}}>({killCnt}회 클리어)</span>}
+            </div>
           </div>
-          {cleared&&<span style={{fontSize:9,color:"var(--gold)",fontWeight:700}}>✅클리어</span>}
+          {cleared&&<span style={{fontSize:9,color:"var(--gold)",fontWeight:800,
+            background:"rgba(245,158,11,0.15)",padding:"2px 6px",borderRadius:6}}>✅세트보유</span>}
         </div>
-        <div style={{fontSize:9,color:"var(--tx3)",marginBottom:5}}>
-          🎁 {Object.entries(boss.rewards).map(([id,amt])=>{const it=[...CONSUMABLES,...EVO_STONES,...BOSS_ITEMS,...FOODS].find(x=>x.id===id)||{emoji:"📦"};return `${it.emoji}×${amt}`;}).join(" ")}
+        <div style={{fontSize:9,color:"var(--tx3)",marginBottom:6,padding:"4px 6px",
+          background:"rgba(0,0,0,0.03)",borderRadius:6}}>
+          🎁 {Object.entries(boss.rewards).map(([id,amt])=>{
+            const it=[...CONSUMABLES,...EVO_STONES,...BOSS_ITEMS,...FOODS].find(x=>x.id===id)||{emoji:"📦"};
+            return `${it.emoji}×${amt}`;
+          }).join(" ")}
           <span style={{color:"var(--gold)",marginLeft:4}}>+⚔️{boss.setBonus.name}</span>
         </div>
-        <button onClick={()=>startRaid(boss.id)} style={{width:"100%",padding:"6px 0",borderRadius:8,border:"none",
-          background:`linear-gradient(135deg,${boss.color},${boss.color}99)`,color:"white",
-          fontSize:10,fontWeight:800,cursor:"pointer",fontFamily:"inherit"}}>
-          ⚔️ 레이드 도전!
+        <button onClick={()=>startRaid(boss.id)}
+          disabled={pickedIdx===null}
+          style={{width:"100%",padding:"7px 0",borderRadius:9,border:"none",
+            background:pickedIdx!==null?`linear-gradient(135deg,${boss.color},${boss.color}99)`:"rgba(0,0,0,0.06)",
+            color:pickedIdx!==null?"white":"rgba(0,0,0,0.2)",
+            fontSize:11,fontWeight:800,cursor:pickedIdx!==null?"pointer":"default",
+            fontFamily:"inherit",
+            boxShadow:pickedIdx!==null?`0 3px 12px ${boss.color}40`:"none"}}>
+          {pickedIdx===null?"소환수를 먼저 선택하세요":"🌋 레이드 도전!"}
         </button>
       </div>;
     })}
@@ -5157,12 +5342,95 @@ function SideBreed({myS,col,setMy,toast,aliveCols,acHex}){
 
 
 // ── 진화석 연구소 (부스터/각인/리롤) ──
-function SideStoneLab({myS,col,setMy,toast,acHex}){
-  const [labTab,setLabTab]=React.useState("boost");
-  const [targetIdx,setTargetIdx]=React.useState(null);
-  const aliveCols=(myS.collection||[]).filter(c=>c.alive!==false);
+// ── 배틀 탭 (1:1 로컬 + 실시간 멀티 통합) ──
+function SideBattle({myS,col,setMy,toast,aliveCols,acHex,oppS,myPick,setMyPick,oppPick,setOppPick,oppHas,battleLeft,startPvp,bs,blog,lr,attack,resetB}){
+  const [battleMode,setBattleMode]=React.useState("realtime"); // "realtime" | "local"
+  const MONS_ref=window.__MONS||[];
+  const TYPES_ref=window.__TYPES||{};
 
-  // 부스터: 진화석 소모 → 소환수 EXP 대량 부여
+  return <div>
+    <div style={{fontSize:11,fontWeight:800,color:"var(--tx1)",marginBottom:6}}>⚔️ 배틀</div>
+    {/* 모드 선택 */}
+    <div style={{display:"flex",gap:4,marginBottom:10}}>
+      {[["realtime","🌐 실시간 멀티"],["local","🔧 로컬 대전"]].map(([k,l])=>(
+        <button key={k} onClick={()=>setBattleMode(k)}
+          style={{flex:1,padding:"6px 0",borderRadius:9,border:`1.5px solid ${battleMode===k?acHex:"rgba(0,0,0,0.08)"}`,
+            background:battleMode===k?`${acHex}12`:"white",cursor:"pointer",fontFamily:"inherit",
+            fontSize:10,fontWeight:battleMode===k?800:500,color:battleMode===k?acHex:"var(--tx2)"}}>
+          {l}
+        </button>
+      ))}
+    </div>
+
+    {/* 내 소환수 선택 (공통) */}
+    <div style={{fontSize:10,fontWeight:700,color:acHex,marginBottom:5}}>출전 소환수</div>
+    {aliveCols.length===0
+      ?<div style={{color:"var(--tx3)",fontSize:11,marginBottom:8}}>살아있는 소환수 없음</div>
+      :<div style={{display:"flex",flexWrap:"wrap",gap:4,marginBottom:10}}>
+        {aliveCols.map(c=>{
+          const ri=col.indexOf(c);
+          const bm=(window.__MONS||[]).find(m=>m.id===(c.baseId||c.id))||c;
+          return <div key={ri} onClick={()=>setMyPick(ri===myPick?null:ri)} style={{
+            border:myPick===ri?`2px solid ${acHex}`:"1px solid rgba(0,0,0,0.08)",
+            borderRadius:10,padding:"6px 8px",cursor:"pointer",textAlign:"center",
+            minWidth:56,background:myPick===ri?`${acHex}15`:"white",boxShadow:"0 1px 6px rgba(0,0,0,0.06)"}}>
+            <div style={{fontSize:18}}>{bm.emoji}</div>
+            <div style={{fontSize:10,fontWeight:600}}>{bm.name}</div>
+            <div style={{fontSize:9,color:"var(--tx3)"}}>Lv{c.lv}{c.gender&&<span style={{color:c.gender==="♂"?"#3b82f6":"#ec4899"}}> {c.gender}</span>}</div>
+          </div>;
+        })}
+      </div>}
+
+    {/* 실시간 멀티 */}
+    {battleMode==="realtime"&&<div style={{borderTop:"1px solid rgba(0,0,0,0.06)",paddingTop:8}}>
+      <div style={{fontSize:10,color:"var(--tx3)",marginBottom:6}}>온라인 유저에게 배틀 신청하세요</div>
+      <div style={{fontSize:10,color:"var(--tx2)",marginBottom:4}}>
+        오늘 <span style={{fontWeight:800,color:battleLeft>0?"var(--green)":"var(--red)"}}>{battleLeft}회</span> 남음
+      </div>
+      <div style={{fontSize:10,color:"var(--tx3)",marginBottom:4}}>
+        ※ 실시간 대전은 대전 탭(메인)에서 진행하세요
+      </div>
+    </div>}
+
+    {/* 로컬 대전 */}
+    {battleMode==="local"&&<div style={{borderTop:"1px solid rgba(0,0,0,0.06)",paddingTop:8}}>
+      {!bs?<>
+        <div style={{fontSize:10,fontWeight:700,color:"var(--blue)",marginBottom:5}}>상대 소환수 선택</div>
+        {!oppHas?<div style={{fontSize:10,color:"var(--tx3)",marginBottom:8}}>상대 소환수 없음</div>
+          :<div style={{display:"flex",flexWrap:"wrap",gap:4,marginBottom:8}}>
+            {(oppS?.collection||[]).filter(c=>c.alive!==false).map(c=>{
+              const ri=(oppS?.collection||[]).indexOf(c);
+              const bm=(window.__MONS||[]).find(m=>m.id===c.id)||c;
+              return <div key={ri} onClick={()=>setOppPick(ri)} style={{
+                border:oppPick===ri?"2px solid var(--blue)":"1px solid rgba(0,0,0,0.08)",
+                borderRadius:10,padding:"6px 8px",cursor:"pointer",textAlign:"center",
+                minWidth:56,background:oppPick===ri?"rgba(59,130,246,0.1)":"white"}}>
+                <div style={{fontSize:18}}>{bm.emoji}</div>
+                <div style={{fontSize:10,fontWeight:600}}>{bm.name}</div>
+                <div style={{fontSize:9,color:"var(--tx3)"}}>Lv{c.lv}</div>
+              </div>;
+            })}
+          </div>}
+        <button onClick={startPvp} disabled={myPick===null||oppPick===null||battleLeft<=0}
+          style={{width:"100%",padding:"8px 0",borderRadius:10,border:"none",
+            background:myPick!==null&&oppPick!==null&&battleLeft>0?"var(--blue)":"rgba(0,0,0,0.06)",
+            color:myPick!==null&&oppPick!==null&&battleLeft>0?"white":"rgba(0,0,0,0.2)",
+            fontSize:11,fontWeight:800,cursor:"pointer",fontFamily:"inherit"}}>
+          ⚔ 배틀 시작!
+        </button>
+        {battleLeft<=0&&<div style={{fontSize:10,color:"var(--red)",textAlign:"center",marginTop:4}}>배틀권⚔️으로 추가 가능!</div>}
+      </>
+      :<BV bs={bs} log={blog} lr={lr} ac={acHex} attack={attack} resetB={resetB}/>}
+    </div>}
+  </div>;
+}
+
+// ── 연구소 (진화석 연구 + 진화 통합) ──
+function SideLab({myS,col,setMy,toast,acHex,aliveCols}){
+  const [labTab,setLabTab]=React.useState("evo");
+  const [targetIdx,setTargetIdx]=React.useState(null);
+
+  // 진화석 연구 - 부스터
   const useBooster=(stoneId,expAmt)=>{
     if(targetIdx===null){toast("소환수를 선택하세요!","var(--red)");return;}
     if((myS.stones?.[stoneId]||0)<=0){toast("진화석이 없습니다!","var(--red)");return;}
@@ -5170,158 +5438,200 @@ function SideStoneLab({myS,col,setMy,toast,acHex}){
       let ns={...s,stones:{...s.stones,[stoneId]:Math.max(0,(s.stones[stoneId]||1)-1)}};
       const nc=(ns.collection||[]).map((c,i)=>{
         if(i!==targetIdx)return c;
-        const ne=c.exp+expAmt,need=c.lv*30;
-        if(ne>=need){const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{hp:30};const nl=c.lv+1,nm=bm.hp+(nl-1)*5;return{...c,lv:nl,exp:ne-need,maxHp:nm,hp:nm,curHp:nm};}
-        return{...c,exp:ne};
+        const newExp=(c.exp||0)+expAmt;
+        const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{hp:30};
+        const expNeeded=c.lv*30;
+        if(newExp>=expNeeded&&c.lv<50){
+          toast(`🎉 Lv업! ${c.name||bm.name} Lv${c.lv}→Lv${c.lv+1}`,"var(--gold)");
+          return{...c,lv:c.lv+1,exp:newExp-expNeeded,maxHp:bm.hp+(c.lv)*5,curHp:bm.hp+(c.lv)*5};
+        }
+        return{...c,exp:newExp};
       });
       return addTamerExp({...ns,collection:nc},15);
     });
-    toast(`💠 EXP +${expAmt} 부스터!`,"var(--purple)");
+    toast(`✨ EXP +${expAmt}!`,"var(--purple)");
   };
 
-  // 각인: 진화석 소모 → 소환수 스탯 영구 +% (imprint)
-  const useImprint=(stoneId,stat,pct)=>{
+  // 각인: 진화석 → 속성 부여
+  const useImprint=(stoneId,type)=>{
     if(targetIdx===null){toast("소환수를 선택하세요!","var(--red)");return;}
-    if((myS.stones?.[stoneId]||0)<=0){toast("진화석이 없습니다!","var(--red)");return;}
+    if((myS.stones?.[stoneId]||0)<2){toast("진화석 2개 필요!","var(--red)");return;}
     setMy(s=>{
-      let ns={...s,stones:{...s.stones,[stoneId]:Math.max(0,(s.stones[stoneId]||1)-1)}};
-      const nc=(ns.collection||[]).map((c,i)=>{
-        if(i!==targetIdx)return c;
-        const imprints={...(c.imprints||{})};
-        imprints[stat]=(imprints[stat]||0)+pct;
-        return{...c,imprints};
-      });
+      const tBonus=TYPES[type]?.bonus||{};
+      const ns={...s,stones:{...s.stones,[stoneId]:Math.max(0,(s.stones[stoneId]||2)-2)}};
+      const nc=(ns.collection||[]).map((c,i)=>i===targetIdx?{...c,monType:type,atkBonus:tBonus.atk||0}:c);
       return{...ns,collection:nc};
     });
-    toast(`🔮 ${stat==="atk"?"ATK":"HP"} 각인 +${pct}%!`,"var(--cyan)");
+    toast(`💎 ${TYPES[type]?.name||type} 속성 각인!`,"var(--cyan)");
   };
 
-  // 리롤: 희귀진화석 소모 → 소환수 속성 랜덤 변경
+  // 리롤: 희귀진화석 → 속성 랜덤 변환
   const useReroll=()=>{
     if(targetIdx===null){toast("소환수를 선택하세요!","var(--red)");return;}
-    if((myS.stones?.stone2||0)<=0){toast("희귀진화석이 없습니다!","var(--red)");return;}
-    const typeKeys=Object.keys(TYPES);
-    const c=aliveCols[targetIdx];if(!c)return;
-    const curType=c.monType;
-    const newType=typeKeys.filter(t=>t!==curType)[Math.floor(Math.random()*(typeKeys.length-1))];
-    const tBonus=TYPES[newType]?.bonus||{};
-    const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{hp:30,atk:10};
+    if((myS.stones?.stone3||0)<=0){toast("희귀진화석 필요!","var(--red)");return;}
+    const types=Object.keys(TYPES);
+    const rndType=types[Math.floor(Math.random()*types.length)];
+    const tBonus=TYPES[rndType]?.bonus||{};
     setMy(s=>{
-      let ns={...s,stones:{...s.stones,stone2:Math.max(0,(s.stones.stone2||1)-1)}};
-      const nc=(ns.collection||[]).map((ci,i)=>i!==targetIdx?ci:{
-        ...ci,monType:newType,atkBonus:tBonus.atk||0,spdBonus:tBonus.spd||0,
-        maxHp:Math.floor((bm.hp+(ci.lv-1)*5)*(1+(tBonus.hp||0))),
-      });
+      const ns={...s,stones:{...s.stones,stone3:Math.max(0,(s.stones.stone3||1)-1)}};
+      const nc=(ns.collection||[]).map((c,i)=>i===targetIdx?{...c,monType:rndType,atkBonus:tBonus.atk||0}:c);
       return{...ns,collection:nc};
     });
-    toast(`🎲 속성 리롤: ${TYPES[newType]?.emoji}${TYPES[newType]?.name}!`,"var(--orange)");
+    toast(`🌈 속성 랜덤 변환: ${TYPES[rndType]?.emoji||""}${TYPES[rndType]?.name||rndType}`,"var(--gold)");
   };
 
-  const LABS=[
-    {id:"boost",label:"💠 부스터",desc:"EXP 대량 지급"},
-    {id:"imprint",label:"🔮 각인",desc:"스탯 영구 강화"},
-    {id:"reroll",label:"🎲 리롤",desc:"속성 재추첨"},
+  const BOOSTERS=[
+    {id:"stone1",name:"기본 진화석",emoji:"💠",exp:50},
+    {id:"stone2",name:"고급 진화석",emoji:"🔮",exp:150},
+    {id:"stone3",name:"희귀 진화석",emoji:"⭐",exp:400},
   ];
 
+  const IMPRINT_STONES=[
+    {id:"stone1",name:"기본",emoji:"💠",types:["fire","water","grass"]},
+    {id:"stone2",name:"고급",emoji:"🔮",types:["lightning","rock","ghost","ice"]},
+  ];
+
+  // 진화 탭 - 소환수 진화
+  const renderEvo=()=>{
+    return <div>
+      <div style={{fontSize:10,color:"var(--tx3)",marginBottom:8,padding:"5px 8px",
+        background:"rgba(139,92,246,0.05)",borderRadius:7,border:"1px solid rgba(139,92,246,0.12)"}}>
+        💡 소환수 탭에서 진화 가능. 연구소에서는 조건 없는 즉시 진화(진화석 소모 2배)
+      </div>
+      {aliveCols.length===0?<div style={{color:"var(--tx3)",fontSize:10,textAlign:"center",padding:"12px 0"}}>소환수 없음</div>
+        :aliveCols.map((c,i)=>{
+          const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{rarity:"COMMON",emoji:"❓",name:"??"};
+          const chain=EVO_CHAIN[c.baseId||c.id];
+          if(!chain)return null;
+          const st=EVO_STONES.find(s=>s.id===chain.stone);
+          const have=myS.stones?.[chain.stone]||0;
+          const need2=2; // 즉시 진화 = 2배 소모
+          const canEvo=have>=need2;
+          return <div key={i} style={{display:"flex",alignItems:"center",gap:7,padding:"7px 8px",
+            borderRadius:10,background:"white",border:`1px solid ${canEvo?"rgba(139,92,246,0.2)":"rgba(0,0,0,0.07)"}`,
+            marginBottom:5,boxShadow:"0 1px 5px rgba(0,0,0,0.04)"}}>
+            <span style={{fontSize:18}}>{bm.emoji}</span>
+            <div style={{flex:1}}>
+              <div style={{fontSize:10,fontWeight:700}}>{c.name||bm.name} <span style={{color:"var(--tx3)"}}>Lv{c.lv}</span></div>
+              <div style={{fontSize:9,color:"var(--tx3)"}}>→ {MONS.find(m=>m.id===chain.to)?.name||chain.to}</div>
+            </div>
+            <div style={{textAlign:"right"}}>
+              <div style={{fontSize:9,color:canEvo?"var(--purple)":"var(--red)",marginBottom:3}}>
+                {st?.emoji||"💠"}×{need2} (보유:{have})
+              </div>
+              <button onClick={()=>{
+                if(!canEvo){toast("진화석 부족!","var(--red)");return;}
+                setMy(s=>{
+                  const ns={...s,stones:{...s.stones,[chain.stone]:Math.max(0,(s.stones[chain.stone]||0)-need2)}};
+                  const toMon=MONS.find(m=>m.id===chain.to);
+                  if(!toMon)return ns;
+                  const nc=(ns.collection||[]).map((cc,ci)=>{
+                    if(ci!==i)return cc;
+                    return{...cc,id:chain.to,baseId:chain.to,name:toMon.name,emoji:toMon.emoji};
+                  });
+                  return addTamerExp({...ns,collection:nc},50);
+                });
+                toast(`✨ 즉시 진화! → ${MONS.find(m=>m.id===chain.to)?.name||"?"}`,"var(--purple)");
+              }} disabled={!canEvo}
+                style={{padding:"3px 10px",borderRadius:7,border:"none",
+                  background:canEvo?"var(--purple)":"rgba(0,0,0,0.05)",
+                  color:canEvo?"white":"rgba(0,0,0,0.2)",fontSize:9,fontWeight:800,
+                  cursor:canEvo?"pointer":"default",fontFamily:"inherit"}}>
+                즉시진화
+              </button>
+            </div>
+          </div>;
+        })
+      }
+    </div>;
+  };
+
+  // 연구 탭 - 부스터/각인/리롤
+  const renderResearch=()=>{
+    const c=targetIdx!==null?aliveCols[targetIdx]:null;
+    const bm=c?MONS.find(m=>m.id===(c.baseId||c.id))||{emoji:"❓",name:"??"}:null;
+    return <div>
+      <div style={{fontSize:10,fontWeight:700,color:"var(--tx2)",marginBottom:5}}>대상 소환수 선택</div>
+      <div style={{display:"flex",flexWrap:"wrap",gap:3,marginBottom:8}}>
+        {aliveCols.map((c2,i)=>{
+          const bm2=MONS.find(m=>m.id===(c2.baseId||c2.id))||{emoji:"❓"};
+          return <button key={i} onClick={()=>setTargetIdx(targetIdx===i?null:i)}
+            style={{padding:"4px 6px",borderRadius:7,border:`1.5px solid ${targetIdx===i?acHex:"rgba(0,0,0,0.08)"}`,
+              background:targetIdx===i?`${acHex}12`:"white",cursor:"pointer",fontFamily:"inherit",
+              fontSize:16,textAlign:"center"}}>
+            {bm2.emoji}
+            <div style={{fontSize:7,color:targetIdx===i?acHex:"var(--tx3)"}}>Lv{c2.lv}</div>
+          </button>;
+        })}
+      </div>
+      {c&&bm&&<div style={{padding:"7px 9px",borderRadius:9,background:`${acHex}08`,border:`1px solid ${acHex}20`,marginBottom:8}}>
+        <span style={{fontSize:11,fontWeight:700}}>{bm.emoji} {c.name||bm.name}</span>
+        <span style={{fontSize:10,color:"var(--tx3)",marginLeft:6}}>
+          {c.monType?`${TYPES[c.monType]?.emoji}${TYPES[c.monType]?.name}`:"속성:없음"}
+        </span>
+      </div>}
+      {/* EXP 부스터 */}
+      <div style={{fontSize:10,fontWeight:700,color:"var(--purple)",marginBottom:5}}>🚀 EXP 대량 부여</div>
+      {BOOSTERS.map(b=>(
+        <div key={b.id} style={{display:"flex",alignItems:"center",gap:6,marginBottom:4,
+          padding:"6px 8px",borderRadius:8,background:"white",border:"1px solid rgba(0,0,0,0.07)"}}>
+          <span style={{fontSize:14}}>{b.emoji}</span>
+          <div style={{flex:1}}>
+            <div style={{fontSize:10,fontWeight:600}}>{b.name}</div>
+            <div style={{fontSize:9,color:"var(--tx3)"}}>EXP +{b.exp} · 보유: {myS.stones?.[b.id]||0}개</div>
+          </div>
+          <button onClick={()=>useBooster(b.id,b.exp)} disabled={targetIdx===null||(myS.stones?.[b.id]||0)<=0}
+            style={{padding:"3px 9px",borderRadius:7,border:"none",fontSize:9,fontWeight:700,
+              background:targetIdx!==null&&(myS.stones?.[b.id]||0)>0?"var(--purple)":"rgba(0,0,0,0.05)",
+              color:targetIdx!==null&&(myS.stones?.[b.id]||0)>0?"white":"rgba(0,0,0,0.2)",
+              cursor:"pointer",fontFamily:"inherit"}}>사용</button>
+        </div>
+      ))}
+      {/* 속성 각인 */}
+      <div style={{fontSize:10,fontWeight:700,color:"var(--cyan)",marginBottom:5,marginTop:8}}>💎 속성 각인 (×2)</div>
+      <div style={{display:"flex",flexWrap:"wrap",gap:3,marginBottom:8}}>
+        {Object.entries(TYPES).map(([type,t])=>(
+          <button key={type} onClick={()=>useImprint("stone1",type)}
+            disabled={targetIdx===null||(myS.stones?.stone1||0)<2}
+            style={{padding:"3px 7px",borderRadius:7,border:"1px solid rgba(0,0,0,0.08)",
+              background:"white",cursor:"pointer",fontFamily:"inherit",
+              fontSize:11,display:"flex",alignItems:"center",gap:2}}>
+            {t.emoji}<span style={{fontSize:9,color:t.color}}>{t.name}</span>
+          </button>
+        ))}
+      </div>
+      {/* 랜덤 리롤 */}
+      <div style={{fontSize:10,fontWeight:700,color:"var(--gold)",marginBottom:5}}>🌈 속성 랜덤 변환</div>
+      <button onClick={useReroll} disabled={targetIdx===null||(myS.stones?.stone3||0)<=0}
+        style={{width:"100%",padding:"7px 0",borderRadius:9,border:"none",
+          background:targetIdx!==null&&(myS.stones?.stone3||0)>0?"linear-gradient(135deg,var(--gold),#d97706)":"rgba(0,0,0,0.06)",
+          color:targetIdx!==null&&(myS.stones?.stone3||0)>0?"#000":"rgba(0,0,0,0.2)",
+          fontSize:10,fontWeight:800,cursor:"pointer",fontFamily:"inherit"}}>
+        ⭐ 희귀진화석×1 소모 · 속성 랜덤 (보유:{myS.stones?.stone3||0}개)
+      </button>
+    </div>;
+  };
+
   return <div>
-    <div style={{fontSize:11,fontWeight:800,color:"var(--tx1)",marginBottom:6}}>💎 진화석 연구소</div>
-    <div style={{display:"flex",gap:4,marginBottom:8}}>
-      {LABS.map(l=>(
-        <button key={l.id} onClick={()=>setLabTab(l.id)}
-          style={{flex:1,padding:"5px 3px",borderRadius:8,border:`1.5px solid ${labTab===l.id?"var(--purple)":"rgba(0,0,0,0.08)"}`,
-            background:labTab===l.id?"rgba(139,92,246,0.1)":"white",cursor:"pointer",fontFamily:"inherit",
-            fontSize:9,fontWeight:labTab===l.id?800:500,color:labTab===l.id?"var(--purple)":"var(--tx2)"}}>
-          {l.label.split(" ")[0]}<br/><span style={{fontSize:7}}>{l.desc}</span>
+    <div style={{fontSize:11,fontWeight:800,color:"var(--tx1)",marginBottom:6}}>🔬 연구소</div>
+    <div style={{fontSize:9,color:"var(--tx3)",marginBottom:8,padding:"4px 7px",
+      background:"rgba(139,92,246,0.05)",borderRadius:6,border:"1px solid rgba(139,92,246,0.12)"}}>
+      진화석을 활용해 소환수를 강화하고 진화시키는 연구소입니다
+    </div>
+    <div style={{display:"flex",gap:4,marginBottom:10}}>
+      {[["evo","⚗️ 즉시진화"],["research","🔬 연구"]].map(([k,l])=>(
+        <button key={k} onClick={()=>setLabTab(k)}
+          style={{flex:1,padding:"6px 0",borderRadius:9,border:`1.5px solid ${labTab===k?acHex:"rgba(0,0,0,0.08)"}`,
+            background:labTab===k?`${acHex}12`:"white",cursor:"pointer",fontFamily:"inherit",
+            fontSize:10,fontWeight:labTab===k?800:500,color:labTab===k?acHex:"var(--tx2)"}}>
+          {l}
         </button>
       ))}
     </div>
-
-    {/* 소환수 선택 */}
-    <div style={{fontSize:9,fontWeight:700,color:"var(--tx3)",marginBottom:4}}>대상 소환수</div>
-    <div style={{display:"flex",gap:3,flexWrap:"wrap",marginBottom:8}}>
-      {aliveCols.map((c,i)=>{
-        const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{emoji:"❓"};
-        return <button key={i} onClick={()=>setTargetIdx(targetIdx===i?null:i)}
-          style={{padding:"3px 5px",borderRadius:7,border:`1.5px solid ${targetIdx===i?"var(--purple)":"rgba(0,0,0,0.08)"}`,
-            background:targetIdx===i?"rgba(139,92,246,0.1)":"white",cursor:"pointer",fontFamily:"inherit",fontSize:13}}>
-          {bm.emoji}<span style={{fontSize:7,color:"var(--tx3)",marginLeft:1}}>Lv{c.lv}</span>
-        </button>;
-      })}
-    </div>
-
-    {labTab==="boost"&&<div>
-      <div style={{fontSize:10,color:"var(--tx3)",marginBottom:6}}>진화석 소모로 소환수 EXP를 즉시 지급합니다.</div>
-      {[
-        {id:"stone1",emoji:"💠",exp:50,label:"EXP +50"},
-        {id:"stone2",emoji:"🔷",exp:150,label:"EXP +150"},
-        {id:"stone3",emoji:"🌀",exp:400,label:"EXP +400"},
-      ].map(({id,emoji,exp,label})=>{
-        const have=myS.stones?.[id]||0;
-        return <div key={id} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 10px",borderRadius:10,
-          border:`1px solid ${have>0?"rgba(139,92,246,0.2)":"rgba(0,0,0,0.06)"}`,marginBottom:5,
-          background:have>0?"rgba(139,92,246,0.04)":"rgba(0,0,0,0.01)"}}>
-          <span style={{fontSize:18}}>{emoji}</span>
-          <div style={{flex:1}}>
-            <div style={{fontSize:10,fontWeight:700,color:"var(--tx1)"}}>{label}</div>
-            <div style={{fontSize:9,color:"var(--tx3)"}}>보유: {have}개</div>
-          </div>
-          <button onClick={()=>useBooster(id,exp)} disabled={have<=0||targetIdx===null}
-            style={{padding:"5px 10px",borderRadius:8,border:"none",
-              background:have>0&&targetIdx!==null?"var(--purple)":"rgba(0,0,0,0.06)",
-              color:have>0&&targetIdx!==null?"white":"rgba(0,0,0,0.2)",
-              fontSize:10,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>사용</button>
-        </div>;
-      })}
-    </div>}
-
-    {labTab==="imprint"&&<div>
-      <div style={{fontSize:10,color:"var(--tx3)",marginBottom:6}}>소환수에 스탯을 영구 각인합니다. (배틀/진화 후에도 유지)</div>
-      {[
-        {id:"stone1",emoji:"💠",stat:"atk",pct:2,label:"ATK +2% 각인"},
-        {id:"stone2",emoji:"🔷",stat:"hp",pct:3,label:"HP +3% 각인"},
-        {id:"stone3",emoji:"🌀",stat:"atk",pct:5,label:"ATK +5% 각인"},
-      ].map(({id,emoji,stat,pct,label})=>{
-        const have=myS.stones?.[id]||0;
-        const cur=targetIdx!==null?(aliveCols[targetIdx]?.imprints?.[stat]||0):0;
-        return <div key={id+stat} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 10px",borderRadius:10,
-          border:`1px solid ${have>0?"rgba(6,182,212,0.2)":"rgba(0,0,0,0.06)"}`,marginBottom:5,
-          background:have>0?"rgba(6,182,212,0.04)":"rgba(0,0,0,0.01)"}}>
-          <span style={{fontSize:18}}>{emoji}</span>
-          <div style={{flex:1}}>
-            <div style={{fontSize:10,fontWeight:700,color:"var(--tx1)"}}>{label}</div>
-            <div style={{fontSize:9,color:"var(--tx3)"}}>보유:{have} {targetIdx!==null&&`· 현재 각인:+${cur}%`}</div>
-          </div>
-          <button onClick={()=>useImprint(id,stat,pct)} disabled={have<=0||targetIdx===null}
-            style={{padding:"5px 10px",borderRadius:8,border:"none",
-              background:have>0&&targetIdx!==null?"var(--cyan)":"rgba(0,0,0,0.06)",
-              color:have>0&&targetIdx!==null?"white":"rgba(0,0,0,0.2)",
-              fontSize:10,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>각인</button>
-        </div>;
-      })}
-    </div>}
-
-    {labTab==="reroll"&&<div>
-      <div style={{fontSize:10,color:"var(--tx3)",marginBottom:6}}>희귀진화석 1개로 소환수의 속성을 랜덤 재추첨합니다.</div>
-      {targetIdx!==null&&<div style={{padding:"8px",borderRadius:9,background:"rgba(249,115,22,0.06)",border:"1px solid rgba(249,115,22,0.2)",marginBottom:8,fontSize:10}}>
-        현재 속성: {aliveCols[targetIdx]?.monType?`${TYPES[aliveCols[targetIdx].monType]?.emoji}${TYPES[aliveCols[targetIdx].monType]?.name}`:"없음"}
-      </div>}
-      <div style={{display:"flex",alignItems:"center",gap:8,padding:"10px 12px",borderRadius:11,
-        border:`1px solid ${(myS.stones?.stone2||0)>0?"rgba(249,115,22,0.2)":"rgba(0,0,0,0.06)"}`,
-        background:(myS.stones?.stone2||0)>0?"rgba(249,115,22,0.04)":"rgba(0,0,0,0.01)"}}>
-        <span style={{fontSize:20}}>🔷</span>
-        <div style={{flex:1}}>
-          <div style={{fontSize:10,fontWeight:700,color:"var(--tx1)"}}>속성 리롤</div>
-          <div style={{fontSize:9,color:"var(--tx3)"}}>희귀진화석 ×1 소모 · 보유: {myS.stones?.stone2||0}개</div>
-        </div>
-        <button onClick={useReroll} disabled={(myS.stones?.stone2||0)<=0||targetIdx===null}
-          style={{padding:"6px 12px",borderRadius:8,border:"none",
-            background:(myS.stones?.stone2||0)>0&&targetIdx!==null?"var(--orange)":"rgba(0,0,0,0.06)",
-            color:(myS.stones?.stone2||0)>0&&targetIdx!==null?"white":"rgba(0,0,0,0.2)",
-            fontSize:10,fontWeight:800,cursor:"pointer",fontFamily:"inherit"}}>🎲 리롤</button>
-      </div>
-    </div>}
+    {labTab==="evo"?renderEvo():renderResearch()}
   </div>;
 }
+
 
 // ── 도움말 ──
 function SideHelp({acHex}){
