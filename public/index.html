@@ -3544,46 +3544,34 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
                   {GRADE_ORDER.indexOf(bm.rarity)>=5&&<span style={{fontSize:10,color:"var(--red)",marginLeft:3}}>💀파괴위험</span>}
                 </button>}
               </div>
-              {chain&&bm.rarity!=="LEGEND"&&<div style={{marginBottom:4}}>
-                {/* 진화 조건 표시 */}
-                <div style={{fontSize:10,color:"var(--tx3)",marginBottom:3,lineHeight:1.5}}>
-                  {chain.conds&&chain.conds.map((cond,ci)=>{
-                    let cur=0,need=cond.val,ok2=false;
-                    if(cond.type==="lv"){cur=c.lv||1;ok2=cur>=need;}
-                    else if(cond.type==="enhance"){cur=c.enhance||0;ok2=cur>=need;}
-                    else if(cond.type==="hunt"){cur=c.huntWins||0;ok2=cur>=need;}
-                    else if(cond.type==="feed"){cur=c.feedCount||0;ok2=cur>=need;}
-                    else if(cond.type==="dungeon"){cur=myS.totalDungeons||0;ok2=cur>=need;}
-                    else if(cond.type==="pvp"){cur=myS.pvpWins||0;ok2=cur>=need;}
-                    else if(cond.type==="boss"){cur=Object.values(myS.bossKills||{}).reduce((a,b)=>a+b,0);ok2=cur>=need;}
-                    else if(cond.type==="tamerLv"){cur=myS.tamerLv||1;ok2=cur>=need;}
-                    const label={lv:"Lv",enhance:"+강화",hunt:"사냥승",feed:"먹이횟수",dungeon:"던전",pvp:"배틀승",boss:"보스토벌",tamerLv:"테이머Lv"}[cond.type]||cond.type;
-                    return <span key={ci} style={{marginRight:4,color:ok2?"var(--green)":"var(--red)",fontWeight:600}}>
-                      {ok2?"✓":"✗"}{label} {cur}/{need}
-                    </span>;
-                  })}
-                </div>
-                {condOk
-                  ?<>
-                    {/* 진화 확률 미리보기 */}
-                    {evoRates&&<div style={{display:"flex",gap:2,marginBottom:3,fontSize:9}}>
-                      <span style={{padding:"1px 4px",borderRadius:4,background:"rgba(245,158,11,0.15)",color:"#d97706",fontWeight:700}}>🌟대성공 {Math.round(evoRates[0]*100)}%</span>
-                      <span style={{padding:"1px 4px",borderRadius:4,background:"rgba(139,92,246,0.12)",color:"var(--purple)",fontWeight:700}}>✨성공 {Math.round(evoRates[1]*100)}%</span>
-                      <span style={{padding:"1px 4px",borderRadius:4,background:"rgba(249,115,22,0.12)",color:"var(--orange)",fontWeight:700}}>💔실패 {Math.round(evoRates[2]*100)}%</span>
-                      <span style={{padding:"1px 4px",borderRadius:4,background:"rgba(239,68,68,0.12)",color:"var(--red)",fontWeight:700}}>💀대실패 {Math.round(evoRates[3]*100)}%</span>
-                    </div>}
-                    <Btn onClick={()=>evolve(i)} disabled={!hasSt||!stUnlocked} color="var(--purple)" sm>
-                      {!stUnlocked?"🔒 ":""}{st?.emoji||"💠"} 진화! → {chain.name}
-                      {chain.altTo&&<span style={{fontSize:9,opacity:0.7}}> (대성공:{chain.altName?.replace("(대성공!)","").trim()})</span>}
-                    </Btn>
-                  </>
-                  :<div style={{padding:"5px 7px",borderRadius:8,background:"rgba(0,0,0,0.03)",
-                      border:"1px solid rgba(0,0,0,0.07)",fontSize:10,color:"var(--tx3)",lineHeight:1.5}}>
-                    🔒 진화 조건 미충족<br/>
-                    <span style={{color:"var(--tx3)"}}>{chain.condDesc}</span>
-                  </div>
-                }
-              </div>}
+              {/* 진화/각성/합성 상태 배지 - 연구소에서 진화 가능 */}
+              <div style={{display:"flex",gap:4,flexWrap:"wrap",marginBottom:5}}>
+                {chain&&<div style={{fontSize:10,padding:"3px 8px",borderRadius:8,fontWeight:700,
+                  background:condOk?"rgba(139,92,246,0.12)":"rgba(0,0,0,0.05)",
+                  color:condOk?"var(--purple)":"var(--tx3)",
+                  border:`1px solid ${condOk?"rgba(139,92,246,0.3)":"rgba(0,0,0,0.08)"}`}}>
+                  {condOk?"✨ 진화 가능! (연구소)":"🔒 진화조건 미충족"}
+                </div>}
+                {c.awakened&&<div style={{fontSize:10,padding:"3px 8px",borderRadius:8,fontWeight:700,
+                  background:"rgba(6,182,212,0.1)",color:"#06b6d4",border:"1px solid rgba(6,182,212,0.25)"}}>
+                  💠 각성 {c.awakenLv||1}단계
+                </div>}
+                {c.hybrid&&<div style={{fontSize:10,padding:"3px 8px",borderRadius:8,fontWeight:700,
+                  background:"rgba(124,58,237,0.1)",color:"#7c3aed",border:"1px solid rgba(124,58,237,0.25)"}}>
+                  🧬 HYBRID
+                </div>}
+                {bm.rarity==="MUTANT"&&<div style={{fontSize:10,padding:"3px 8px",borderRadius:8,fontWeight:700,
+                  background:"rgba(0,172,193,0.1)",color:"#00acc1",border:"1px solid rgba(0,172,193,0.25)"}}>
+                  🧬 돌연변이
+                </div>}
+                {(c.baseId||c.id)!==c.id&&<div style={{fontSize:10,padding:"3px 8px",borderRadius:8,fontWeight:700,
+                  background:"rgba(16,185,129,0.1)",color:"var(--green)",border:"1px solid rgba(16,185,129,0.25)"}}>
+                  ⚗️ 진화체
+                </div>}
+                {chain&&condOk&&<div style={{fontSize:9,color:"var(--tx3)",width:"100%"}}>
+                  → {chain.name} {chain.altTo&&`(대성공: ${chain.altName?.replace("(대성공!)","").trim()})`}
+                </div>}
+              </div>
               <div style={{marginBottom:5}}>
                 <span style={{fontSize:13,color:"var(--tx3)",fontWeight:600}}>속성: </span>
                 {c.monType
@@ -5832,58 +5820,170 @@ function SideLab({myS,col,setMy,toast,acHex,aliveCols}){
     {id:"stone2",name:"고급",emoji:"🔮",types:["lightning","rock","ghost","ice"]},
   ];
 
-  // 진화 탭 - 소환수 진화
+  // 진화 탭 - 조건 충족 후 연구소에서 진화
   const renderEvo=()=>{
-    return <div>
-      <div style={{fontSize:10,color:"var(--tx3)",marginBottom:8,padding:"5px 8px",
-        background:"rgba(139,92,246,0.05)",borderRadius:7,border:"1px solid rgba(139,92,246,0.12)"}}>
-        💡 소환수 탭에서 진화 가능. 연구소에서는 조건 없는 즉시 진화(진화석 소모 2배)
-      </div>
-      {aliveCols.length===0?<div style={{color:"var(--tx3)",fontSize:10,textAlign:"center",padding:"12px 0"}}>소환수 없음</div>
-        :aliveCols.map((c,i)=>{
-          const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{rarity:"COMMON",emoji:"❓",name:"??"};
-          const chain=EVO_CHAIN[c.baseId||c.id];
-          if(!chain)return null;
-          const st=EVO_STONES.find(s=>s.id===chain.stone);
-          const have=myS.stones?.[chain.stone]||0;
-          const need2=2; // 즉시 진화 = 2배 소모
-          const canEvo=have>=need2;
-          return <div key={i} style={{display:"flex",alignItems:"center",gap:7,padding:"7px 8px",
-            borderRadius:10,background:"white",border:`1px solid ${canEvo?"rgba(139,92,246,0.2)":"rgba(0,0,0,0.07)"}`,
-            marginBottom:5,boxShadow:"0 1px 5px rgba(0,0,0,0.04)"}}>
-            <span style={{fontSize:18}}>{bm.emoji}</span>
-            <div style={{flex:1}}>
-              <div style={{fontSize:10,fontWeight:700}}>{c.name||bm.name} <span style={{color:"var(--tx3)"}}>Lv{c.lv}</span></div>
-              <div style={{fontSize:9,color:"var(--tx3)"}}>→ {MONS.find(m=>m.id===chain.to)?.name||chain.to}</div>
-            </div>
-            <div style={{textAlign:"right"}}>
-              <div style={{fontSize:9,color:canEvo?"var(--purple)":"var(--red)",marginBottom:3}}>
-                {st?.emoji||"💠"}×{need2} (보유:{have})
-              </div>
-              <button onClick={()=>{
-                if(!canEvo){toast("진화석 부족!","var(--red)");return;}
-                setMy(s=>{
-                  const ns={...s,stones:{...s.stones,[chain.stone]:Math.max(0,(s.stones[chain.stone]||0)-need2)}};
-                  const toMon=MONS.find(m=>m.id===chain.to);
-                  if(!toMon)return ns;
-                  const nc=(ns.collection||[]).map((cc,ci)=>{
-                    if(ci!==i)return cc;
-                    return{...cc,id:chain.to,baseId:chain.to,name:toMon.name,emoji:toMon.emoji};
-                  });
-                  return addTamerExp({...ns,collection:nc},50);
-                });
-                toast(`✨ 즉시 진화! → ${MONS.find(m=>m.id===chain.to)?.name||"?"}`,"var(--purple)");
-              }} disabled={!canEvo}
-                style={{padding:"3px 10px",borderRadius:7,border:"none",
-                  background:canEvo?"var(--purple)":"rgba(0,0,0,0.05)",
-                  color:canEvo?"white":"rgba(0,0,0,0.2)",fontSize:9,fontWeight:800,
-                  cursor:canEvo?"pointer":"default",fontFamily:"inherit"}}>
-                즉시진화
-              </button>
-            </div>
-          </div>;
-        })
+    // 등급별 기본 진화석 소모량
+    const EVO_COST={COMMON:1,UNCOMMON:2,RARE:3,UNIQUE:5,SUPER:8,EPIC:12};
+    // 강화진화 추가 소모 (대성공 가능)
+    const EVO_EXTRA_COST={COMMON:1,UNCOMMON:2,RARE:3,UNIQUE:4,SUPER:6,EPIC:8};
+
+    const doEvolve=(c,i,isEnhanced)=>{
+      const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{rarity:"COMMON"};
+      const chain=EVO_CHAIN[c.baseId||c.id];
+      if(!chain)return;
+      const condOk=checkEvoConds(chain,c,myS);
+      if(!condOk){toast("진화 조건 미충족!","var(--red)");return;}
+      const baseCost=EVO_COST[bm.rarity]||1;
+      const extraCost=EVO_EXTRA_COST[bm.rarity]||1;
+      const totalCost=isEnhanced?baseCost+extraCost:baseCost;
+      const have=myS.stones?.[chain.stone]||0;
+      if(have<totalCost){toast(`진화석 ${totalCost}개 필요! (보유:${have})`,"var(--red)");return;}
+
+      // 강화진화: 대성공/성공 중 결과, 기본진화: 무조건 성공
+      let evoResult="success";
+      if(isEnhanced){
+        const rates=EVO_RATES[bm.rarity]||EVO_RATES["COMMON"];
+        const r=Math.random();
+        if(r<rates[0])evoResult="great";
+        else evoResult="success";
       }
+
+      const toId=evoResult==="great"&&chain.altTo?chain.altTo:chain.to;
+      const toMon=MONS.find(m=>m.id===toId);
+      if(!toMon){toast("진화체 없음!","var(--red)");return;}
+      const greatBonus=evoResult==="great"?1.1:1;
+
+      setMy(s=>{
+        const ns={...s,stones:{...s.stones,[chain.stone]:Math.max(0,(s.stones[chain.stone]||0)-totalCost)}};
+        const nc=(ns.collection||[]).map((cc,ci)=>{
+          if(ci!==i)return cc;
+          return{...cc,id:toId,baseId:toId,name:toMon.name,emoji:toMon.emoji,
+            lv:1,exp:0,
+            maxHp:Math.floor(toMon.hp*greatBonus),hp:Math.floor(toMon.hp*greatBonus),curHp:Math.floor(toMon.hp*greatBonus),
+            feedCount:0,huntWins:0,
+          };
+        });
+        const newDex=(ns.dexSeen||[]).includes(toId)?ns.dexSeen:[...(ns.dexSeen||[]),toId];
+        return addTamerExp({...ns,collection:nc,dexSeen:newDex,totalEvos:(ns.totalEvos||0)+1},evoResult==="great"?60:30);
+      });
+
+      if(evoResult==="great"){
+        toast(`🌟 대성공!! ${toMon.name}으로 진화!`,"var(--gold)");
+      }else{
+        toast(`✨ 진화 성공! → ${toMon.name}`,"var(--purple)");
+      }
+    };
+
+    const evolveList=aliveCols.filter((c)=>{
+      const baseId=c.baseId||c.id;
+      return EVO_CHAIN[baseId]&&c.rarity!=="LEGEND";
+    });
+
+    return <div>
+      <div style={{fontSize:11,color:"var(--tx3)",marginBottom:10,padding:"7px 9px",
+        background:"rgba(139,92,246,0.05)",borderRadius:8,border:"1px solid rgba(139,92,246,0.12)"}}>
+        🔬 진화 조건 충족 후 진화석 소모. 강화진화는 추가 진화석으로 <b>대성공</b> 가능!
+      </div>
+      {evolveList.length===0&&<div style={{color:"var(--tx3)",fontSize:12,textAlign:"center",padding:"16px 0"}}>
+        진화 가능한 소환수가 없습니다
+      </div>}
+      {evolveList.map((c,i)=>{
+        const origIdx=aliveCols.indexOf(c);
+        const baseId=c.baseId||c.id;
+        const bm=MONS.find(m=>m.id===baseId)||{rarity:"COMMON",emoji:"❓",name:"??"};
+        const chain=EVO_CHAIN[baseId];
+        const condOk=checkEvoConds(chain,c,myS);
+        const st=EVO_STONES.find(s=>s.id===chain.stone);
+        const have=myS.stones?.[chain.stone]||0;
+        const baseCost=EVO_COST[bm.rarity]||1;
+        const extraCost=EVO_EXTRA_COST[bm.rarity]||1;
+        const canBasic=condOk&&have>=baseCost;
+        const canEnhanced=condOk&&have>=baseCost+extraCost;
+        const rates=EVO_RATES[bm.rarity]||EVO_RATES["COMMON"];
+        const toMon=MONS.find(m=>m.id===chain.to);
+        const altMon=chain.altTo?MONS.find(m=>m.id===chain.altTo):null;
+
+        return <div key={origIdx} style={{borderRadius:12,padding:"12px",marginBottom:10,
+          border:`1.5px solid ${condOk?"rgba(139,92,246,0.25)":"rgba(0,0,0,0.08)"}`,
+          background:condOk?"rgba(139,92,246,0.03)":"white",
+          boxShadow:"0 1px 6px rgba(0,0,0,0.05)"}}>
+          {/* 소환수 헤더 */}
+          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
+            <span style={{fontSize:24}}>{bm.emoji}</span>
+            <div style={{flex:1}}>
+              <div style={{fontSize:13,fontWeight:800,color:"var(--tx1)"}}>{c.name||bm.name}</div>
+              <div style={{fontSize:10,color:"var(--tx3)"}}>
+                Lv{c.lv} · +{c.enhance||0}강 · <span style={{color:RCOL[bm.rarity]||"#888"}}>{bm.rarity}</span>
+              </div>
+            </div>
+            <div style={{textAlign:"right",fontSize:10}}>
+              <div style={{color:condOk?"var(--purple)":"var(--red)",fontWeight:700}}>
+                {condOk?"✅ 조건 충족":"🔒 조건 미충족"}
+              </div>
+            </div>
+          </div>
+
+          {/* 진화 조건 */}
+          <div style={{fontSize:10,color:"var(--tx3)",marginBottom:8,padding:"5px 8px",
+            background:"rgba(0,0,0,0.03)",borderRadius:7}}>
+            <span style={{fontWeight:700,color:"var(--tx2)"}}>조건: </span>
+            {chain.conds&&chain.conds.map((cond,ci)=>{
+              let cur=0,need=cond.val,ok2=false;
+              if(cond.type==="lv"){cur=c.lv||1;ok2=cur>=need;}
+              else if(cond.type==="enhance"){cur=c.enhance||0;ok2=cur>=need;}
+              else if(cond.type==="hunt"){cur=c.huntWins||0;ok2=cur>=need;}
+              else if(cond.type==="feed"){cur=c.feedCount||0;ok2=cur>=need;}
+              else if(cond.type==="dungeon"){cur=myS.totalDungeons||0;ok2=cur>=need;}
+              else if(cond.type==="pvp"){cur=myS.pvpWins||0;ok2=cur>=need;}
+              else if(cond.type==="boss"){cur=Object.values(myS.bossKills||{}).reduce((a,b)=>a+b,0);ok2=cur>=need;}
+              else if(cond.type==="tamerLv"){cur=myS.tamerLv||1;ok2=cur>=need;}
+              const label={lv:"Lv",enhance:"+강화",hunt:"사냥승",feed:"먹이횟수",dungeon:"던전",pvp:"배틀승",boss:"보스토벌",tamerLv:"테이머Lv"}[cond.type]||cond.type;
+              return <span key={ci} style={{marginRight:5,color:ok2?"var(--green)":"var(--red)",fontWeight:600}}>
+                {ok2?"✓":"✗"}{label} {cur}/{need}
+              </span>;
+            })}
+          </div>
+
+          {/* 진화 결과 미리보기 */}
+          <div style={{display:"flex",gap:6,marginBottom:8,alignItems:"center"}}>
+            <span style={{fontSize:20}}>{bm.emoji}</span>
+            <span style={{fontSize:12,color:"var(--tx3)"}}>→</span>
+            <div>
+              <div style={{fontSize:12,fontWeight:700,color:"var(--purple)"}}>{toMon?.name||chain.to}</div>
+              {altMon&&<div style={{fontSize:10,color:"var(--gold)"}}>🌟대성공: {altMon.name}</div>}
+            </div>
+          </div>
+
+          {/* 진화석 현황 */}
+          <div style={{fontSize:11,color:"var(--tx3)",marginBottom:8}}>
+            {st?.emoji||"💠"} 보유: {have}개
+          </div>
+
+          {/* 진화 버튼 2가지 */}
+          <div style={{display:"flex",gap:6}}>
+            {/* 기본 진화 - 무조건 성공 */}
+            <button onClick={()=>doEvolve(c,origIdx,false)}
+              disabled={!canBasic}
+              style={{flex:1,padding:"9px 0",borderRadius:10,border:"none",
+                background:canBasic?"linear-gradient(135deg,var(--purple),#6d28d9)":"rgba(0,0,0,0.06)",
+                color:canBasic?"white":"rgba(0,0,0,0.2)",
+                fontSize:11,fontWeight:800,cursor:canBasic?"pointer":"default",fontFamily:"inherit"}}>
+              ✅ 기본진화<br/>
+              <span style={{fontSize:9,opacity:0.85}}>{st?.emoji}×{baseCost} · 100% 성공</span>
+            </button>
+            {/* 강화 진화 - 대성공 가능 */}
+            {chain.altTo&&<button onClick={()=>doEvolve(c,origIdx,true)}
+              disabled={!canEnhanced}
+              style={{flex:1,padding:"9px 0",borderRadius:10,border:"none",
+                background:canEnhanced?"linear-gradient(135deg,var(--gold),#d97706)":"rgba(0,0,0,0.06)",
+                color:canEnhanced?"#000":"rgba(0,0,0,0.2)",
+                fontSize:11,fontWeight:800,cursor:canEnhanced?"pointer":"default",fontFamily:"inherit"}}>
+              🌟 강화진화<br/>
+              <span style={{fontSize:9,opacity:0.85}}>{st?.emoji}×{baseCost+extraCost} · 대성공{Math.round(rates[0]*100)}%</span>
+            </button>}
+          </div>
+        </div>;
+      })}
     </div>;
   };
 
@@ -5943,7 +6043,7 @@ function SideLab({myS,col,setMy,toast,acHex,aliveCols}){
       진화석을 활용해 소환수를 강화하고 진화시키는 연구소입니다
     </div>
     <div style={{display:"flex",gap:5,marginBottom:12}}>
-      {[["evo","⚗️ 즉시진화"],["awaken","💠 각성"],["research","🔬 속성연구"]].map(([k,l])=>(
+      {[["evo","⚗️ 진화"],["awaken","💠 각성"],["research","🔬 속성연구"]].map(([k,l])=>(
         <button key={k} onClick={()=>setLabTab(k)}
           style={{flex:1,padding:"8px 0",borderRadius:10,border:`1.5px solid ${labTab===k?acHex:"rgba(0,0,0,0.08)"}`,
             background:labTab===k?`${acHex}12`:"white",cursor:"pointer",fontFamily:"inherit",
