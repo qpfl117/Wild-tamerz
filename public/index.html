@@ -62,6 +62,7 @@
     @media(min-width:900px){
     .side-col{display:flex;flex-direction:column;width:340px;min-width:300px;height:100%;background:#ffffff;border-left:2px solid rgba(139,92,246,0.10);overflow:hidden;position:relative;}
       .menu-btn-hide{display:none !important;}
+      .mobile-panel-btn{display:none !important;}
     }
     .side-tabs{display:flex;border-bottom:1.5px solid rgba(139,92,246,0.10);background:white;flex-shrink:0;overflow-x:auto;}
     .side-tabs::-webkit-scrollbar{height:0;}
@@ -79,6 +80,15 @@
     .side-bottom-content{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:10px 12px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;font-size:12px;background:#faf9ff;}
     /* 탭바 스크롤바 숨기기 */
     .tab-bar::-webkit-scrollbar{display:none;}
+    /* 모바일 하단 슬라이드 패널 */
+    .mobile-panel{position:fixed;bottom:0;left:0;right:0;background:white;border-radius:20px 20px 0 0;box-shadow:0 -4px 24px rgba(139,92,246,0.18);z-index:150;transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);max-height:75vh;display:flex;flex-direction:column;}
+    .mobile-panel.closed{transform:translateY(calc(100% - 44px));}
+    .mobile-panel.open{transform:translateY(0);}
+    .mobile-panel-handle{flex-shrink:0;padding:10px 0 6px;text-align:center;cursor:pointer;position:relative;}
+    .mobile-panel-handle::before{content:'';display:block;width:36px;height:4px;background:rgba(139,92,246,0.2);border-radius:2px;margin:0 auto 4px;}
+    .mobile-panel-tabs{display:flex;border-bottom:1.5px solid rgba(139,92,246,0.08);overflow-x:auto;flex-shrink:0;}
+    .mobile-panel-tabs::-webkit-scrollbar{height:0;}
+    .mobile-panel-content{flex:1;overflow-y:auto;padding:12px;-webkit-overflow-scrolling:touch;}
     /* 모바일 전체 폰트/레이아웃 */
     @media(max-width:600px){
       body{font-size:14px;}
@@ -1917,146 +1927,277 @@ function SidePanel({sideTabTop,setSideTabTop,sideTabBot,setSideTabBot,
 
 
 // ── 뚝딱이 (빨간 후드 소년) ──
+// ── 뚝딱이 (빨간 후드 소년) - 소환수급 입체감 v2 ──
 function TukChar({x,y,frame,mood,divine}){
   const m=mood||"normal";
   const step=frame%4;
   const bob=step===1||step===3?0:2.5;
-  const tilt=step<2?2:-1.5;
-  const lA=step<2?-18:-4, rA=step<2?4:18;
-  const lU=step===1?-10:step===2?-4:0;
-  const rU=step===0?-10:step===3?-4:0;
+  const tilt=step<2?2.2:-1.8;
+  const lA=step<2?-22:-5, rA=step<2?5:22;
+  const lU=step===1?-12:step===2?-5:0;
+  const rU=step===0?-12:step===3?-5:0;
+  const lFwd=step===1||step===2?4:-2;
+  const rFwd=step===0||step===3?4:-2;
   return <g transform={`translate(${x},${y+bob})`}>
-    <ellipse cx={38} cy={118} rx={19} ry={4} fill="rgba(0,0,0,0.12)"/>
+    <ellipse cx={38} cy={120} rx={step<2?21:17} ry={4.5} fill="rgba(0,0,0,0.18)"/>
     <g transform={`rotate(${tilt},38,62)`}>
-      <g transform={`translate(0,${lU})`}>
-        <path d="M24 82 Q30 80 36 82 L36 108 Q30 114 24 108Z" fill="#1e293b"/>
-        <ellipse cx={29} cy={112} rx={11} ry={5} fill="#1e1b2e"/>
+      {/* 왼발 */}
+      <g transform={`translate(${lFwd},${lU})`}>
+        <path d="M22 80 Q29 78 35 80 L35 108 Q29 115 22 108Z" fill="#1e293b"/>
+        <path d="M22 80 Q25 78 28 80 L28 108 Q25 114 22 108Z" fill="#334155" opacity={0.5}/>
+        <path d="M18 108 Q29 112 37 108 L37 113 Q29 117 18 113Z" fill="#0f172a"/>
+        <ellipse cx={27} cy={114} rx={2} ry={1} fill="#475569" opacity={0.5}/>
       </g>
-      <g transform={`translate(0,${rU})`}>
-        <path d="M38 82 Q44 80 50 82 L50 108 Q44 114 38 108Z" fill="#1e293b"/>
-        <ellipse cx={45} cy={112} rx={11} ry={5} fill="#1e1b2e"/>
+      {/* 오른발 */}
+      <g transform={`translate(${rFwd},${rU})`}>
+        <path d="M39 80 Q46 78 52 80 L52 108 Q46 115 39 108Z" fill="#1e293b"/>
+        <path d="M46 80 Q49 78 52 80 L52 108 Q49 114 46 108Z" fill="#334155" opacity={0.5}/>
+        <path d="M35 108 Q46 112 55 108 L55 113 Q46 117 35 113Z" fill="#0f172a"/>
+        <ellipse cx={46} cy={114} rx={2} ry={1} fill="#475569" opacity={0.5}/>
       </g>
+      {/* 몸통 - 후드 자켓 입체감 */}
       <defs>
-        <linearGradient id="tukBG" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#b91c1c"/><stop offset="40%" stopColor="#ef4444"/><stop offset="100%" stopColor="#991b1b"/>
+        <linearGradient id="tukBody" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#dc2626"/>
+          <stop offset="45%" stopColor="#ef4444"/>
+          <stop offset="100%" stopColor="#991b1b"/>
+        </linearGradient>
+        <linearGradient id="tukHood2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#b91c1c"/>
+          <stop offset="100%" stopColor="#7f1d1d"/>
         </linearGradient>
       </defs>
-      <path d="M19 50 C19 42 38 42 57 42 C57 42 56 50 56 78 C56 86 38 86 20 86 C20 86 19 78 19 50Z" fill="url(#tukBG)"/>
-      <path d="M26 44 C36 43 46 44 48 46 C42 44 28 44 26 44Z" fill="white" opacity={0.15}/>
-      <path d="M26 68 Q38 65 50 68 L50 80 Q38 83 26 80Z" fill="#dc2626"/>
-      <path d="M52 48 C56 52 56 78 52 84 C55 78 55 52 52 48Z" fill="rgba(0,0,0,0.1)"/>
-      <g transform={`rotate(${lA},20,53)`}>
-        <path d="M8 50 C8 47 20 47 20 50 L20 75 C20 79 8 79 8 75Z" fill="#ef4444"/>
-        <ellipse cx={14} cy={79} rx={8} ry={7} fill="#fcd5a0"/>
-        <path d="M10 81 Q14 84 18 81" stroke="#d4a060" strokeWidth={1} fill="none"/>
+      {/* 후드 망토 뒤 */}
+      <path d="M13 48 C9 54 9 88 13 94 C13 88 15 54 13 48Z" fill="#991b1b" opacity={0.6}/>
+      <path d="M63 48 C67 54 67 88 63 94 C63 88 61 54 63 48Z" fill="#991b1b" opacity={0.6}/>
+      {/* 몸통 */}
+      <path d="M18 50 C16 42 38 40 58 42 C60 50 59 78 58 86 C58 86 38 88 18 86 C16 78 16 50 18 50Z" fill="url(#tukBody)"/>
+      {/* 하이라이트 */}
+      <path d="M25 42 C35 40 49 42 53 44 C41 41 27 41 25 42Z" fill="white" opacity={0.2}/>
+      {/* 후드 앞 지퍼 */}
+      <path d="M35 44 L41 44 L41 86 L35 86Z" fill="#b91c1c" opacity={0.35}/>
+      <line x1={38} y1={44} x2={38} y2={86} stroke="#7f1d1d" strokeWidth={1.5} opacity={0.5}/>
+      {/* 주머니 */}
+      <path d="M22 67 Q38 64 54 67 L53 80 Q38 83 23 80Z" fill="#b91c1c" opacity={0.65}/>
+      {/* 측면 음영 */}
+      <path d="M55 46 C61 52 60 82 57 88 C60 82 60 52 55 46Z" fill="rgba(0,0,0,0.16)"/>
+      {/* 왼팔 */}
+      <g transform={`rotate(${lA},18,52)`}>
+        <path d="M6 48 C6 44 20 44 20 48 L20 76 C20 80 6 80 6 76Z" fill="#ef4444"/>
+        <path d="M6 48 C6 44 12 44 12 48 L12 76 C9 79 6 79 6 76Z" fill="#dc2626" opacity={0.55}/>
+        <path d="M4 74 Q13 78 22 74 L22 78 Q13 82 4 78Z" fill="#b91c1c"/>
+        <ellipse cx={13} cy={82} rx={8.5} ry={7.5} fill="#fcd5a0"/>
+        <ellipse cx={12} cy={81} rx={5.5} ry={5.5} fill="#f5c080"/>
+        <path d="M8 84 Q13 88 18 84" stroke="#d4a060" strokeWidth={1.2} fill="none" strokeLinecap="round"/>
+        <circle cx={10} cy={83} r={1.3} fill="#f5c080" opacity={0.7}/>
+        <circle cx={16} cy={83} r={1.3} fill="#f5c080" opacity={0.7}/>
       </g>
-      <g transform={`rotate(${rA},56,53)`}>
-        <path d="M56 50 C56 47 68 47 68 50 L68 75 C68 79 56 79 56 75Z" fill="#ef4444"/>
-        <ellipse cx={62} cy={79} rx={8} ry={7} fill="#fcd5a0"/>
-        <path d="M58 81 Q62 84 66 81" stroke="#d4a060" strokeWidth={1} fill="none"/>
+      {/* 오른팔 */}
+      <g transform={`rotate(${rA},58,52)`}>
+        <path d="M56 48 C56 44 70 44 70 48 L70 76 C70 80 56 80 56 76Z" fill="#ef4444"/>
+        <path d="M64 48 C67 44 70 44 70 48 L70 76 C67 79 64 79 64 76Z" fill="#dc2626" opacity={0.55}/>
+        <path d="M54 74 Q63 78 72 74 L72 78 Q63 82 54 78Z" fill="#b91c1c"/>
+        <ellipse cx={63} cy={82} rx={8.5} ry={7.5} fill="#fcd5a0"/>
+        <ellipse cx={64} cy={81} rx={5.5} ry={5.5} fill="#f5c080"/>
+        <path d="M59 84 Q64 88 69 84" stroke="#d4a060" strokeWidth={1.2} fill="none" strokeLinecap="round"/>
       </g>
-      <path d="M30 40 C30 37 46 37 46 40 L46 47 C46 45 30 45 30 47Z" fill="#fcd5a0"/>
+      <path d="M30 40 C30 36 46 36 46 40 L46 48 C46 46 30 46 30 48Z" fill="#fcd5a0"/>
     </g>
-    <g transform={`rotate(${tilt*0.45},38,20)`}>
-      <path d="M31 35 C31 31 45 31 45 35 L45 42 C45 40 31 40 31 42Z" fill="#fcd5a0"/>
-      <ellipse cx={38} cy={20} rx={23} ry={21} fill="#fcd5a0"/>
-      <ellipse cx={17} cy={27} rx={7} ry={5.5} fill="#f9a8a8" opacity={0.4}/>
-      <ellipse cx={59} cy={27} rx={7} ry={5.5} fill="#f9a8a8" opacity={0.4}/>
-      <path d="M15 18 C12 8 15 0 38 0 C61 0 64 8 61 18 C58 10 52 5 38 5 C24 5 18 10 15 18Z" fill="#92400e"/>
-      <path d="M15 22 C11 12 13 2 38 1 C14 4 12 14 15 22Z" fill="#92400e"/>
-      <path d="M61 22 C65 12 63 2 38 1 C62 4 64 14 61 22Z" fill="#92400e"/>
+    {/* 머리 */}
+    <g transform={`rotate(${tilt*0.42},38,20) translate(0,${bob*0.15})`}>
+      <path d="M31 35 C31 30 45 30 45 35 L45 43 C45 41 31 41 31 43Z" fill="#fcd5a0"/>
+      {/* 후드 뒤 */}
+      <path d="M12 22 C10 6 18 -6 38 -6 C58 -6 66 6 64 22 C60 8 52 2 38 2 C24 2 16 8 12 22Z" fill="#991b1b"/>
+      {/* 얼굴 */}
+      <ellipse cx={38} cy={20} rx={24} ry={22} fill="#fcd5a0"/>
+      <ellipse cx={34} cy={15} rx={15} ry={13} fill="white" opacity={0.13}/>
+      <ellipse cx={17} cy={28} rx={7.5} ry={5.5} fill="#f9a8a8" opacity={m==="happy"?0.65:0.4}/>
+      <ellipse cx={59} cy={28} rx={7.5} ry={5.5} fill="#f9a8a8" opacity={m==="happy"?0.65:0.4}/>
+      {/* 후드 */}
+      <path d="M13 20 C11 8 16 -2 38 -2 C60 -2 65 8 63 20 C59 8 52 4 38 4 C24 4 17 8 13 20Z" fill="url(#tukHood2)"/>
+      <path d="M13 20 C15 10 22 5 38 4 C54 5 61 10 63 20" stroke="#ef4444" strokeWidth={1.5} fill="none" opacity={0.45}/>
+      {/* 머리카락 */}
+      <path d="M20 22 C17 12 20 3 38 3 C56 3 59 12 56 22 C53 13 48 8 38 8 C28 8 23 13 20 22Z" fill="#92400e"/>
+      <path d="M18 25 C15 15 17 5 38 2 C18 6 16 18 18 25Z" fill="#92400e"/>
+      <path d="M58 25 C61 15 59 5 38 2 C58 6 60 18 58 25Z" fill="#92400e"/>
+      <path d="M26 5 C32 3 44 3 50 5 C42 3 30 3 26 5Z" fill="#b45309" opacity={0.65}/>
+      {/* 표정 */}
       {m==="normal"&&<>
-        <circle cx={26} cy={20} r={4.5} fill="#1a1a2e"/>
-        <circle cx={43} cy={20} r={4.5} fill="#1a1a2e"/>
-        <circle cx={27} cy={19} r={1.8} fill="white"/>
-        <circle cx={44} cy={19} r={1.8} fill="white"/>
-        <path d="M27 30 Q38 37 49 30" stroke="#c07858" strokeWidth={2} fill="none" strokeLinecap="round"/>
+        <circle cx={27} cy={21} r={4.5} fill="#1a0a00"/>
+        <circle cx={44} cy={21} r={4.5} fill="#1a0a00"/>
+        <circle cx={28} cy={19.5} r={2} fill="white"/>
+        <circle cx={45} cy={19.5} r={2} fill="white"/>
+        <circle cx={29} cy={20.2} r={0.8} fill="white" opacity={0.55}/>
+        <path d="M28 31 Q38 37 50 31" stroke="#c07858" strokeWidth={2} fill="none" strokeLinecap="round"/>
+        <ellipse cx={38} cy={27} rx={3} ry={1.8} fill="#d4a060" opacity={0.5}/>
       </>}
       {m==="happy"&&<>
-        <path d="M21 21 Q26 15 31 21" stroke="#1a1a2e" strokeWidth={2.4} fill="none" strokeLinecap="round"/>
-        <path d="M39 21 Q44 15 49 21" stroke="#1a1a2e" strokeWidth={2.4} fill="none" strokeLinecap="round"/>
-        <path d="M25 30 Q38 39 51 30" stroke="#c07858" strokeWidth={2.1} fill="none" strokeLinecap="round"/>
+        <path d="M22 22 Q27 15 32 22" stroke="#1a0a00" strokeWidth={2.5} fill="none" strokeLinecap="round"/>
+        <path d="M40 22 Q45 15 50 22" stroke="#1a0a00" strokeWidth={2.5} fill="none" strokeLinecap="round"/>
+        <ellipse cx={26} cy={19} rx={5} ry={4.5} fill="#1a0a00" opacity={0.8}/>
+        <ellipse cx={44} cy={19} rx={5} ry={4.5} fill="#1a0a00" opacity={0.8}/>
+        <path d="M24 31 Q38 42 52 31" stroke="#c07858" strokeWidth={2.2} fill="none" strokeLinecap="round"/>
+        <text x={52} y={10} fontSize={11} style={{animation:"float 0.8s ease-in-out infinite"}}>✨</text>
       </>}
-      <ellipse cx={38} cy={26} rx={2.5} ry={1.5} fill="#d4a060" opacity={0.5}/>
+      {m==="sad"&&<>
+        <path d="M22 19 Q27 24 32 19" stroke="#1a0a00" strokeWidth={2.2} fill="none" strokeLinecap="round"/>
+        <path d="M40 19 Q45 24 50 19" stroke="#1a0a00" strokeWidth={2.2} fill="none" strokeLinecap="round"/>
+        <path d="M28 32 Q38 29 48 32" stroke="#c07858" strokeWidth={2} fill="none" strokeLinecap="round"/>
+        <ellipse cx={14} cy={21} rx={2.2} ry={3.5} fill="#93c5fd" opacity={0.85}/>
+        <ellipse cx={56} cy={21} rx={2.2} ry={3.5} fill="#93c5fd" opacity={0.85}/>
+      </>}
     </g>
-    {divine&&<g transform="translate(16,-10)">
+    {divine&&<g transform="translate(16,-12)">
       <path d="M8 10 L8 0 L14 5 L20 0 L26 5 L32 0 L32 10Z" fill="#ff6600"/>
       <path d="M8 10 L32 10 L30 16 L10 16Z" fill="#ff8800"/>
+      <circle cx={14} cy={3} r={2.5} fill="#ffdd00"/>
+      <circle cx={20} cy={1} r={2.5} fill="#ff4400"/>
+      <circle cx={26} cy={3} r={2.5} fill="#ffdd00"/>
     </g>}
   </g>;
 }
 
-// ── 톡톡이 (초록 원피스 소녀) ──
+// ── 톡톡이 (초록 원피스 소녀) - 소환수급 입체감 v2 ──
 function TokChar({x,y,frame,mood,divine}){
   const m=mood||"normal";
   const step=frame%4;
-  const bob=step===1||step===3?0:2;
-  const tilt=step<2?1.5:-1;
-  const lA=step<2?-15:-3, rA=step<2?3:15;
-  const lU=step===1?-8:step===2?-3:0;
-  const rU=step===0?-8:step===3?-3:0;
+  const bob=step===1||step===3?0:2.2;
+  const tilt=step<2?1.8:-1.2;
+  const lA=step<2?-18:-4, rA=step<2?4:18;
+  const lU=step===1?-10:step===2?-4:0;
+  const rU=step===0?-10:step===3?-4:0;
+  const lFwd=step===1||step===2?3:-2;
+  const rFwd=step===0||step===3?3:-2;
   return <g transform={`translate(${x},${y+bob})`}>
-    <ellipse cx={38} cy={118} rx={20} ry={4} fill="rgba(0,0,0,0.11)"/>
-    <g transform={`rotate(${tilt},38,62)`}>
-      <g transform={`translate(0,${lU})`}>
-        <path d="M26 90 Q30 88 34 90 L34 110 Q30 115 26 110Z" fill="#166534"/>
-        <ellipse cx={29} cy={113} rx={9} ry={4} fill="#1e1b2e"/>
+    {/* 그림자 */}
+    <ellipse cx={38} cy={120} rx={step<2?20:16} ry={4} fill="rgba(0,0,0,0.16)"/>
+    <g transform={`rotate(${tilt},38,65)`}>
+      {/* 왼발+신발 */}
+      <g transform={`translate(${lFwd},${lU})`}>
+        <path d="M24 88 Q30 86 36 88 L36 112 Q30 118 24 112Z" fill="#166534"/>
+        <path d="M24 88 Q27 86 30 88 L30 112 Q27 117 24 112Z" fill="#15803d" opacity={0.5}/>
+        <path d="M20 112 Q30 116 38 112 L38 117 Q30 121 20 117Z" fill="#1e1b2e"/>
+        <path d="M21 112 Q30 115 37 112 L37 114 Q30 116 21 114Z" fill="#2d2a45"/>
       </g>
-      <g transform={`translate(0,${rU})`}>
-        <path d="M40 90 Q44 88 48 90 L48 110 Q44 115 40 110Z" fill="#166534"/>
-        <ellipse cx={45} cy={113} rx={9} ry={4} fill="#1e1b2e"/>
+      {/* 오른발+신발 */}
+      <g transform={`translate(${rFwd},${rU})`}>
+        <path d="M38 88 Q44 86 50 88 L50 112 Q44 118 38 112Z" fill="#166534"/>
+        <path d="M44 88 Q47 86 50 88 L50 112 Q47 117 44 112Z" fill="#15803d" opacity={0.5}/>
+        <path d="M34 112 Q44 116 52 112 L52 117 Q44 121 34 117Z" fill="#1e1b2e"/>
+        <path d="M35 112 Q44 115 51 112 L51 114 Q44 116 35 114Z" fill="#2d2a45"/>
       </g>
+      {/* 원피스 몸통 - 입체감 */}
       <defs>
-        <linearGradient id="tokBG" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#15803d"/><stop offset="40%" stopColor="#22c55e"/><stop offset="100%" stopColor="#14532d"/>
+        <linearGradient id="tokDress" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#16a34a"/>
+          <stop offset="40%" stopColor="#22c55e"/>
+          <stop offset="100%" stopColor="#14532d"/>
+        </linearGradient>
+        <linearGradient id="tokSkirt" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#15803d"/>
+          <stop offset="100%" stopColor="#14532d"/>
         </linearGradient>
       </defs>
-      <path d="M20 50 C20 42 38 42 56 42 C56 42 55 55 55 75 C55 90 38 92 21 90 C21 90 20 78 20 50Z" fill="url(#tokBG)"/>
-      <path d="M28 42 Q38 46 48 42 Q44 50 38 52 Q32 50 28 42Z" fill="white" opacity={0.85}/>
-      <path d="M53 48 C56 52 55 78 52 88 C55 78 55 52 53 48Z" fill="rgba(0,0,0,0.09)"/>
-      <g transform={`rotate(${lA},21,53)`}>
-        <path d="M9 50 C9 47 21 47 21 50 L21 74 C21 78 9 78 9 74Z" fill="#22c55e"/>
-        <ellipse cx={15} cy={78} rx={7.5} ry={6.5} fill="#fcd5a0"/>
-        <path d="M11 80 Q15 83 19 80" stroke="#d4a060" strokeWidth={1} fill="none"/>
+      {/* 스커트 퍼짐 */}
+      <path d="M14 72 C12 78 14 94 20 96 C26 98 50 98 56 96 C62 94 64 78 62 72 C56 78 20 78 14 72Z" fill="url(#tokSkirt)"/>
+      <path d="M14 72 C20 76 56 76 62 72 C56 74 20 74 14 72Z" fill="white" opacity={0.12}/>
+      {/* 몸통 */}
+      <path d="M20 48 C18 42 38 40 58 42 C60 48 59 74 58 78 C50 80 26 80 18 78 C17 74 18 48 20 48Z" fill="url(#tokDress)"/>
+      {/* 칼라(흰 collar) */}
+      <path d="M28 42 Q38 46 48 42 Q44 50 38 52 Q32 50 28 42Z" fill="white" opacity={0.88}/>
+      {/* 리본 */}
+      <ellipse cx={38} cy={48} rx={6} ry={3} fill="#ec4899" opacity={0.85}/>
+      <circle cx={38} cy={48} r={2} fill="#db2777"/>
+      <path d="M32 48 L35 45 L38 48 L35 51Z" fill="#ec4899"/>
+      <path d="M44 48 L41 45 L38 48 L41 51Z" fill="#ec4899"/>
+      {/* 측면 음영 */}
+      <path d="M56 44 C61 50 60 76 57 80 C60 76 60 50 56 44Z" fill="rgba(0,0,0,0.14)"/>
+      {/* 주름 장식 */}
+      <path d="M22 66 Q38 63 54 66" stroke="rgba(255,255,255,0.2)" strokeWidth={1.5} fill="none"/>
+      {/* 왼팔 */}
+      <g transform={`rotate(${lA},19,52)`}>
+        <path d="M8 48 C8 45 21 45 21 48 L21 73 C21 77 8 77 8 73Z" fill="#22c55e"/>
+        <path d="M8 48 C8 45 13 45 13 48 L13 73 C10 76 8 76 8 73Z" fill="#16a34a" opacity={0.6}/>
+        <path d="M6 71 Q14 75 23 71 L23 75 Q14 79 6 75Z" fill="#15803d"/>
+        <ellipse cx={14} cy={80} rx={8} ry={7} fill="#fcd5a0"/>
+        <ellipse cx={13} cy={79} rx={5} ry={5} fill="#f5c080"/>
+        <path d="M10 82 Q14 86 18 82" stroke="#d4a060" strokeWidth={1.2} fill="none" strokeLinecap="round"/>
+        <circle cx={11} cy={81} r={1.2} fill="#f5c080" opacity={0.7}/>
+        <circle cx={17} cy={81} r={1.2} fill="#f5c080" opacity={0.7}/>
       </g>
-      <g transform={`rotate(${rA},55,53)`}>
-        <path d="M55 50 C55 47 67 47 67 50 L67 74 C67 78 55 78 55 74Z" fill="#22c55e"/>
-        <ellipse cx={61} cy={78} rx={7.5} ry={6.5} fill="#fcd5a0"/>
-        <path d="M57 80 Q61 83 65 80" stroke="#d4a060" strokeWidth={1} fill="none"/>
+      {/* 오른팔 */}
+      <g transform={`rotate(${rA},57,52)`}>
+        <path d="M55 48 C55 45 68 45 68 48 L68 73 C68 77 55 77 55 73Z" fill="#22c55e"/>
+        <path d="M63 48 C66 45 68 45 68 48 L68 73 C65 76 63 76 63 73Z" fill="#16a34a" opacity={0.6}/>
+        <path d="M53 71 Q61 75 70 71 L70 75 Q61 79 53 75Z" fill="#15803d"/>
+        <ellipse cx={62} cy={80} rx={8} ry={7} fill="#fcd5a0"/>
+        <ellipse cx={63} cy={79} rx={5} ry={5} fill="#f5c080"/>
+        <path d="M59 82 Q63 86 67 82" stroke="#d4a060" strokeWidth={1.2} fill="none" strokeLinecap="round"/>
       </g>
-      <path d="M30 40 C30 37 46 37 46 40 L46 47 C46 45 30 45 30 47Z" fill="#fcd5a0"/>
+      <path d="M30 40 C30 36 46 36 46 40 L46 48 C46 46 30 46 30 48Z" fill="#fcd5a0"/>
     </g>
-    <g transform={`rotate(${tilt*0.4},38,20)`}>
-      <path d="M31 35 C31 31 45 31 45 35 L45 42 C45 40 31 40 31 42Z" fill="#fcd5a0"/>
-      <ellipse cx={38} cy={20} rx={23} ry={21} fill="#fcd5a0"/>
-      <ellipse cx={17} cy={27} rx={7} ry={5.5} fill="#f9a8a8" opacity={0.5}/>
-      <ellipse cx={59} cy={27} rx={7} ry={5.5} fill="#f9a8a8" opacity={0.5}/>
-      <path d="M15 18 C12 8 15 0 38 0 C61 0 64 8 61 18 C58 10 52 5 38 5 C24 5 18 10 15 18Z" fill="#1a1a2e"/>
-      <path d="M15 22 C11 12 13 2 38 1 C14 4 12 14 15 22Z" fill="#1a1a2e"/>
-      <path d="M61 22 C65 12 63 2 38 1 C62 4 64 14 61 22Z" fill="#1a1a2e"/>
-      <path d="M15 18 C12 30 10 55 12 75 C14 55 13 30 15 18Z" fill="#1a1a2e"/>
-      <path d="M61 18 C64 30 66 55 64 75 C62 55 63 30 61 18Z" fill="#1a1a2e"/>
-      <path d="M50 4 C54 1 60 3 58 7 C56 5 52 5 50 4Z" fill="#22c55e"/>
-      <path d="M58 4 C62 1 66 3 64 7 C62 5 60 5 58 4Z" fill="#22c55e"/>
-      <circle cx={58} cy={5} r={3} fill="#16a34a"/>
+    {/* 머리 */}
+    <g transform={`rotate(${tilt*0.38},38,20) translate(0,${bob*0.12})`}>
+      <path d="M31 36 C31 31 45 31 45 36 L45 43 C45 41 31 41 31 43Z" fill="#fcd5a0"/>
+      {/* 긴 흑발 - 좌우 */}
+      <path d="M15 18 C12 30 10 58 12 78 C14 58 13 30 15 18Z" fill="#1a1a2e"/>
+      <path d="M61 18 C64 30 66 58 64 78 C62 58 63 30 61 18Z" fill="#1a1a2e"/>
+      {/* 얼굴 */}
+      <ellipse cx={38} cy={20} rx={24} ry={22} fill="#fcd5a0"/>
+      {/* 얼굴 입체감 */}
+      <ellipse cx={34} cy={15} rx={14} ry={12} fill="white" opacity={0.14}/>
+      {/* 볼터치 */}
+      <ellipse cx={17} cy={28} rx={8} ry={5.5} fill="#f9a8a8" opacity={m==="happy"?0.65:0.45}/>
+      <ellipse cx={59} cy={28} rx={8} ry={5.5} fill="#f9a8a8" opacity={m==="happy"?0.65:0.45}/>
+      {/* 흑발 위쪽 */}
+      <path d="M15 18 C12 8 15 0 38 0 C61 0 64 8 61 18 C58 8 52 3 38 3 C24 3 18 8 15 18Z" fill="#1a1a2e"/>
+      <path d="M15 20 C11 10 13 1 38 0 C14 3 12 12 15 20Z" fill="#1a1a2e"/>
+      <path d="M61 20 C65 10 63 1 38 0 C62 3 64 12 61 20Z" fill="#1a1a2e"/>
+      {/* 머리카락 하이라이트 */}
+      <path d="M22 2 C30 0 46 0 54 2 C42 0 30 0 22 2Z" fill="#374151" opacity={0.7}/>
+      {/* 머리핀/꽃장식 */}
+      <circle cx={56} cy={5} r={4} fill="#ec4899"/>
+      <circle cx={56} cy={5} r={2.5} fill="#f9a8a8"/>
+      <circle cx={56} cy={5} r={1.2} fill="#db2777"/>
+      <path d="M52 3 C54 1 56 3 54 5 C52 3 52 3 52 3Z" fill="#ec4899"/>
+      <path d="M60 3 C58 1 56 3 58 5 C60 3 60 3 60 3Z" fill="#ec4899"/>
+      {/* 표정 */}
       {m==="normal"&&<>
-        <circle cx={26} cy={20} r={4.2} fill="#1a1a2e"/>
-        <circle cx={43} cy={20} r={4.2} fill="#1a1a2e"/>
-        <circle cx={27} cy={19} r={1.7} fill="white"/>
-        <circle cx={44} cy={19} r={1.7} fill="white"/>
+        <circle cx={27} cy={21} r={4.2} fill="#1a1a2e"/>
+        <circle cx={44} cy={21} r={4.2} fill="#1a1a2e"/>
+        <circle cx={28} cy={19.5} r={1.8} fill="white"/>
+        <circle cx={45} cy={19.5} r={1.8} fill="white"/>
+        <circle cx={28.8} cy={20.2} r={0.7} fill="white" opacity={0.55}/>
+        {/* 속눈썹 */}
         <path d="M22 16 Q26 13 30 16" stroke="#1a1a2e" strokeWidth={1.5} fill="none"/>
         <path d="M39 16 Q43 13 47 16" stroke="#1a1a2e" strokeWidth={1.5} fill="none"/>
         <path d="M28 31 Q38 36 48 31" stroke="#c07858" strokeWidth={1.8} fill="none" strokeLinecap="round"/>
+        <ellipse cx={38} cy={27} rx={2.8} ry={1.8} fill="#d4a060" opacity={0.5}/>
       </>}
       {m==="happy"&&<>
-        <path d="M21 21 Q26 15 31 21" stroke="#1a1a2e" strokeWidth={2.4} fill="none" strokeLinecap="round"/>
-        <path d="M39 21 Q44 15 49 21" stroke="#1a1a2e" strokeWidth={2.4} fill="none" strokeLinecap="round"/>
-        <path d="M25 30 Q38 39 51 30" stroke="#c07858" strokeWidth={2.1} fill="none" strokeLinecap="round"/>
+        <path d="M22 22 Q27 16 32 22" stroke="#1a1a2e" strokeWidth={2.3} fill="none" strokeLinecap="round"/>
+        <path d="M40 22 Q45 16 50 22" stroke="#1a1a2e" strokeWidth={2.3} fill="none" strokeLinecap="round"/>
+        <ellipse cx={26} cy={19} rx={5} ry={4.5} fill="#1a1a2e" opacity={0.8}/>
+        <ellipse cx={44} cy={19} rx={5} ry={4.5} fill="#1a1a2e" opacity={0.8}/>
+        <path d="M23 31 Q38 42 53 31" stroke="#c07858" strokeWidth={2.2} fill="none" strokeLinecap="round"/>
+        <ellipse cx={15} cy={28} rx={5} ry={3.5} fill="#f9a8a8" opacity={0.7}/>
+        <ellipse cx={61} cy={28} rx={5} ry={3.5} fill="#f9a8a8" opacity={0.7}/>
+        <text x={52} y={8} fontSize={10}>✨</text>
+      </>}
+      {m==="sad"&&<>
+        <path d="M22 19 Q27 24 32 19" stroke="#1a1a2e" strokeWidth={2} fill="none" strokeLinecap="round"/>
+        <path d="M40 19 Q45 24 50 19" stroke="#1a1a2e" strokeWidth={2} fill="none" strokeLinecap="round"/>
+        <path d="M28 32 Q38 29 48 32" stroke="#c07858" strokeWidth={1.8} fill="none" strokeLinecap="round"/>
+        <ellipse cx={14} cy={22} rx={2} ry={3.2} fill="#93c5fd" opacity={0.8}/>
+        <ellipse cx={56} cy={22} rx={2} ry={3.2} fill="#93c5fd" opacity={0.8}/>
       </>}
     </g>
-    {divine&&<g transform="translate(16,-10)">
+    {divine&&<g transform="translate(16,-12)">
       <path d="M8 10 L8 0 L14 5 L20 0 L26 5 L32 0 L32 10Z" fill="#ff6600"/>
       <path d="M8 10 L32 10 L30 16 L10 16Z" fill="#ff8800"/>
+      <circle cx={14} cy={3} r={2.5} fill="#ffdd00"/>
+      <circle cx={20} cy={1} r={2.5} fill="#ff4400"/>
+      <circle cx={26} cy={3} r={2.5} fill="#ffdd00"/>
     </g>}
   </g>;
 }
@@ -2144,21 +2285,32 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
   const [blog,setBlog]=useState([]);
   const [fa,setFa]=useState(null);
   const [fb,setFb]=useState(null);
-  const [fusAnim,setFusAnim]=useState(null); // "great"|"success"|"fail"|"bust"
+  const [fusAnim,setFusAnim]=useState(null);
   const [fusRes,setFusRes]=useState(null);
   const [dexF,setDexF]=useState("all");
   const [dgRes,setDgRes]=useState(null);
-  const [dgExploring,setDgExploring]=useState(null); // 탐험 중 애니
+  const [dgExploring,setDgExploring]=useState(null);
   const [releaseIdx,setReleaseIdx]=useState(null);
   const [bossFight,setBossFight]=useState(null);
   const [bossLog,setBossLog]=useState([]);
   const [bossPick,setBossPick]=useState(null);
-  const [huntCount,setHuntCount]=useState(0); // 사냥 횟수 (보스 출현 카운터)
-  const [youngsooEncounter,setYoungsooEncounter]=useState(false); // 영수 조우 애니 중
-  const [youngsooPhase,setYoungsooPhase]=useState(0); // 0=없음 1=등장 2=메인 3=퇴장
-  const [equippedItems,setEquippedItems]=useState({}); // {slot: itemId}
+  const [huntCount,setHuntCount]=useState(0);
+  const [youngsooEncounter,setYoungsooEncounter]=useState(false);
+  const [youngsooPhase,setYoungsooPhase]=useState(0);
+  const [equippedItems,setEquippedItems]=useState({});
   const [enhancePick,setEnhancePick]=useState(null);
   const [achTab,setAchTab]=useState("list");
+  // 일괄 방생
+  const [bulkReleaseMode,setBulkReleaseMode]=useState(false);
+  const [bulkSelected,setBulkSelected]=useState(new Set());
+  const [bulkGradeFilter,setBulkGradeFilter]=useState("all");
+  // 모바일 슬라이드 패널
+  const [mobilePanelOpen,setMobilePanelOpen]=useState(false);
+  const [mobilePanelTab,setMobilePanelTab]=useState("tamer");
+  // 실시간 대전 - 배틀룸
+  const [battleRoom,setBattleRoom]=useState(null); // Firebase 실시간 배틀룸
+  const [battleRoomId,setBattleRoomId]=useState(null);
+  const [onlineUsers,setOnlineUsers]=useState({}); // 접속 중인 유저 목록
   const lr=useRef(null);
   const blr=useRef(null);
   const fieldRef=useRef(null);
@@ -2189,7 +2341,17 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
   useEffect(()=>{
     const ref=db.ref(`players/${player}/online`);
     ref.set(true);ref.onDisconnect().set(false);
-    return()=>ref.set(false);
+    // 전체 온라인 유저 목록 구독
+    const usersRef=db.ref('players');
+    usersRef.on('value',snap=>{
+      const data=snap.val()||{};
+      const online={};
+      Object.entries(data).forEach(([code,d])=>{
+        if(d.online&&code!==player)online[code]={nickname:d.nickname||code,tamerLv:d.tamerLv||1};
+      });
+      setOnlineUsers(online);
+    });
+    return()=>{ref.set(false);usersRef.off();};
   },[player]);
   useEffect(()=>{const id=setInterval(()=>setFrame(f=>f+1),300);return()=>clearInterval(id);},[]);
   useEffect(()=>{
@@ -2287,6 +2449,7 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
             alive:true,enhance:0,
             monType:baseType,
             atkBonus:tBonus.atk||0,spdBonus:tBonus.spd||0,
+            gender:Math.random()<0.5?"♂":"♀",
           };
           const nc=[...(s.collection||[]),newMon];
           let ns={...s,collection:nc,totalCaught:(s.totalCaught||0)+1,balls:{...s.balls,ball1:(s.balls.ball1||0)+ballReward}};
@@ -2407,7 +2570,6 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
     const c=(myS.collection||[])[idx];
     const bm=MONS.find(m=>m.id===(c.baseId||c.id))||MONS.find(m=>m.id===c.id)||{rarity:"COMMON"};
     const rwdList=RELEASE_REWARD[bm.rarity]||[{id:"food1",amt:1}];
-    // 소환수 Lv 보너스: Lv마다 10%씩 추가 (최대 2배)
     const lvBonus=Math.min(2.0, 1.0 + (c.lv||1)*0.05);
     setMy(s=>{
       let ns={...s,collection:(s.collection||[]).filter((_,i)=>i!==idx),totalReleases:(s.totalReleases||0)+1};
@@ -2420,6 +2582,55 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
     }).join(" ");
     toast(`🕊️ ${bm.name} 방생! ${desc}`,"var(--gold)");
     setReleaseIdx(null);
+  };
+
+  // ── 일괄 방생 ──
+  const bulkRelease=()=>{
+    if(bulkSelected.size===0){toast("방생할 소환수를 선택하세요!","var(--red)");return;}
+    const indices=[...bulkSelected].sort((a,b)=>b-a); // 역순으로 제거
+    let totalDesc={};
+    setMy(s=>{
+      let ns={...s,totalReleases:(s.totalReleases||0)+indices.length};
+      // 역순으로 제거
+      let col=[...ns.collection];
+      indices.forEach(idx=>{
+        const c=col[idx];if(!c)return;
+        const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{rarity:"COMMON"};
+        const rwdList=RELEASE_REWARD[bm.rarity]||[{id:"food1",amt:1}];
+        const lvBonus=Math.min(2.0,1.0+(c.lv||1)*0.05);
+        rwdList.forEach(({id,amt})=>{
+          const finalAmt=Math.max(1,Math.round(amt*lvBonus));
+          totalDesc[id]=(totalDesc[id]||0)+finalAmt;
+          ns=addItem(ns,id,finalAmt);
+        });
+      });
+      ns={...ns,collection:col.filter((_,i)=>!indices.includes(i))};
+      return addTamerExp(ns,5*indices.length);
+    });
+    const descStr=Object.entries(totalDesc).map(([id,amt])=>{
+      const it=[...BALLS,...FOODS,...EVO_STONES,...CONSUMABLES].find(x=>x.id===id)||{emoji:"📦"};
+      return `${it.emoji}×${amt}`;
+    }).join(" ");
+    toast(`🕊️ ${indices.length}마리 방생! ${descStr}`,"var(--gold)");
+    setBulkSelected(new Set());
+    setBulkReleaseMode(false);
+  };
+
+  const toggleBulkSelect=(idx)=>{
+    setBulkSelected(prev=>{
+      const next=new Set(prev);
+      if(next.has(idx))next.delete(idx);else next.add(idx);
+      return next;
+    });
+  };
+
+  const bulkSelectByGrade=(grade)=>{
+    const indices=col.map((_,i)=>i).filter(i=>{
+      const c=col[i];
+      const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{rarity:"COMMON"};
+      return grade==="all"||bm.rarity===grade;
+    });
+    setBulkSelected(new Set(indices));
   };
 
   const gm=(col,idx)=>{
@@ -2484,6 +2695,91 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
     });
     setBs({m1,m2,m1idx:myPick,m2idx:oppPick,turn:"m1",over:false,winner:null,mode:"pvp"});
     setBlog([`⚔ ${m1.emoji}${m1.name} Lv.${m1.lv} VS ${m2.emoji}${m2.name} Lv.${m2.lv}`]);
+  };
+
+  // ── 실시간 배틀 요청 ──
+  const sendBattleRequest=(oppCode)=>{
+    if(myPick===null){toast("먼저 소환수를 선택하세요!","var(--red)");return;}
+    const roomId=`battle_${Date.now()}`;
+    const m1=gm(myS.collection,myPick);
+    if(!m1)return;
+    // Firebase에 배틀룸 생성
+    db.ref(`battleRooms/${roomId}`).set({
+      host:player,hostMon:{...m1,collection:undefined},
+      guest:null,guestMon:null,
+      status:"waiting",
+      turn:"host",hostHp:m1.maxHp,guestHp:0,
+      log:[`⚔️ ${myNickname||player}의 배틀 요청!`],
+      createdAt:Date.now(),
+    });
+    // 상대에게 배틀 요청 알림
+    db.ref(`players/${oppCode}/battleRequest`).set({roomId,from:player,nickname:myNickname||player,monName:m1.name,monEmoji:m1.emoji});
+    setBattleRoomId(roomId);
+    // 룸 구독
+    db.ref(`battleRooms/${roomId}`).on('value',snap=>{
+      const room=snap.val();
+      if(room)setBattleRoom(room);
+    });
+    toast(`⚔️ ${oppCode}에게 배틀 요청!`,"var(--purple)");
+  };
+
+  const acceptBattleRequest=(roomId,oppCode)=>{
+    if(myPick===null){toast("먼저 소환수를 선택하세요!","var(--red)");return;}
+    const m2=gm(myS.collection,myPick);
+    if(!m2)return;
+    db.ref(`battleRooms/${roomId}`).update({
+      guest:player,guestMon:{...m2},guestHp:m2.maxHp,status:"ongoing",
+    });
+    setBattleRoomId(roomId);
+    db.ref(`battleRooms/${roomId}`).on('value',snap=>{
+      const room=snap.val();
+      if(room)setBattleRoom(room);
+    });
+    // 요청 알림 제거
+    db.ref(`players/${player}/battleRequest`).remove();
+    toast("⚔️ 배틀 수락!","var(--green)");
+  };
+
+  const attackRealtime=()=>{
+    if(!battleRoom||battleRoom.status!=="ongoing"||!battleRoomId)return;
+    const isHost=battleRoom.host===player;
+    const myTurn=(battleRoom.turn==="host"&&isHost)||(battleRoom.turn==="guest"&&!isHost);
+    if(!myTurn){toast("상대방 차례입니다!","var(--orange)");return;}
+    const atk=isHost?battleRoom.hostMon:battleRoom.guestMon;
+    const defHp=isHost?battleRoom.guestHp:battleRoom.hostHp;
+    const atkMult=getTypeMult(atk.monType,isHost?battleRoom.guestMon?.monType:battleRoom.hostMon?.monType);
+    const dmg=Math.max(1,Math.round((atk.atk+(atk.lv-1)*2)*(0.85+Math.random()*0.3)*atkMult));
+    const newDefHp=Math.max(0,defHp-dmg);
+    const logMsg=`${atk.emoji}→ ${dmg}dmg${atkMult>1?" ⚡효과적!":atkMult<1?" 💤비효과...":""}`;
+    const updates={
+      turn:isHost?"guest":"host",
+      log:[...(battleRoom.log||[]).slice(-8),logMsg],
+    };
+    if(isHost)updates.guestHp=newDefHp;
+    else updates.hostHp=newDefHp;
+    if(newDefHp<=0){
+      updates.status="over";
+      updates.winner=isHost?"host":"guest";
+      updates.log=[...(battleRoom.log||[]).slice(-8),logMsg,`🏆 ${myNickname||player} 승리!`];
+      // 승리 처리
+      const esAmt=3+Math.floor(Math.random()*4);
+      const tokenAmt=2+Math.floor(Math.random()*4);
+      setMy(s=>{let ns={...s,pvpWins:(s.pvpWins||0)+1};
+        ns=addItem(ns,"enhance_stone",esAmt);
+        ns=addItem(ns,"battle_token",tokenAmt);
+        return addTamerExp(ns,50);});
+      toast(`🏆 실시간 배틀 승리! 🔩×${esAmt} 🪙×${tokenAmt}`,"var(--gold)");
+    }
+    db.ref(`battleRooms/${battleRoomId}`).update(updates);
+  };
+
+  const leaveRealtime=()=>{
+    if(battleRoomId){
+      db.ref(`battleRooms/${battleRoomId}`).off();
+      db.ref(`battleRooms/${battleRoomId}`).remove();
+    }
+    setBattleRoom(null);setBattleRoomId(null);
+    db.ref(`players/${player}/battleRequest`).remove();
   };
 
   const attack=()=>{
@@ -3039,14 +3335,63 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
 
     {/* ── 소환수 ── */}
     {tab==="collection"&&<div style={{padding:12}}>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-        <div style={{padding:"4px 10px",borderRadius:20,background:"var(--purple)18",border:"1.5px solid var(--purple)25"}}>
-          <span style={{fontSize:17,fontWeight:700,color:"var(--purple)"}}>📦 {col.length}/{maxStorage}마리</span>
+      {/* 헤더 - 일괄 방생 모드 토글 */}
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+        <div style={{display:"flex",alignItems:"center",gap:8}}>
+          <div style={{padding:"4px 10px",borderRadius:20,background:"var(--purple)18",border:"1.5px solid var(--purple)25"}}>
+            <span style={{fontSize:14,fontWeight:700,color:"var(--purple)"}}>📦 {col.length}/{maxStorage}</span>
+          </div>
+          {col.filter(c=>c.alive===false).length>0&&<div style={{padding:"4px 8px",borderRadius:20,background:"#ef444415",border:"1.5px solid #ef444425"}}>
+            <span style={{fontSize:13,fontWeight:700,color:"var(--red)"}}>💀 {col.filter(c=>c.alive===false).length}전사</span>
+          </div>}
         </div>
-        {col.filter(c=>c.alive===false).length>0&&<div style={{padding:"4px 10px",borderRadius:20,background:"#ef444415",border:"1.5px solid #ef444425"}}>
-          <span style={{fontSize:17,fontWeight:700,color:"var(--red)"}}>💀 {col.filter(c=>c.alive===false).length}전사</span>
-        </div>}
+        <button onClick={()=>{setBulkReleaseMode(b=>!b);setBulkSelected(new Set());setBulkGradeFilter("all");}}
+          style={{padding:"5px 12px",borderRadius:10,border:`1.5px solid ${bulkReleaseMode?"var(--red)":"rgba(245,158,11,0.4)"}`,
+            background:bulkReleaseMode?"rgba(239,68,68,0.08)":"rgba(245,158,11,0.06)",
+            color:bulkReleaseMode?"var(--red)":"var(--gold)",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>
+          {bulkReleaseMode?"✕ 취소":"🗑️ 일괄방생"}
+        </button>
       </div>
+
+      {/* 일괄 방생 모드 컨트롤 */}
+      {bulkReleaseMode&&<div style={{marginBottom:10,padding:"10px 12px",borderRadius:12,
+        background:"rgba(245,158,11,0.06)",border:"1.5px solid rgba(245,158,11,0.25)"}}>
+        <div style={{fontSize:12,fontWeight:700,color:"var(--gold)",marginBottom:7}}>
+          🗑️ 일괄 방생 모드 — {bulkSelected.size}마리 선택됨
+        </div>
+        {/* 등급 필터 버튼 */}
+        <div style={{display:"flex",gap:4,flexWrap:"wrap",marginBottom:8}}>
+          {["all","COMMON","UNCOMMON","RARE","UNIQUE","SUPER","EPIC","LEGEND","MUTANT","HYBRID"].map(g=>(
+            <button key={g} onClick={()=>{setBulkGradeFilter(g);bulkSelectByGrade(g);}}
+              style={{padding:"3px 8px",borderRadius:8,border:`1px solid ${bulkGradeFilter===g?(RCOL[g]||"var(--purple)")+"80":"rgba(0,0,0,0.1)"}`,
+                background:bulkGradeFilter===g?`${RCOL[g]||"#8b5cf6"}15`:"white",
+                color:bulkGradeFilter===g?(RCOL[g]||"var(--purple)"):"var(--tx3)",
+                fontSize:10,fontWeight:bulkGradeFilter===g?800:500,cursor:"pointer",fontFamily:"inherit"}}>
+              {g==="all"?"전체":g}
+            </button>
+          ))}
+        </div>
+        <div style={{display:"flex",gap:6}}>
+          <button onClick={()=>setBulkSelected(new Set(col.map((_,i)=>i)))}
+            style={{flex:1,padding:"6px 0",borderRadius:8,border:"1px solid rgba(0,0,0,0.1)",
+              background:"rgba(0,0,0,0.03)",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"inherit",color:"var(--tx2)"}}>
+            전체 선택
+          </button>
+          <button onClick={()=>setBulkSelected(new Set())}
+            style={{flex:1,padding:"6px 0",borderRadius:8,border:"1px solid rgba(0,0,0,0.1)",
+              background:"rgba(0,0,0,0.03)",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"inherit",color:"var(--tx2)"}}>
+            전체 해제
+          </button>
+          <button onClick={bulkRelease} disabled={bulkSelected.size===0}
+            style={{flex:2,padding:"6px 0",borderRadius:8,border:"none",
+              background:bulkSelected.size>0?"linear-gradient(135deg,var(--gold),#cc8800)":"rgba(0,0,0,0.06)",
+              color:bulkSelected.size>0?"#000":"rgba(0,0,0,0.2)",
+              fontSize:11,fontWeight:800,cursor:bulkSelected.size>0?"pointer":"default",fontFamily:"inherit"}}>
+            🕊️ {bulkSelected.size}마리 방생!
+          </button>
+        </div>
+      </div>}
+
       {col.length===0&&<div style={{textAlign:"center",padding:"50px 0",color:"var(--tx3)"}}>
         <div style={{fontSize:40,marginBottom:8}}>🐾</div>
         <div style={{fontSize:17,fontWeight:600}}>소환수가 없어요!</div>
@@ -3054,7 +3399,6 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
       <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:10}}>
         {col.map((c,i)=>{
           const bm=MONS.find(m=>m.id===(c.baseId||c.id))||MONS.find(m=>m.id===c.id)||{name:c.id,emoji:"❓",color:"#888",desc:"",rarity:"COMMON",atk:10,spd:10,hp:30};
-          // ★ 버그수정: baseId 우선으로 체인 탐색
           const lookupId=c.baseId||c.id;
           const chain=EVO_CHAIN[lookupId];
           const condOk=chain?checkEvoConds(chain,c,myS):false;
@@ -3063,16 +3407,30 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
           const stUnlocked=chain?unlocks.stones.includes(chain.stone):false;
           const isDead=c.alive===false;
           const tInfo=c.monType?TYPES[c.monType]:null;
-          // 진화 확률 표시
           const evoRates=chain?EVO_RATES[bm.rarity]||EVO_RATES["COMMON"]:null;
-          return <div key={i} style={{border:`1.5px solid ${isDead?"#ef4444":bm.color}28`,
-            borderRadius:14,padding:"11px 11px",background:"white",
-            boxShadow:`0 2px 10px ${isDead?"#ef444418":bm.color+"12"}`,
-            opacity:isDead?0.65:1,borderLeftColor:isDead?"#ef4444":bm.color,borderLeftWidth:3}}>
+          const isSelected=bulkSelected.has(i);
+          return <div key={i}
+            onClick={bulkReleaseMode?()=>toggleBulkSelect(i):undefined}
+            style={{border:`1.5px solid ${isSelected?"var(--gold)":isDead?"#ef4444":bm.color}28`,
+              borderRadius:14,padding:"11px 11px",background:isSelected?"rgba(245,158,11,0.06)":"white",
+              boxShadow:`0 2px 10px ${isDead?"#ef444418":bm.color+"12"}`,
+              opacity:isDead?0.65:1,
+              borderLeftColor:isSelected?"var(--gold)":isDead?"#ef4444":bm.color,borderLeftWidth:3,
+              cursor:bulkReleaseMode?"pointer":"default",
+              position:"relative",transition:"all 0.15s"}}>
             <div style={{display:"flex",alignItems:"flex-start",gap:8,marginBottom:6}}>
+              {/* 일괄방생 모드: 체크박스 */}
+              {bulkReleaseMode&&<div style={{width:20,height:20,borderRadius:5,border:`2px solid ${isSelected?"var(--gold)":"rgba(0,0,0,0.2)"}`,
+                background:isSelected?"var(--gold)":"white",flexShrink:0,marginTop:4,
+                display:"flex",alignItems:"center",justifyContent:"center"}}>
+                {isSelected&&<span style={{fontSize:12,color:"white",fontWeight:900}}>✓</span>}
+              </div>}
               <div style={{position:"relative",flexShrink:0}}>
                 <span className={!isDead?"mon-idle":""} style={{fontSize:28,display:"inline-block"}}>{bm.emoji}</span>
                 {isDead&&<span style={{position:"absolute",top:-4,right:-6,fontSize:17}}>💀</span>}
+                {/* 성별 표시 */}
+                {c.gender&&<span style={{position:"absolute",bottom:-2,right:-6,fontSize:10,fontWeight:800,
+                  color:c.gender==="♂"?"#3b82f6":"#ec4899"}}>{c.gender}</span>}
               </div>
               <div style={{flex:1,minWidth:0}}>
                 <div style={{display:"flex",alignItems:"center",gap:4,flexWrap:"wrap",marginBottom:2}}>
@@ -3564,77 +3922,191 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
       </div>
     </div>}
 
-    {/* ── 멀티대전 ── */}
+    {/* ── 멀티대전 (실시간) ── */}
     {tab==="pvp"&&<div>
       <div style={{position:"relative",overflow:"hidden"}}>
-        <svg width="100%" height={100} viewBox="0 0 600 100" style={{display:"block",width:"100%"}}>
+        <svg width="100%" height={90} viewBox="0 0 600 90" style={{display:"block",width:"100%"}}>
           <defs><linearGradient id="pvpsky" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor="#1e1b4b"/><stop offset="100%" stopColor="#4c1d95"/>
           </linearGradient></defs>
-          <rect width={600} height={100} fill="url(#pvpsky)"/>
+          <rect width={600} height={90} fill="url(#pvpsky)"/>
           {[[40,12],[140,20],[300,8],[460,18],[550,12]].map(([sx,sy],i)=>(
             <circle key={i} cx={sx} cy={sy} r={i%2===0?2:1.2} fill="white" opacity={0.5}/>
           ))}
-          <rect x={0} y={70} width={600} height={30} fill="#2e1065"/>
-          <rect x={0} y={70} width={600} height={4} fill="#a855f7"/>
-          <text x={300} y={48} textAnchor="middle" fontSize={22} fontWeight="900" fill="white" opacity={0.95}>👥 멀티대전</text>
-          <text x={300} y={66} textAnchor="middle" fontSize={10} fill="rgba(255,255,255,0.6)">하루 15회 · 패배 시 전사</text>
+          <rect x={0} y={64} width={600} height={26} fill="#2e1065"/>
+          <rect x={0} y={64} width={600} height={3} fill="#a855f7"/>
+          <text x={300} y={42} textAnchor="middle" fontSize={20} fontWeight="900" fill="white">⚔️ 실시간 멀티대전</text>
+          <text x={300} y={58} textAnchor="middle" fontSize={9} fill="rgba(255,255,255,0.6)">온라인 유저와 실시간 배틀 · 패배 시 소환수 전사</text>
         </svg>
       </div>
       <div style={{padding:"10px 12px"}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-          <span style={{fontSize:17,color:oppS?.online?"var(--green)":"var(--red)",fontWeight:600}}>
-            {oppS?.online?"🟢 상대 접속중":"⚫ 상대 오프라인"}
-          </span>
-          <Badge text={`오늘 ${battleLeft}회`} color={battleLeft>0?"var(--green)":"var(--red)"}/>
-        </div>
-        {!bs&&<>
-          <div style={{fontSize:17,fontWeight:700,color:acHex,marginBottom:5}}>내 소환수</div>
+
+        {/* 배틀 요청 수신 */}
+        {myS.battleRequest&&<div style={{padding:"12px",borderRadius:14,background:"rgba(139,92,246,0.08)",
+          border:"2px solid rgba(139,92,246,0.3)",marginBottom:10,animation:"pulse 1s ease-in-out infinite"}}>
+          <div style={{fontSize:14,fontWeight:800,color:"var(--purple)",marginBottom:6}}>
+            ⚔️ {myS.battleRequest.nickname}의 배틀 요청!
+          </div>
+          <div style={{fontSize:12,color:"var(--tx2)",marginBottom:8}}>
+            {myS.battleRequest.monEmoji} {myS.battleRequest.monName} 으로 도전!
+          </div>
+          <div style={{display:"flex",gap:6}}>
+            <button onClick={()=>acceptBattleRequest(myS.battleRequest.roomId,myS.battleRequest.from)}
+              disabled={myPick===null}
+              style={{flex:2,padding:"8px 0",borderRadius:10,border:"none",
+                background:myPick!==null?"var(--purple)":"rgba(0,0,0,0.06)",
+                color:myPick!==null?"white":"rgba(0,0,0,0.2)",fontSize:13,fontWeight:800,
+                cursor:myPick!==null?"pointer":"default",fontFamily:"inherit"}}>
+              {myPick!==null?"✅ 수락":"소환수 먼저 선택!"}
+            </button>
+            <button onClick={()=>{setMy(s=>{const ns={...s};delete ns.battleRequest;return ns;});}}
+              style={{flex:1,padding:"8px 0",borderRadius:10,border:"1px solid rgba(0,0,0,0.1)",
+                background:"transparent",color:"var(--tx2)",fontSize:13,fontWeight:700,
+                cursor:"pointer",fontFamily:"inherit"}}>거절</button>
+          </div>
+        </div>}
+
+        {/* 실시간 배틀룸 진행 중 */}
+        {battleRoom&&battleRoomId&&<div>
+          {battleRoom.status==="waiting"&&<div style={{textAlign:"center",padding:"20px 0",color:"var(--tx3)"}}>
+            <div style={{fontSize:28,marginBottom:8,animation:"pulse 1s infinite"}}>⏳</div>
+            <div style={{fontSize:14,fontWeight:700}}>상대방 수락 대기 중...</div>
+            <button onClick={leaveRealtime} style={{marginTop:12,padding:"7px 20px",borderRadius:10,
+              border:"1px solid rgba(0,0,0,0.1)",background:"transparent",color:"var(--red)",
+              fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>취소</button>
+          </div>}
+          {battleRoom.status==="ongoing"&&(()=>{
+            const isHost=battleRoom.host===player;
+            const myMon=isHost?battleRoom.hostMon:battleRoom.guestMon;
+            const oppMon=isHost?battleRoom.guestMon:battleRoom.hostMon;
+            const myHp=isHost?battleRoom.hostHp:battleRoom.guestHp;
+            const oppHp2=isHost?battleRoom.guestHp:battleRoom.hostHp;
+            const isMyTurn=(battleRoom.turn==="host"&&isHost)||(battleRoom.turn==="guest"&&!isHost);
+            return <div>
+              {/* 배틀 화면 */}
+              <div style={{display:"flex",gap:8,marginBottom:8}}>
+                {[{m:myMon,hp:myHp,label:"나",c:acHex},{m:oppMon,hp:oppHp2,label:"상대",c:"var(--red)"}].map(({m,hp,label,c})=>(
+                  <div key={label} style={{flex:1,padding:"10px",borderRadius:12,background:"white",border:`1.5px solid ${c}30`,boxShadow:"var(--shadow)"}}>
+                    <div style={{fontSize:11,fontWeight:700,color:c,marginBottom:3}}>{label}</div>
+                    <div style={{fontSize:24,textAlign:"center",marginBottom:4}}>{m?.emoji||"❓"}</div>
+                    <div style={{fontSize:11,fontWeight:700,textAlign:"center",marginBottom:4}}>{m?.name}</div>
+                    <HpBar cur={hp} max={m?.maxHp||1}/>
+                    <div style={{fontSize:10,color:"var(--tx3)",textAlign:"right",marginTop:2}}>{hp}/{m?.maxHp}</div>
+                  </div>
+                ))}
+              </div>
+              {/* 배틀 로그 */}
+              <div style={{maxHeight:80,overflowY:"auto",background:"rgba(30,27,75,0.05)",borderRadius:10,
+                padding:"7px 10px",marginBottom:8,fontSize:11,color:"var(--tx2)",lineHeight:1.7}}>
+                {(battleRoom.log||[]).slice(-5).map((l,i)=>(
+                  <div key={i} style={{color:l.includes("승리")?"var(--gold)":l.includes("효과적")?"var(--green)":"var(--tx2)"}}>{l}</div>
+                ))}
+              </div>
+              {/* 공격 버튼 */}
+              {battleRoom.status==="ongoing"
+                ?<Btn onClick={attackRealtime} disabled={!isMyTurn} color={isMyTurn?acHex:"var(--tx3)"}>
+                  {isMyTurn?"⚔️ 공격!":"⏳ 상대 차례..."}
+                </Btn>
+                :<Btn onClick={leaveRealtime} color="var(--purple)" outline>← 나가기</Btn>}
+            </div>;
+          })()}
+          {battleRoom.status==="over"&&<div style={{textAlign:"center",padding:"16px 0"}}>
+            <div style={{fontSize:32,marginBottom:8}}>
+              {battleRoom.winner===(battleRoom.host===player?"host":"guest")?"🏆":"😵"}
+            </div>
+            <div style={{fontSize:18,fontWeight:800,color:battleRoom.winner===(battleRoom.host===player?"host":"guest")?"var(--gold)":"var(--red)",marginBottom:12}}>
+              {battleRoom.winner===(battleRoom.host===player?"host":"guest")?"승리!":"패배..."}
+            </div>
+            <Btn onClick={leaveRealtime} color="var(--purple)" outline>← 돌아가기</Btn>
+          </div>}
+        </div>}
+
+        {/* 일반 대전 UI (배틀룸 없을 때) */}
+        {!battleRoom&&<>
+          {/* 내 소환수 선택 */}
+          <div style={{fontSize:13,fontWeight:700,color:acHex,marginBottom:5}}>⚔️ 출전 소환수 선택</div>
           {aliveCols.length===0
-            ?<div style={{color:"var(--tx3)",fontSize:17,marginBottom:10}}>살아있는 소환수 없음</div>
-            :<div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:12}}>
-              {aliveCols.map(c=>{const ri=col.indexOf(c);const bm=MONS.find(m=>m.id===c.id)||c;
+            ?<div style={{color:"var(--tx3)",fontSize:13,marginBottom:10}}>살아있는 소환수 없음</div>
+            :<div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:12}}>
+              {aliveCols.map(c=>{
+                const ri=col.indexOf(c);
+                const bm=MONS.find(m=>m.id===(c.baseId||c.id))||c;
                 const tInfo=c.monType?TYPES[c.monType]:null;
-                return <div key={ri} onClick={()=>setMyPick(ri)} style={{
+                return <div key={ri} onClick={()=>setMyPick(ri===myPick?null:ri)} style={{
                   border:myPick===ri?`2px solid ${acHex}`:"1px solid rgba(0,0,0,0.08)",
-                  borderRadius:12,padding:"8px 10px",cursor:"pointer",textAlign:"center",
-                  minWidth:68,background:myPick===ri?`${acHex}15`:"white",boxShadow:"var(--shadow)"}}>
-                  <div style={{fontSize:22}}>{bm.emoji}</div>
-                  <div style={{fontSize:13,fontWeight:600}}>{bm.name}</div>
-                  <div style={{fontSize:11,color:"var(--tx3)"}}>Lv.{c.lv}</div>
-                  {tInfo&&<div style={{fontSize:10,color:tInfo.color,fontWeight:700}}>{tInfo.emoji}{tInfo.name}</div>}
-                  <StatBadges c={c} MONS={MONS} TYPES={TYPES} small={true}/>
+                  borderRadius:12,padding:"7px 9px",cursor:"pointer",textAlign:"center",
+                  minWidth:62,background:myPick===ri?`${acHex}15`:"white",boxShadow:"var(--shadow)"}}>
+                  <div style={{fontSize:20}}>{bm.emoji}</div>
+                  <div style={{fontSize:11,fontWeight:600}}>{bm.name}</div>
+                  <div style={{fontSize:10,color:"var(--tx3)"}}>Lv{c.lv}{c.gender&&<span style={{color:c.gender==="♂"?"#3b82f6":"#ec4899"}}> {c.gender}</span>}</div>
+                  {tInfo&&<div style={{fontSize:9,color:tInfo.color}}>{tInfo.emoji}</div>}
                 </div>;
               })}
             </div>
           }
-          <div style={{borderTop:"1px solid rgba(0,0,0,0.06)",paddingTop:10,marginBottom:10}}>
-            <div style={{fontSize:17,fontWeight:700,marginBottom:5,color:isSik?"var(--blue)":"#f97316"}}>
-              {isSik?"찡찡이":"식충이"} 소환수
+
+          {/* 온라인 유저 목록 */}
+          <div style={{borderTop:"1px solid rgba(0,0,0,0.06)",paddingTop:10}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+              <div style={{fontSize:13,fontWeight:700,color:"var(--tx2)"}}>
+                🟢 접속 중 ({Object.keys(onlineUsers).length}명)
+              </div>
+              <Badge text={`오늘 ${battleLeft}회`} color={battleLeft>0?"var(--green)":"var(--red)"}/>
             </div>
-            {!oppHas?<div style={{fontSize:17,color:"var(--tx3)"}}>상대 소환수 없음</div>
-              :<div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:8}}>
-                {(oppS?.collection||[]).filter(c=>c.alive!==false).map(c=>{
-                  const ri=(oppS?.collection||[]).indexOf(c);const bm=MONS.find(m=>m.id===c.id)||c;
-                  const tInfo=c.monType?TYPES[c.monType]:null;
-                  return <div key={ri} onClick={()=>setOppPick(ri)} style={{
-                    border:oppPick===ri?`2px solid ${isSik?"var(--blue)":"#f97316"}`:"1px solid rgba(0,0,0,0.08)",
-                    borderRadius:12,padding:"8px 10px",cursor:"pointer",textAlign:"center",
-                    minWidth:68,background:"white",boxShadow:"var(--shadow)"}}>
-                    <div style={{fontSize:22}}>{bm.emoji}</div>
-                    <div style={{fontSize:13,fontWeight:600}}>{bm.name}</div>
-                    <div style={{fontSize:11,color:"var(--tx3)"}}>Lv.{c.lv}</div>
-                    {tInfo&&<div style={{fontSize:10,color:tInfo.color,fontWeight:700}}>{tInfo.emoji}{tInfo.name}</div>}
-                    <StatBadges c={c} MONS={MONS} TYPES={TYPES} small={true}/>
-                  </div>;
-                })}
+            {Object.keys(onlineUsers).length===0
+              ?<div style={{textAlign:"center",padding:"24px 0",color:"var(--tx3)"}}>
+                <div style={{fontSize:28,marginBottom:6}}>👥</div>
+                <div style={{fontSize:13,fontWeight:600}}>접속 중인 유저가 없어요</div>
+                <div style={{fontSize:11,marginTop:3}}>상대방이 접속하면 여기에 표시됩니다</div>
+              </div>
+              :<div style={{display:"flex",flexDirection:"column",gap:6}}>
+                {Object.entries(onlineUsers).map(([code,info])=>(
+                  <div key={code} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",
+                    borderRadius:12,background:"white",border:"1px solid rgba(0,0,0,0.07)",boxShadow:"var(--shadow)"}}>
+                    <div style={{width:32,height:32,borderRadius:"50%",background:"rgba(139,92,246,0.12)",
+                      display:"flex",alignItems:"center",justifyContent:"center",fontSize:16}}>🎮</div>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:13,fontWeight:700,color:"var(--tx1)"}}>{info.nickname||code}</div>
+                      <div style={{fontSize:11,color:"var(--tx3)"}}>테이머 Lv.{info.tamerLv||1}</div>
+                    </div>
+                    <button onClick={()=>sendBattleRequest(code)}
+                      disabled={myPick===null||battleLeft<=0}
+                      style={{padding:"6px 14px",borderRadius:10,border:"none",
+                        background:myPick!==null&&battleLeft>0?"var(--purple)":"rgba(0,0,0,0.06)",
+                        color:myPick!==null&&battleLeft>0?"white":"rgba(0,0,0,0.2)",
+                        fontSize:12,fontWeight:800,cursor:myPick!==null&&battleLeft>0?"pointer":"default",
+                        fontFamily:"inherit",boxShadow:myPick!==null&&battleLeft>0?"0 3px 10px rgba(139,92,246,0.3)":"none"}}>
+                      ⚔️ 도전!
+                    </button>
+                  </div>
+                ))}
               </div>
             }
+            {battleLeft<=0&&<div style={{fontSize:12,color:"var(--red)",textAlign:"center",marginTop:6}}>배틀권⚔️으로 추가 가능!</div>}
           </div>
-          <Btn onClick={startPvp} disabled={myPick===null||oppPick===null||!oppHas||battleLeft<=0} color={acHex}>⚔ 배틀 시작!</Btn>
-          {battleLeft<=0&&<div style={{fontSize:16,color:"var(--red)",textAlign:"center",marginTop:5}}>배틀권⚔️으로 추가 가능!</div>}
+
+          {/* 기존 로컬 대전 (같은 기기) */}
+          {oppS&&<div style={{marginTop:10,padding:"10px 12px",borderRadius:12,
+            background:"rgba(59,130,246,0.05)",border:"1px solid rgba(59,130,246,0.15)"}}>
+            <div style={{fontSize:12,fontWeight:700,color:"var(--blue)",marginBottom:6}}>🔧 로컬 대전 (같은 기기)</div>
+            <div style={{display:"flex",gap:6,marginBottom:6}}>
+              {(oppS?.collection||[]).filter(c=>c.alive!==false).map(c=>{
+                const ri=(oppS?.collection||[]).indexOf(c);
+                const bm=MONS.find(m=>m.id===c.id)||c;
+                return <div key={ri} onClick={()=>setOppPick(ri)} style={{
+                  border:oppPick===ri?"2px solid var(--blue)":"1px solid rgba(0,0,0,0.08)",
+                  borderRadius:10,padding:"5px 7px",cursor:"pointer",textAlign:"center",
+                  minWidth:52,background:oppPick===ri?"rgba(59,130,246,0.1)":"white"}}>
+                  <div style={{fontSize:16}}>{bm.emoji}</div>
+                  <div style={{fontSize:10,fontWeight:600}}>{bm.name}</div>
+                  <div style={{fontSize:9,color:"var(--tx3)"}}>Lv{c.lv}</div>
+                </div>;
+              })}
+            </div>
+            <Btn onClick={startPvp} disabled={myPick===null||oppPick===null||battleLeft<=0} color="var(--blue)" sm>⚔ 로컬 배틀!</Btn>
+          </div>}
+          {bs&&<BV bs={bs} log={blog} lr={lr} ac={acHex} attack={attack} resetB={resetB}/>}
         </>}
-        {bs&&<BV bs={bs} log={blog} lr={lr} ac={acHex} attack={attack} resetB={resetB}/>}
       </div>
     </div>}
 
@@ -3786,7 +4258,45 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
       fontSize:17,color:"var(--tx3)",display:"flex",justifyContent:"space-between",
       background:"white",boxShadow:"0 -2px 8px rgba(139,92,246,0.05)"}}>
       <span>Lv.{tLv} · {col.length}/{maxStorage}마리</span>
-      <span>⚡{myS.stamina||0} · ⚔{battleLeft}회 · 보스{Object.keys(myS.bossKills||{}).length}/3</span>
+      <span style={{display:"flex",alignItems:"center",gap:8}}>
+        <span>⚡{myS.stamina||0} · ⚔{battleLeft}회</span>
+        {/* 모바일 패널 버튼 */}
+        <button className="mobile-panel-btn" onClick={()=>setMobilePanelOpen(o=>!o)}
+          style={{padding:"3px 10px",borderRadius:8,border:`1.5px solid ${mobilePanelOpen?acHex:"rgba(139,92,246,0.2)"}`,
+            background:mobilePanelOpen?`${acHex}15`:"white",color:mobilePanelOpen?acHex:"var(--purple)",
+            fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>
+          {mobilePanelOpen?"▼ 패널":"▲ 패널"}
+        </button>
+      </span>
+    </div>
+
+    {/* 모바일 슬라이드 패널 */}
+    <div className={`mobile-panel ${mobilePanelOpen?"open":"closed"}`}>
+      <div className="mobile-panel-handle" onClick={()=>setMobilePanelOpen(o=>!o)}>
+        <span style={{fontSize:10,fontWeight:700,color:"var(--purple)"}}>
+          {mobilePanelOpen?"▼ 닫기":"▲ 패널 열기"}
+        </span>
+      </div>
+      <div className="mobile-panel-tabs">
+        {[...SIDE_TABS_TOP,...SIDE_TABS_BOT].map(([k,icon,name])=>(
+          <button key={k} className={`side-tab${mobilePanelTab===k?" active":""}`}
+            onClick={()=>setMobilePanelTab(k)}>
+            {icon}<br/>{name}
+          </button>
+        ))}
+      </div>
+      <div className="mobile-panel-content">
+        {mobilePanelTab==="tamer"&&<SideTamer myS={myS} tLv={tLv} tExpNeed={tExpNeed} col={col} maxStorage={maxStorage} acHex={acHex} setMy={setMy}/>}
+        {mobilePanelTab==="dungeon"&&<SideDungeon myS={myS} dgExploring={dgExploring} dgRes={dgRes} setDgRes={setDgRes} runDungeon={runDungeon} DUNGEONS={DUNGEONS} unlocks={unlocks} aliveCols={aliveCols} useStaminaPot={useStaminaPot}/>}
+        {mobilePanelTab==="monthly"&&<SideMonthly myS={myS} todayDay={todayDay} claimMonthly={claimMonthly}/>}
+        {mobilePanelTab==="raid"&&<SideRaid myS={myS} col={col} setMy={setMy} toast={toast} aliveCols={aliveCols} acHex={acHex}/>}
+        {mobilePanelTab==="breed"&&<SideBreed myS={myS} col={col} setMy={setMy} toast={toast} aliveCols={aliveCols} acHex={acHex}/>}
+        {mobilePanelTab==="dex"&&<SideDex myS={myS} col={col} acHex={acHex} setMy={setMy}/>}
+        {mobilePanelTab==="ach"&&<SideAch myS={myS} acHex={acHex} claimAchReward={claimAchReward}/>}
+        {mobilePanelTab==="stonelab"&&<SideStoneLab myS={myS} col={col} setMy={setMy} toast={toast} acHex={acHex}/>}
+        {mobilePanelTab==="help"&&<SideHelp acHex={acHex}/>}
+        {mobilePanelTab==="prob"&&<SideProb/>}
+      </div>
     </div>
 
     </div>{/* game-col 끝 */}
@@ -4452,162 +4962,199 @@ function SideRaid({myS,col,setMy,toast,aliveCols,acHex}){
 
 // ── HYBRID 교배/육아 시스템 ──
 // HYBRID 등급: 두 소환수 교배로 탄생, 부모 속성 혼합
+// ── HYBRID 교배/육아 시스템 v2 ──
 function SideBreed({myS,col,setMy,toast,aliveCols,acHex}){
-  const [parentA,setParentA]=React.useState(null);
-  const [parentB,setParentB]=React.useState(null);
-  const [egg,setEgg]=React.useState(null); // {monId,hatch:0,need:10,parentA,parentB}
-  const [nurseCount,setNurseCount]=React.useState(0);
+  const [parentMale,setParentMale]=React.useState(null);
+  const [parentFemale,setParentFemale]=React.useState(null);
+  const [egg,setEgg]=React.useState(myS.breedEgg||null);
+  const [breedTab,setBreedTab]=React.useState("select");
 
-  // 알 품기 (먹이 소모)
+  const BREED_MIN_IDX=GRADE_ORDER.indexOf("UNCOMMON");
+  const breedable=aliveCols.map((c,i)=>({c,i})).filter(({c})=>{
+    const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{rarity:"COMMON"};
+    return GRADE_ORDER.indexOf(bm.rarity)>=BREED_MIN_IDX&&!c.isHybrid;
+  });
+  const males=breedable.filter(({c})=>c.gender==="♂"||!c.gender);
+  const females=breedable.filter(({c})=>c.gender==="♀");
+
   const nurseEgg=()=>{
     if(!egg||egg.hatch>=egg.need){toast("알이 없거나 이미 부화됨!","var(--red)");return;}
-    if((myS.foods?.food1||0)<=0){toast("일반 먹이가 필요합니다!","var(--red)");return;}
-    setMy(s=>({...s,foods:{...s.foods,food1:Math.max(0,(s.foods.food1||1)-1)}}));
-    setEgg(e=>({...e,hatch:Math.min(e.need,e.hatch+1)}));
-    setNurseCount(n=>n+1);
+    const useAdv=egg.hatch>=egg.need*0.5;
+    const fid=useAdv?"food2":"food1";
+    const have=myS.foods?.[fid]||0;
+    if(have<=0){toast(`${useAdv?"고급":"일반"} 먹이 필요!`,"var(--red)");return;}
+    setMy(s=>({...s,foods:{...s.foods,[fid]:Math.max(0,(s.foods[fid]||1)-1)}}));
+    const newEgg={...egg,hatch:Math.min(egg.need,egg.hatch+1)};
+    setEgg(newEgg);
+    setMy(s=>({...s,breedEgg:newEgg}));
   };
 
-  // 부화
   const hatchEgg=()=>{
-    if(!egg||egg.hatch<egg.need){return;}
-    const bmA=MONS.find(m=>m.id===egg.parentA)||{rarity:"COMMON"};
-    const bmB=MONS.find(m=>m.id===egg.parentB)||{rarity:"COMMON"};
-    // HYBRID 스탯: 부모 평균 + 보너스
-    const gradeA=GRADE_ORDER.indexOf(bmA.rarity),gradeB=GRADE_ORDER.indexOf(bmB.rarity);
-    const hybridGradeIdx=Math.min(GRADE_ORDER.length-3,Math.floor((gradeA+gradeB)/2)+1);
+    if(!egg||egg.hatch<egg.need)return;
+    const bmA=MONS.find(m=>m.id===egg.fatherMon)||{rarity:"UNCOMMON",hp:40,atk:15,name:"아빠",emoji:"🧬"};
+    const bmB=MONS.find(m=>m.id===egg.motherMon)||{rarity:"UNCOMMON",hp:40,atk:15,name:"엄마",emoji:"🧬"};
+    const gA=GRADE_ORDER.indexOf(bmA.rarity),gB=GRADE_ORDER.indexOf(bmB.rarity);
+    const hybridGradeIdx=Math.min(GRADE_ORDER.length-3,Math.floor((gA+gB)/2+0.7)+1);
     const hybridRarity=GRADE_ORDER[hybridGradeIdx]||"RARE";
-    // 부모 속성 혼합
-    const typeA=MON_BASE_TYPE[egg.parentA]||null;
-    const typeB=MON_BASE_TYPE[egg.parentB]||null;
-    const hybridType=Math.random()<0.5?typeA:typeB;
+    const domHp=Math.max(bmA.hp,bmB.hp),recHp=Math.min(bmA.hp,bmB.hp);
+    const domAtk=Math.max(bmA.atk,bmB.atk),recAtk=Math.min(bmA.atk,bmB.atk);
+    const baseHp=Math.floor((domHp*0.7+recHp*0.3)*1.15);
+    const baseAtk=Math.floor((domAtk*0.7+recAtk*0.3)*1.15);
+    const typeA=MON_BASE_TYPE[egg.fatherMon]||null;
+    const typeB=MON_BASE_TYPE[egg.motherMon]||null;
+    const hybridType=typeA===typeB?typeA:(Math.random()<0.6?typeA:typeB);
     const tBonus=hybridType?TYPES[hybridType]?.bonus||{}:{};
-    const baseHp=Math.floor(((bmA.hp||30)+(bmB.hp||30))/2*1.2*(1+(tBonus.hp||0)));
-    const baseAtk=Math.floor(((bmA.atk||10)+(bmB.atk||10))/2*1.2*(1+(tBonus.atk||0)));
+    const gender=Math.random()<0.5?"♂":"♀";
     const hybridMon={
-      id:`hybrid_${egg.parentA}_${egg.parentB}_${Date.now()}`,
-      name:`🧬${bmA.name.slice(0,3)}×${bmB.name.slice(0,3)}`,
-      emoji:"🧬",rarity:hybridRarity,
-      hp:baseHp,atk:baseAtk,
-      lv:1,exp:0,maxHp:baseHp,curHp:baseHp,alive:true,enhance:0,
-      monType:hybridType,atkBonus:tBonus.atk||0,
-      isHybrid:true,parentA:egg.parentA,parentB:egg.parentB,
+      id:`hybrid_${Date.now()}`,name:`🧬${bmA.name.slice(0,2)}×${bmB.name.slice(0,2)}`,
+      emoji:"🧬",rarity:hybridRarity,lv:1,exp:0,
+      maxHp:Math.floor(baseHp*(1+(tBonus.hp||0))),hp:Math.floor(baseHp*(1+(tBonus.hp||0))),curHp:Math.floor(baseHp*(1+(tBonus.hp||0))),
+      atk:Math.floor(baseAtk*(1+(tBonus.atk||0))),alive:true,enhance:0,
+      monType:hybridType,atkBonus:tBonus.atk||0,isHybrid:true,gender,
+      fatherMon:egg.fatherMon,motherMon:egg.motherMon,
     };
     setMy(s=>{
       const nc=[...(s.collection||[]),hybridMon];
-      return addTamerExp({...s,collection:nc},50);
+      return addTamerExp({...s,collection:nc,breedEgg:null},60);
     });
-    toast(`🧬 HYBRID 탄생! [${hybridRarity}] ${hybridMon.name}`,"var(--purple)");
-    setEgg(null);setParentA(null);setParentB(null);
+    toast(`🧬 ${gender} HYBRID [${hybridRarity}] ${hybridMon.name} 탄생!`,"var(--purple)");
+    setEgg(null);setParentMale(null);setParentFemale(null);setBreedTab("select");
   };
 
-  // 교배 시작
   const startBreed=()=>{
-    if(parentA===null||parentB===null||parentA===parentB){toast("다른 소환수 2마리 선택!","var(--red)");return;}
-    const a=aliveCols[parentA],b=aliveCols[parentB];
-    if(!a||!b)return;
-    const bmA=MONS.find(m=>m.id===(a.baseId||a.id))||{rarity:"COMMON"};
-    const bmB=MONS.find(m=>m.id===(b.baseId||b.id))||{rarity:"COMMON"};
-    // 조건: 둘 다 Lv5 이상
-    if((a.lv||1)<5||(b.lv||1)<5){toast("두 소환수 모두 Lv.5 이상 필요!","var(--red)");return;}
-    const gradeA=GRADE_ORDER.indexOf(bmA.rarity),gradeB=GRADE_ORDER.indexOf(bmB.rarity);
-    const need=3+gradeA+gradeB; // 등급 합산으로 부화 필요 먹이 수
-    setEgg({parentA:bmA.id,parentB:bmB.id,hatch:0,need,nameA:bmA.name,nameB:bmB.name});
+    if(parentMale===null||parentFemale===null){toast("♂수컷과 ♀암컷을 선택하세요!","var(--red)");return;}
+    const mC=males[parentMale]?.c;
+    const fC=females[parentFemale]?.c;
+    if(!mC||!fC)return;
+    if((mC.lv||1)<3||(fC.lv||1)<3){toast("Lv.3 이상 필요!","var(--red)");return;}
+    if(egg){toast("이미 알이 있어요!","var(--red)");return;}
+    const bmA=MONS.find(m=>m.id===(mC.baseId||mC.id))||{rarity:"UNCOMMON"};
+    const bmB=MONS.find(m=>m.id===(fC.baseId||fC.id))||{rarity:"UNCOMMON"};
+    const gA=GRADE_ORDER.indexOf(bmA.rarity),gB=GRADE_ORDER.indexOf(bmB.rarity);
+    const need=Math.min(20,Math.max(4,gA+gB+2));
+    const newEgg={fatherMon:mC.baseId||mC.id,motherMon:fC.baseId||fC.id,hatch:0,need,
+      fatherName:bmA.name,motherName:bmB.name,fatherEmoji:bmA.emoji||"🧬",motherEmoji:bmB.emoji||"🧬"};
+    setEgg(newEgg);
+    setMy(s=>({...s,breedEgg:newEgg}));
+    setBreedTab("nurse");
     toast(`🥚 교배 시작! 먹이 ${need}개로 부화`,"var(--purple)");
   };
 
   return <div>
-    <div style={{fontSize:11,fontWeight:800,color:"var(--tx1)",marginBottom:4}}>🥚 HYBRID 교배/육아</div>
-    <div style={{fontSize:9,color:"var(--tx3)",marginBottom:8,padding:"5px 8px",
-      background:"rgba(139,92,246,0.05)",borderRadius:7,border:"1px solid rgba(139,92,246,0.15)"}}>
-      두 소환수를 교배해 <b style={{color:"var(--purple)"}}>HYBRID</b> 탄생! 부모 속성·등급 혼합
+    <div style={{fontSize:11,fontWeight:800,color:"var(--tx1)",marginBottom:6}}>🥚 HYBRID 교배/육아</div>
+    <div style={{fontSize:9,color:"var(--tx3)",marginBottom:6,padding:"4px 7px",background:"rgba(139,92,246,0.05)",borderRadius:6}}>
+      UNCOMMON↑ · Lv3↑ · 암수한쌍 · 우성유전(높은스탯70%) · 등급결정식
+    </div>
+    <div style={{display:"flex",gap:4,marginBottom:8}}>
+      {[["select","👫선택"],["nurse","🥚육아"],["hybrid","🧬목록"]].map(([k,l])=>(
+        <button key={k} onClick={()=>setBreedTab(k)}
+          style={{flex:1,padding:"5px 0",borderRadius:8,border:`1.5px solid ${breedTab===k?acHex:"rgba(0,0,0,0.08)"}`,
+            background:breedTab===k?`${acHex}12`:"white",cursor:"pointer",fontFamily:"inherit",
+            fontSize:9,fontWeight:breedTab===k?800:500,color:breedTab===k?acHex:"var(--tx2)"}}>
+          {l}{k==="nurse"&&egg?` (${egg.hatch}/${egg.need})`:""}
+        </button>
+      ))}
     </div>
 
-    {/* 알 부화 중 */}
-    {egg&&<div style={{borderRadius:12,padding:"12px",background:"rgba(139,92,246,0.06)",
-      border:"1.5px solid rgba(139,92,246,0.2)",marginBottom:10,textAlign:"center"}}>
-      <div style={{fontSize:28,marginBottom:4,animation:"float 1.5s ease-in-out infinite",display:"inline-block"}}>🥚</div>
-      <div style={{fontSize:10,fontWeight:700,color:"var(--purple)",marginBottom:4}}>
-        {egg.nameA} × {egg.nameB}
-      </div>
-      <div style={{background:"rgba(0,0,0,0.07)",borderRadius:6,height:8,marginBottom:6,overflow:"hidden"}}>
-        <div style={{width:`${egg.hatch/egg.need*100}%`,height:"100%",background:"var(--purple)",borderRadius:6,transition:"width 0.3s"}}/>
-      </div>
-      <div style={{fontSize:10,color:"var(--tx3)",marginBottom:8}}>🍖 {egg.hatch}/{egg.need} 먹이 완료</div>
-      {egg.hatch>=egg.need
-        ?<button onClick={hatchEgg} style={{width:"100%",padding:"7px 0",borderRadius:9,border:"none",
-            background:"linear-gradient(135deg,var(--purple),#6d28d9)",color:"white",fontSize:11,fontWeight:800,cursor:"pointer",fontFamily:"inherit"}}>
-            🥚 지금 부화!
-          </button>
-        :<button onClick={nurseEgg} disabled={(myS.foods?.food1||0)<=0}
-            style={{width:"100%",padding:"7px 0",borderRadius:9,border:"none",
-            background:(myS.foods?.food1||0)>0?"rgba(139,92,246,0.15)":"rgba(0,0,0,0.06)",
-            color:(myS.foods?.food1||0)>0?"var(--purple)":"var(--tx3)",fontSize:11,fontWeight:800,cursor:"pointer",fontFamily:"inherit"}}>
-            🌾 먹이주기 (보유: {myS.foods?.food1||0}개)
-          </button>
-      }
-    </div>}
-
-    {!egg&&<>
-      {/* 부모 선택 */}
-      <div style={{fontSize:10,fontWeight:700,color:"var(--tx2)",marginBottom:4}}>부모 소환수 선택 (각 1마리)</div>
-      <div style={{display:"flex",gap:8,marginBottom:8}}>
-        {["A","B"].map((slot,si)=>{
-          const idx=si===0?parentA:parentB;
-          const c=idx!==null?aliveCols[idx]:null;
-          const bm=c?MONS.find(m=>m.id===(c.baseId||c.id)):null;
-          return <div key={slot} style={{flex:1,borderRadius:10,padding:"8px",
-            border:`1.5px solid ${idx!==null?acHex:"rgba(0,0,0,0.1)"}`,
-            background:idx!==null?`${acHex}08`:"rgba(0,0,0,0.02)",textAlign:"center",cursor:"pointer"}}
-            onClick={()=>{if(si===0)setParentA(null);else setParentB(null);}}>
-            {bm?<><div style={{fontSize:20}}>{bm.emoji}</div><div style={{fontSize:9,color:"var(--tx1)",fontWeight:700}}>{bm.name}</div><div style={{fontSize:8,color:"var(--tx3)"}}>Lv{c.lv}</div></>
-              :<div style={{fontSize:10,color:"var(--tx3)"}}>부모 {slot}<br/>선택</div>}
-          </div>;
-        })}
-      </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:4,marginBottom:8}}>
-        {aliveCols.map((c,i)=>{
-          const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{emoji:"❓"};
-          const isA=parentA===i,isB=parentB===i;
-          return <button key={i} onClick={()=>{
-            if(isA){setParentA(null);}
-            else if(isB){setParentB(null);}
-            else if(parentA===null)setParentA(i);
-            else if(parentB===null)setParentB(i);
-          }} style={{padding:"5px 3px",borderRadius:8,border:`1.5px solid ${isA?"#f97316":isB?"#8b5cf6":"rgba(0,0,0,0.08)"}`,
-            background:isA?"rgba(249,115,22,0.1)":isB?"rgba(139,92,246,0.1)":"white",
-            cursor:"pointer",fontFamily:"inherit",textAlign:"center"}}>
-            <div style={{fontSize:16}}>{bm.emoji}</div>
-            <div style={{fontSize:7,color:"var(--tx3)"}}>Lv{c.lv}</div>
-            {isA&&<div style={{fontSize:7,color:"#f97316",fontWeight:700}}>A</div>}
-            {isB&&<div style={{fontSize:7,color:"#8b5cf6",fontWeight:700}}>B</div>}
+    {breedTab==="select"&&<div>
+      <div style={{fontSize:10,fontWeight:700,color:"#3b82f6",marginBottom:4}}>♂ 수컷 선택</div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:3,marginBottom:8}}>
+        {males.map(({c},i)=>{
+          const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{emoji:"❓",rarity:"COMMON"};
+          return <button key={i} onClick={()=>setParentMale(parentMale===i?null:i)}
+            style={{padding:"4px 2px",borderRadius:7,border:`1.5px solid ${parentMale===i?"#3b82f6":"rgba(0,0,0,0.08)"}`,
+              background:parentMale===i?"rgba(59,130,246,0.1)":"white",cursor:"pointer",fontFamily:"inherit",textAlign:"center"}}>
+            <div style={{fontSize:14}}>{bm.emoji}</div>
+            <div style={{fontSize:6,color:"var(--tx3)"}}>Lv{c.lv}</div>
+            <div style={{fontSize:6,color:RCOL[bm.rarity]||"#888"}}>{bm.rarity?.slice(0,4)}</div>
           </button>;
         })}
+        {males.length===0&&<div style={{gridColumn:"1/-1",fontSize:9,color:"var(--tx3)",padding:"6px 0",textAlign:"center"}}>♂수컷 없음</div>}
       </div>
-      <button onClick={startBreed} disabled={parentA===null||parentB===null||parentA===parentB}
+      <div style={{fontSize:10,fontWeight:700,color:"#ec4899",marginBottom:4}}>♀ 암컷 선택</div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:3,marginBottom:8}}>
+        {females.map(({c},i)=>{
+          const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{emoji:"❓",rarity:"COMMON"};
+          return <button key={i} onClick={()=>setParentFemale(parentFemale===i?null:i)}
+            style={{padding:"4px 2px",borderRadius:7,border:`1.5px solid ${parentFemale===i?"#ec4899":"rgba(0,0,0,0.08)"}`,
+              background:parentFemale===i?"rgba(236,72,153,0.1)":"white",cursor:"pointer",fontFamily:"inherit",textAlign:"center"}}>
+            <div style={{fontSize:14}}>{bm.emoji}</div>
+            <div style={{fontSize:6,color:"var(--tx3)"}}>Lv{c.lv}</div>
+            <div style={{fontSize:6,color:RCOL[bm.rarity]||"#888"}}>{bm.rarity?.slice(0,4)}</div>
+          </button>;
+        })}
+        {females.length===0&&<div style={{gridColumn:"1/-1",fontSize:9,color:"var(--tx3)",padding:"6px 0",textAlign:"center"}}>♀암컷 없음 (포획 시 랜덤 성별 부여)</div>}
+      </div>
+      <button onClick={startBreed} disabled={parentMale===null||parentFemale===null||!!egg}
         style={{width:"100%",padding:"8px 0",borderRadius:10,border:"none",
-          background:parentA!==null&&parentB!==null&&parentA!==parentB?"linear-gradient(135deg,var(--purple),#6d28d9)":"rgba(0,0,0,0.06)",
-          color:parentA!==null&&parentB!==null&&parentA!==parentB?"white":"rgba(0,0,0,0.2)",
+          background:parentMale!==null&&parentFemale!==null&&!egg?"linear-gradient(135deg,var(--purple),#6d28d9)":"rgba(0,0,0,0.06)",
+          color:parentMale!==null&&parentFemale!==null&&!egg?"white":"rgba(0,0,0,0.2)",
           fontSize:11,fontWeight:800,cursor:"pointer",fontFamily:"inherit"}}>
-        🥚 교배 시작!
+        {egg?"🥚 육아 중...":"🥚 교배 시작!"}
       </button>
-    </>}
+    </div>}
 
-    {/* HYBRID 보유 목록 */}
-    {(myS.collection||[]).filter(c=>c.isHybrid).length>0&&<div style={{marginTop:10}}>
-      <div style={{fontSize:10,fontWeight:700,color:"var(--tx2)",marginBottom:5}}>🧬 보유 HYBRID</div>
-      {(myS.collection||[]).filter(c=>c.isHybrid).map((c,i)=>(
-        <div key={i} style={{display:"flex",alignItems:"center",gap:6,padding:"6px 8px",borderRadius:9,
-          background:"rgba(139,92,246,0.05)",border:"1px solid rgba(139,92,246,0.15)",marginBottom:4}}>
-          <span style={{fontSize:16}}>🧬</span>
-          <div style={{flex:1}}>
-            <div style={{fontSize:10,fontWeight:700,color:"var(--purple)"}}>{c.name}</div>
-            <div style={{fontSize:9,color:"var(--tx3)"}}>Lv{c.lv} · {c.monType?TYPES[c.monType]?.emoji:""} [{c.rarity}]</div>
-          </div>
+    {breedTab==="nurse"&&<div style={{textAlign:"center"}}>
+      {egg?<>
+        <div style={{fontSize:40,marginBottom:6,animation:"float 1.5s ease-in-out infinite",display:"inline-block"}}>🥚</div>
+        <div style={{fontSize:11,fontWeight:700,color:"var(--purple)",marginBottom:4}}>
+          {egg.fatherEmoji}{egg.fatherName} ♂ × {egg.motherEmoji}{egg.motherName} ♀
         </div>
-      ))}
+        <div style={{background:"rgba(0,0,0,0.07)",borderRadius:6,height:10,marginBottom:4,overflow:"hidden"}}>
+          <div style={{width:`${egg.hatch/egg.need*100}%`,height:"100%",background:"linear-gradient(90deg,var(--purple),#a855f7)",borderRadius:6,transition:"width 0.3s"}}/>
+        </div>
+        <div style={{fontSize:10,color:"var(--tx3)",marginBottom:10}}>
+          먹이 {egg.hatch}/{egg.need}
+          {egg.hatch>=Math.floor(egg.need*0.5)&&<span style={{color:"var(--gold)",marginLeft:4}}>🍖고급먹이 필요</span>}
+        </div>
+        {egg.hatch>=egg.need
+          ?<button onClick={hatchEgg} style={{width:"100%",padding:"9px 0",borderRadius:10,border:"none",
+              background:"linear-gradient(135deg,var(--purple),#6d28d9)",color:"white",fontSize:12,fontWeight:800,cursor:"pointer",fontFamily:"inherit"}}>
+              🐣 부화!
+            </button>
+          :<button onClick={nurseEgg}
+              disabled={(myS.foods?.food1||0)<=0&&(myS.foods?.food2||0)<=0}
+              style={{width:"100%",padding:"9px 0",borderRadius:10,border:"none",
+                background:(myS.foods?.food1||0)>0||(myS.foods?.food2||0)>0?"rgba(139,92,246,0.15)":"rgba(0,0,0,0.06)",
+                color:(myS.foods?.food1||0)>0||(myS.foods?.food2||0)>0?"var(--purple)":"var(--tx3)",
+                fontSize:11,fontWeight:800,cursor:"pointer",fontFamily:"inherit"}}>
+              먹이주기 🌾{myS.foods?.food1||0} / 🍖{myS.foods?.food2||0}
+            </button>}
+        <button onClick={()=>{setEgg(null);setMy(s=>({...s,breedEgg:null}));}}
+          style={{width:"100%",marginTop:6,padding:"6px 0",borderRadius:10,border:"1px solid rgba(239,68,68,0.3)",
+            background:"transparent",color:"var(--red)",fontSize:10,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>
+          ✕ 알 포기
+        </button>
+      </>:<div style={{padding:"20px 0",color:"var(--tx3)"}}>
+        <div style={{fontSize:24,marginBottom:6}}>🥚</div>
+        <div style={{fontSize:11}}>선택 탭에서 교배를 시작하세요</div>
+      </div>}
+    </div>}
+
+    {breedTab==="hybrid"&&<div>
+      {(myS.collection||[]).filter(c=>c.isHybrid).length===0
+        ?<div style={{textAlign:"center",padding:"16px 0",color:"var(--tx3)",fontSize:10}}>보유 HYBRID 없음</div>
+        :(myS.collection||[]).filter(c=>c.isHybrid).map((c,i)=>{
+          const bmF=MONS.find(m=>m.id===c.fatherMon)||{emoji:"❓"};
+          const bmM=MONS.find(m=>m.id===c.motherMon)||{emoji:"❓"};
+          return <div key={i} style={{display:"flex",alignItems:"center",gap:6,padding:"7px 8px",borderRadius:9,
+            background:"rgba(139,92,246,0.05)",border:"1px solid rgba(139,92,246,0.15)",marginBottom:4}}>
+            <span style={{fontSize:18}}>🧬</span>
+            <div style={{flex:1}}>
+              <div style={{display:"flex",alignItems:"center",gap:4}}>
+                <span style={{fontSize:10,fontWeight:700,color:"var(--purple)"}}>{c.name}</span>
+                <span style={{fontSize:9,color:c.gender==="♂"?"#3b82f6":"#ec4899",fontWeight:700}}>{c.gender}</span>
+              </div>
+              <div style={{fontSize:9,color:"var(--tx3)"}}>{bmF.emoji}×{bmM.emoji} · Lv{c.lv} · [{c.rarity}]</div>
+            </div>
+            {c.monType&&<span style={{fontSize:11}}>{TYPES[c.monType]?.emoji}</span>}
+          </div>;
+        })
+      }
     </div>}
   </div>;
 }
+
 
 // ── 진화석 연구소 (부스터/각인/리롤) ──
 function SideStoneLab({myS,col,setMy,toast,acHex}){
