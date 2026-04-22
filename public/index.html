@@ -237,14 +237,15 @@ function getTypeEvoMon(baseId,type){
     desc:`${base.desc} [${t.name} 속성 진화]`};
 }
 
-// 합성 확률 - 앞(주결과) 높고, 뒤(보너스) 낮고, 등급 높을수록 실패↑
+// 합성 확률 - 앞 높고 뒤 낮고 실패 점점 증가
+// 에픽/레전드는 매우 낮은 확률로 조정
 const FUSION_TABLE={
-  "COMMON":   [{g:"UNCOMMON",r:0.60},{g:"RARE",r:0.10},{g:"fail",r:0.30}],
-  "UNCOMMON": [{g:"RARE",    r:0.55},{g:"UNIQUE",r:0.10},{g:"fail",r:0.35}],
-  "RARE":     [{g:"UNIQUE",  r:0.45},{g:"SUPER", r:0.08},{g:"fail",r:0.47}],
-  "UNIQUE":   [{g:"SUPER",   r:0.35},{g:"EPIC",  r:0.06},{g:"fail",r:0.59}],
-  "SUPER":    [{g:"EPIC",    r:0.25},{g:"LEGEND",r:0.05},{g:"MUTANT",r:0.02},{g:"fail",r:0.68}],
-  "EPIC":     [{g:"LEGEND",  r:0.15},{g:"MUTANT",r:0.03},{g:"fail",r:0.82}],
+  "COMMON":   [{g:"UNCOMMON",r:0.60},{g:"RARE",r:0.08},{g:"fail",r:0.32}],
+  "UNCOMMON": [{g:"RARE",    r:0.55},{g:"UNIQUE",r:0.08},{g:"fail",r:0.37}],
+  "RARE":     [{g:"UNIQUE",  r:0.42},{g:"SUPER", r:0.05},{g:"fail",r:0.53}],
+  "UNIQUE":   [{g:"SUPER",   r:0.32},{g:"EPIC",  r:0.03},{g:"fail",r:0.65}],
+  "SUPER":    [{g:"EPIC",    r:0.20},{g:"LEGEND",r:0.02},{g:"MUTANT",r:0.01},{g:"fail",r:0.77}],
+  "EPIC":     [{g:"LEGEND",  r:0.08},{g:"MUTANT",r:0.01},{g:"fail",r:0.91}],
 }
 const FUSION_POOL={
   "UNCOMMON":["blaze","aqua","bolt","frostie","venom","terro","shiny","draco"],
@@ -290,6 +291,8 @@ const CONSUMABLES=[
   {id:"stamina_pot",name:"스태미나포션",emoji:"⚡",desc:"스태미나 +5 즉시 회복"},
   {id:"enhance_stone",name:"강화석",emoji:"🔩",desc:"소환수 강화에 사용"},
   {id:"awaken_stone",name:"각성석",emoji:"💠",desc:"연구소에서 소환수 각성 전용"},
+  {id:"gender_swap",name:"성별교환권",emoji:"🔄",desc:"소환수 성별 ♂↔♀ 교환"},
+  {id:"dual_type",name:"이중속성 각인권",emoji:"🌈",desc:"소환수에 두 번째 속성 부여 (랜덤)"},
 ];
 const BOSS_ITEMS=[
   {id:"boss_crystal",name:"레이드 크리스탈",emoji:"🔴",desc:"합성 시 등급UP +30%"},
@@ -327,6 +330,7 @@ const SHOP_ITEMS=[
   {id:"s8",name:"부활권",emoji:"💊",cat:"특수",cost:{ball1:50},give:{revive:1},desc:"🟠×50 → 💊×1",dailyLimit:2},
   {id:"s9",name:"배틀권",emoji:"⚔️",cat:"특수",cost:{ball1:30},give:{battle_ticket:1},desc:"🟠×30 → ⚔️×1",dailyLimit:3},
   {id:"s10",name:"스태미나포션",emoji:"⚡",cat:"특수",cost:{ball1:25},give:{stamina_pot:1},desc:"🟠×25 → ⚡×1",dailyLimit:3},
+  {id:"s17",name:"성별교환권",emoji:"🔄",cat:"특수",cost:{ball1:80},give:{gender_swap:1},desc:"🟠×80 → 🔄×1",dailyLimit:1},
   {id:"s14",name:"강화석 ×3",emoji:"🔩",cat:"강화석",cost:{ball1:20},give:{enhance_stone:3},desc:"🟠×20 → 🔩×3"},
   {id:"s15",name:"강화석 ×10",emoji:"🔩",cat:"강화석",cost:{ball1:60},give:{enhance_stone:10},desc:"🟠×60 → 🔩×10",dailyLimit:3},
   {id:"s16",name:"강화석 ×5 (토큰)",emoji:"🪙",cat:"토큰",cost:{battle_token:8},give:{enhance_stone:5},desc:"🪙×8 → 🔩×5",dailyLimit:5},
@@ -338,8 +342,8 @@ const SHOP_ITEMS=[
 const DUNGEONS=[
   {id:"dg1",name:"초보 던전",emoji:"🌿",minTamerLv:1,stamina:1,desc:"Lv1",drops:[{id:"food1",amt:3,rate:1.0},{id:"food2",amt:1,rate:0.4},{id:"stone1",amt:1,rate:0.15},{id:"enhance_stone",amt:3,rate:0.6}]},
   {id:"dg2",name:"중급 던전",emoji:"🔥",minTamerLv:5,stamina:2,desc:"Lv5",drops:[{id:"food2",amt:2,rate:1.0},{id:"stone1",amt:1,rate:0.4},{id:"stone2",amt:1,rate:0.1},{id:"enhance_stone",amt:4,rate:0.8}]},
-  {id:"dg3",name:"고급 던전",emoji:"⚡",minTamerLv:10,stamina:3,desc:"Lv10",drops:[{id:"food3",amt:2,rate:0.5},{id:"stone2",amt:1,rate:0.3},{id:"enhance_stone",amt:6,rate:1.0}]},
-  {id:"dg4",name:"전설 던전",emoji:"🌟",minTamerLv:20,stamina:5,desc:"Lv20",drops:[{id:"food3",amt:3,rate:1.0},{id:"stone2",amt:2,rate:0.5},{id:"stone3",amt:1,rate:0.2},{id:"enhance_stone",amt:9,rate:1.0}]},
+  {id:"dg3",name:"고급 던전",emoji:"⚡",minTamerLv:10,stamina:3,desc:"Lv10",drops:[{id:"food3",amt:2,rate:0.5},{id:"stone2",amt:1,rate:0.3},{id:"enhance_stone",amt:6,rate:1.0},{id:"dual_type",amt:1,rate:0.04}]},
+  {id:"dg4",name:"전설 던전",emoji:"🌟",minTamerLv:20,stamina:5,desc:"Lv20",drops:[{id:"food3",amt:3,rate:1.0},{id:"stone2",amt:2,rate:0.5},{id:"stone3",amt:1,rate:0.2},{id:"enhance_stone",amt:9,rate:1.0},{id:"dual_type",amt:1,rate:0.08}]},
 ];
 
 // 방생 보상 강화 (복합 보상: 배열)
@@ -567,15 +571,15 @@ function checkEvoConds(chain, c, myS){
 // 대성공: altTo 존재 시 더 강한 몬스터로 / 없으면 스탯 보너스
 // 성공: 일반 진화
 // 실패: 강화석 보상, 소환수 유지
-// 대실패: 소환수 사망
+// 강화진화(대성공/성공), 기본진화(100% 성공)
+// [대성공률, 성공률] - 강화진화 전용, RARE 이후 성공률 점점 낮아짐
 const EVO_RATES={
-  // [대성공, 성공, 실패, 대실패]
-  "COMMON":   [0.15, 0.65, 0.18, 0.02],
-  "UNCOMMON": [0.10, 0.60, 0.25, 0.05],
-  "RARE":     [0.08, 0.55, 0.27, 0.10],
-  "UNIQUE":   [0.05, 0.50, 0.30, 0.15],
-  "SUPER":    [0.03, 0.42, 0.35, 0.20],
-  "EPIC":     [0.02, 0.33, 0.40, 0.25],
+  "COMMON":   [0.20, 0.80], // 대성공20% / 성공80%
+  "UNCOMMON": [0.15, 0.70], // 대성공15% / 성공70% (나머지 실패)
+  "RARE":     [0.10, 0.55], // 대성공10% / 성공55% → 35% 실패
+  "UNIQUE":   [0.07, 0.40], // 대성공7%  / 성공40% → 53% 실패
+  "SUPER":    [0.05, 0.28], // 대성공5%  / 성공28% → 67% 실패
+  "EPIC":     [0.03, 0.18], // 대성공3%  / 성공18% → 79% 실패
 };
 
 // MONS - 소환수 목록 (이모지 중복 없음, 속성·진화 계보 명확)
@@ -695,7 +699,7 @@ function initState(){
     foods:{food1:10,food2:0,food3:0},
     stones:{stone1:2,stone2:0,stone3:0},
     specials:{revive:0},
-    consumables:{battle_ticket:0,stamina_pot:0,enhance_stone:10},
+    consumables:{battle_ticket:0,stamina_pot:0,enhance_stone:10,awaken_stone:0,gender_swap:0},
     bossItems:{boss_crystal:0,ancient_shard:0,boss_eye:0,trophy:0},
     battleItems:{battle_token:0},
     stamina:15,maxStamina:15,lastStaminaRefill:null,
@@ -3016,7 +3020,7 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
       const fbt=fusionBonusTable[resultGrade]||{atk:[1,2],hp:[1,2]};
       const rndRange=(r)=>r[0]+Math.floor(Math.random()*(r[1]-r[0]+1));
       const fusionBonus={atk:rndRange(fbt.atk),hp:rndRange(fbt.hp)};
-      nc.push({id:res.id,lv:1,exp:0,maxHp:res.hp+fusionBonus.hp,hp:res.hp+fusionBonus.hp,curHp:res.hp+fusionBonus.hp,alive:true,enhance:0,fusionBonus});
+      nc.push({id:res.id,lv:1,exp:0,maxHp:res.hp+fusionBonus.hp,hp:res.hp+fusionBonus.hp,curHp:res.hp+fusionBonus.hp,alive:true,enhance:0,fusionBonus,gender:Math.random()<0.5?"♂":"♀"});
       return addTamerExp({...s,collection:nc,totalFusions:(s.totalFusions||0)+1},40);
     });
     setFusRes({res,grade:resultGrade,bonus:fusionBonus});setFa(null);setFb(null);
@@ -3599,6 +3603,20 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
                 })}
               </div>
             </>}
+            {/* 성별교환권 버튼 */}
+            {!isDead&&c.gender&&(myS.consumables?.gender_swap||0)>0&&<div style={{marginTop:4}}>
+              <button onClick={()=>{
+                setMy(s=>{
+                  const nc=(s.collection||[]).map((cc,ci)=>ci===i?{...cc,gender:cc.gender==="♂"?"♀":"♂"}:cc);
+                  return{...s,collection:nc,consumables:{...s.consumables,gender_swap:Math.max(0,(s.consumables?.gender_swap||1)-1)}};
+                });
+                toast(`🔄 성별 변경! ${c.gender==="♂"?"♀":"♂"}로 교환`,"var(--purple)");
+              }} style={{padding:"4px 10px",borderRadius:8,border:"1px solid rgba(139,92,246,0.25)",
+                background:"rgba(139,92,246,0.08)",color:"var(--purple)",fontSize:12,
+                cursor:"pointer",fontFamily:"inherit",fontWeight:600}}>
+                🔄 성별교환 ({c.gender}→{c.gender==="♂"?"♀":"♂"}) 보유:{myS.consumables?.gender_swap||0}
+              </button>
+            </div>}
             {isDead&&<div style={{display:"flex",gap:6,marginTop:4}}>
               <div style={{flex:1}}>
                 <Btn onClick={()=>reviveMon(i)} disabled={(myS.specials?.revive||0)<=0}
@@ -5083,6 +5101,92 @@ function MineTab({myS,col,aliveCols,dispatchMine,recallMine,acHex,unlocks}){
 function SideRaid({myS,col,setMy,toast,aliveCols,acHex}){
   const [raidState,setRaidState]=React.useState(null);
   const [pickedIdx,setPickedIdx]=React.useState(null);
+  const [raidRooms,setRaidRooms]=React.useState({}); // Firebase 공유 레이드방
+  const [myRaidRoom,setMyRaidRoom]=React.useState(null); // 내가 참여 중인 방
+
+  // Firebase 레이드방 실시간 구독
+  React.useEffect(()=>{
+    if(!db)return;
+    const ref=db.ref("raidRooms");
+    ref.on("value",snap=>{
+      const data=snap.val()||{};
+      // 활성화된 방만 (24시간 이내)
+      const now=Date.now();
+      const active={};
+      Object.entries(data).forEach(([id,room])=>{
+        if(room&&room.bossHp>0&&room.startedAt&&(now-room.startedAt)<86400000){
+          active[id]=room;
+        }
+      });
+      setRaidRooms(active);
+    });
+    return()=>ref.off();
+  },[]);
+
+  // 협력 레이드 공격
+  const attackCoopRaid=(roomId,bossId)=>{
+    if(pickedIdx===null){toast("소환수를 선택하세요!","var(--red)");return;}
+    const boss=RAID_BOSSES.find(b=>b.id===bossId);
+    const c=aliveCols[pickedIdx];
+    if(!c||!boss)return;
+    const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{atk:10,hp:30};
+    const enh=c.enhance||0;
+    const equipB=getEquipBonus(myS.equipsOn,myS.equips);
+    const myAtk=Math.floor((bm.atk+(c.lv||1)*2)*(1+(c.atkBonus||0))*(1+enh*3/100)*(1+equipB.atk/100));
+    const myDmg=Math.max(1,Math.floor(myAtk*(0.85+Math.random()*0.3)));
+
+    const roomRef=db.ref(`raidRooms/${roomId}`);
+    roomRef.transaction(room=>{
+      if(!room||room.bossHp<=0)return room;
+      const newHp=Math.max(0,room.bossHp-myDmg);
+      const log=[...(room.log||[]).slice(-10),
+        `⚔️ ${myS.nickname||"테이머"} ${myDmg}dmg → HP ${newHp}/${room.bossMaxHp}`
+      ];
+      if(newHp<=0){
+        return{...room,bossHp:0,status:"cleared",clearedAt:Date.now(),log:[...log,`🏆 ${boss.name} 레이드 클리어!`]};
+      }
+      return{...room,bossHp:newHp,log};
+    },(err,committed,snap)=>{
+      if(err){toast("오류 발생!","var(--red)");return;}
+      const room=snap.val();
+      if(room&&room.bossHp<=0){
+        // 클리어 보상 지급
+        setMy(s=>{
+          let ns={...s,bossKills:{...(s.bossKills||{}),[bossId]:((s.bossKills||{})[bossId]||0)+1}};
+          Object.entries(boss.rewards).forEach(([id,amt])=>{ns=addItem(ns,id,amt);});
+          (boss.randomDrops||[]).forEach(drop=>{
+            if(Math.random()<drop.rate*0.5){ // 협력은 개인 드롭 50%
+              const isEquip=BOSS_EQUIPS.find(e=>e.id===drop.id);
+              if(isEquip) ns={...ns,equips:{...(ns.equips||{}),[drop.id]:true}};
+              else ns=addItem(ns,drop.id,drop.amt);
+            }
+          });
+          return addTamerExp(ns,150);
+        });
+        toast(`🏆 ${boss.name} 협력 레이드 클리어!`,"var(--gold)");
+      }else{
+        toast(`⚔️ ${myDmg} 대미지!`,"var(--purple)");
+      }
+    });
+  };
+
+  // 새 레이드방 생성
+  const createRaidRoom=(bossId)=>{
+    if(!db){toast("Firebase 연결 필요!","var(--red)");return;}
+    const boss=RAID_BOSSES.find(b=>b.id===bossId);
+    if(!boss)return;
+    const roomId=`raid_${Date.now()}_${Math.random().toString(36).slice(2,6)}`;
+    const room={
+      id:roomId,bossId,bossHp:boss.hp,bossMaxHp:boss.hp,
+      status:"ongoing",startedAt:Date.now(),
+      host:myS.nickname||"테이머",
+      log:[`🌋 ${boss.name} 레이드 시작!`],
+      participants:{},
+    };
+    db.ref(`raidRooms/${roomId}`).set(room);
+    setMyRaidRoom(roomId);
+    toast(`🌋 ${boss.name} 레이드방 개설!`,"var(--purple)");
+  };
 
   // 즐겨찾기(주력) 소환수
   const favs=myS.favMons||[];
@@ -5358,8 +5462,55 @@ function SideRaid({myS,col,setMy,toast,aliveCols,acHex}){
     <div style={{fontSize:11,fontWeight:800,color:"var(--tx1)",marginBottom:4}}>🌋 레이드</div>
     <div style={{fontSize:9,color:"var(--tx3)",marginBottom:8,padding:"5px 8px",
       background:"rgba(239,68,68,0.05)",borderRadius:7,border:"1px solid rgba(239,68,68,0.15)"}}>
-      ⚠️ 보스가 강력하게 반격합니다 · 소환수가 쓰러지면 전사! · 강화된 소환수를 추천
+      ⚠️ 보스가 강력하게 반격! · 소환수 전사 주의 · 강화된 소환수 추천
     </div>
+
+    {/* 실시간 협력 레이드방 */}
+    {Object.keys(raidRooms).length>0&&<div style={{marginBottom:12}}>
+      <div style={{fontSize:11,fontWeight:800,color:"var(--purple)",marginBottom:6}}>
+        🔴 진행 중인 협력 레이드 ({Object.keys(raidRooms).length}개)
+      </div>
+      {Object.entries(raidRooms).map(([roomId,room])=>{
+        const boss=RAID_BOSSES.find(b=>b.id===room.bossId);
+        if(!boss)return null;
+        const pct=Math.max(0,(room.bossHp/room.bossMaxHp)*100);
+        return <div key={roomId} style={{padding:"9px 11px",borderRadius:11,marginBottom:6,
+          border:`1.5px solid ${boss.color}40`,background:`${boss.color}06`}}>
+          <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:5}}>
+            <span style={{fontSize:20}}>{boss.emoji}</span>
+            <div style={{flex:1}}>
+              <div style={{fontSize:11,fontWeight:800,color:boss.color}}>{boss.name}</div>
+              <div style={{fontSize:9,color:"var(--tx3)"}}>방장: {room.host}</div>
+            </div>
+            <div style={{fontSize:10,fontWeight:800,color:pct>50?"var(--green)":pct>25?"var(--gold)":"var(--red)"}}>
+              HP {Math.round(pct)}%
+            </div>
+          </div>
+          {/* 보스 HP 바 */}
+          <div style={{background:"rgba(0,0,0,0.08)",borderRadius:5,height:7,overflow:"hidden",marginBottom:5}}>
+            <div style={{width:`${pct}%`,height:"100%",
+              background:pct>50?"var(--green)":pct>25?"var(--gold)":"var(--red)",
+              borderRadius:5,transition:"width 0.3s"}}/>
+          </div>
+          <div style={{fontSize:8,color:"var(--tx3)",marginBottom:5}}>
+            {(room.log||[]).slice(-1)[0]||""}
+          </div>
+          <button onClick={()=>attackCoopRaid(roomId,room.bossId)}
+            disabled={pickedIdx===null}
+            style={{width:"100%",padding:"6px 0",borderRadius:8,border:"none",
+              background:pickedIdx!==null?`linear-gradient(135deg,${boss.color},${boss.color}cc)`:"rgba(0,0,0,0.06)",
+              color:pickedIdx!==null?"white":"rgba(0,0,0,0.2)",
+              fontSize:11,fontWeight:800,cursor:pickedIdx!==null?"pointer":"default",fontFamily:"inherit"}}>
+            {pickedIdx===null?"소환수 선택 후 참전":"⚔️ 참전 공격!"}
+          </button>
+        </div>;
+      })}
+    </div>}
+    {Object.keys(raidRooms).length===0&&<div style={{padding:"8px 10px",borderRadius:9,
+      background:"rgba(0,0,0,0.03)",border:"1px solid rgba(0,0,0,0.07)",marginBottom:10,
+      fontSize:10,color:"var(--tx3)",textAlign:"center"}}>
+      진행 중인 레이드방 없음 · 아래에서 새 레이드 시작!
+    </div>}
 
     {/* 소환수 선택 - 개선된 카드 */}
     <div style={{fontSize:10,fontWeight:700,color:"var(--tx2)",marginBottom:4}}>
@@ -5449,7 +5600,7 @@ function SideRaid({myS,col,setMy,toast,aliveCols,acHex}){
           <span style={{fontWeight:700,color:"var(--purple)"}}>🎲 파밍 풀: </span>
           {(boss.randomDrops||[]).map(d=>`${d.emoji}${Math.round(d.rate*100)}%`).join(" · ")}
         </div>
-        <button onClick={()=>startRaid(boss.id)}
+        <button onClick={()=>createRaidRoom(boss.id)}
           disabled={pickedIdx===null}
           style={{width:"100%",padding:"7px 0",borderRadius:9,border:"none",
             background:pickedIdx!==null?`linear-gradient(135deg,${boss.color},${boss.color}99)`:"rgba(0,0,0,0.06)",
@@ -5457,7 +5608,7 @@ function SideRaid({myS,col,setMy,toast,aliveCols,acHex}){
             fontSize:11,fontWeight:800,cursor:pickedIdx!==null?"pointer":"default",
             fontFamily:"inherit",
             boxShadow:pickedIdx!==null?`0 3px 12px ${boss.color}40`:"none"}}>
-          {pickedIdx===null?"소환수를 먼저 선택하세요":"🌋 레이드 도전!"}
+          {pickedIdx===null?"소환수를 먼저 선택하세요":"🌋 새 레이드방 개설!"}
         </button>
       </div>;
     })}
@@ -5839,13 +5990,22 @@ function SideLab({myS,col,setMy,toast,acHex,aliveCols}){
       const have=myS.stones?.[chain.stone]||0;
       if(have<totalCost){toast(`진화석 ${totalCost}개 필요! (보유:${have})`,"var(--red)");return;}
 
-      // 강화진화: 대성공/성공 중 결과, 기본진화: 무조건 성공
+      // 강화진화: [대성공률, 성공률] 기반, 나머지는 실패(진화석만 소모)
+      // 기본진화: 무조건 100% 성공
       let evoResult="success";
       if(isEnhanced){
         const rates=EVO_RATES[bm.rarity]||EVO_RATES["COMMON"];
         const r=Math.random();
-        if(r<rates[0])evoResult="great";
-        else evoResult="success";
+        if(r<rates[0]) evoResult="great";           // 대성공
+        else if(r<rates[0]+rates[1]) evoResult="success"; // 성공
+        else evoResult="fail";                       // 실패 (진화석만 소모)
+      }
+
+      if(evoResult==="fail"){
+        // 실패: 진화석만 소모, 소환수 유지
+        setMy(s=>({...s,stones:{...s.stones,[chain.stone]:Math.max(0,(s.stones[chain.stone]||0)-totalCost)}}));
+        toast(`💔 강화진화 실패... 진화석 ${totalCost}개 소모`,"var(--orange)");
+        return;
       }
 
       const toId=evoResult==="great"&&chain.altTo?chain.altTo:chain.to;
@@ -5979,7 +6139,7 @@ function SideLab({myS,col,setMy,toast,acHex,aliveCols}){
                 color:canEnhanced?"#000":"rgba(0,0,0,0.2)",
                 fontSize:11,fontWeight:800,cursor:canEnhanced?"pointer":"default",fontFamily:"inherit"}}>
               🌟 강화진화<br/>
-              <span style={{fontSize:9,opacity:0.85}}>{st?.emoji}×{baseCost+extraCost} · 대성공{Math.round(rates[0]*100)}%</span>
+              <span style={{fontSize:9,opacity:0.85}}>{st?.emoji}×{baseCost+extraCost} · 대성공{Math.round(rates[0]*100)}% 성공{Math.round(rates[1]*100)}%</span>
             </button>}
           </div>
         </div>;
@@ -5987,52 +6147,44 @@ function SideLab({myS,col,setMy,toast,acHex,aliveCols}){
     </div>;
   };
 
-  // 연구 탭 - 속성 각인/리롤 (EXP 부스터 제거)
+  // 연구 탭 - 현재 속성 확인 (각인은 사냥터/던전 드롭으로만)
   const renderResearch=()=>{
-    const c=targetIdx!==null?aliveCols[targetIdx]:null;
-    const bm=c?MONS.find(m=>m.id===(c.baseId||c.id))||{emoji:"❓",name:"??"}:null;
     return <div>
-      <div style={{fontSize:10,fontWeight:700,color:"var(--tx2)",marginBottom:5}}>대상 소환수 선택</div>
-      <div style={{display:"flex",flexWrap:"wrap",gap:3,marginBottom:8}}>
+      <div style={{fontSize:11,color:"var(--tx3)",marginBottom:10,padding:"7px 9px",
+        background:"rgba(245,158,11,0.05)",borderRadius:8,border:"1px solid rgba(245,158,11,0.15)"}}>
+        🌈 이중속성은 사냥터·던전에서 낮은 확률로 드롭되는 <b>이중속성 각인권</b>으로만 부여됩니다
+      </div>
+      <div style={{fontSize:12,fontWeight:700,color:"var(--tx2)",marginBottom:8}}>보유 소환수 속성 현황</div>
+      <div style={{display:"flex",flexDirection:"column",gap:5}}>
         {aliveCols.map((c2,i)=>{
-          const bm2=MONS.find(m=>m.id===(c2.baseId||c2.id))||{emoji:"❓"};
-          return <button key={i} onClick={()=>setTargetIdx(targetIdx===i?null:i)}
-            style={{padding:"4px 6px",borderRadius:7,border:`1.5px solid ${targetIdx===i?acHex:"rgba(0,0,0,0.08)"}`,
-              background:targetIdx===i?`${acHex}12`:"white",cursor:"pointer",fontFamily:"inherit",
-              fontSize:16,textAlign:"center"}}>
-            {bm2.emoji}
-            <div style={{fontSize:7,color:targetIdx===i?acHex:"var(--tx3)"}}>Lv{c2.lv}</div>
-          </button>;
+          const bm2=MONS.find(m=>m.id===(c2.baseId||c2.id))||{emoji:"❓",name:"??"};
+          const t1=c2.monType?TYPES[c2.monType]:null;
+          const t2=c2.monType2?TYPES[c2.monType2]:null;
+          return <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"7px 10px",
+            borderRadius:9,background:"white",border:"1px solid rgba(0,0,0,0.07)"}}>
+            <span style={{fontSize:18}}>{bm2.emoji}</span>
+            <div style={{flex:1}}>
+              <div style={{fontSize:11,fontWeight:700}}>{c2.name||bm2.name}</div>
+              <div style={{display:"flex",gap:4,marginTop:2}}>
+                {t1?<span style={{fontSize:10,padding:"1px 6px",borderRadius:6,
+                  background:`${t1.color}15`,color:t1.color,fontWeight:700,border:`1px solid ${t1.color}30`}}>
+                  {t1.emoji} {t1.name}
+                </span>:<span style={{fontSize:10,color:"var(--tx3)"}}>속성 없음</span>}
+                {t2&&<span style={{fontSize:10,padding:"1px 6px",borderRadius:6,
+                  background:`${t2.color}15`,color:t2.color,fontWeight:700,border:`1px solid ${t2.color}30`}}>
+                  {t2.emoji} {t2.name} <span style={{fontSize:8,opacity:0.7}}>이중</span>
+                </span>}
+              </div>
+            </div>
+          </div>;
         })}
+        {aliveCols.length===0&&<div style={{textAlign:"center",padding:"16px",color:"var(--tx3)",fontSize:11}}>소환수 없음</div>}
       </div>
-      {c&&bm&&<div style={{padding:"7px 9px",borderRadius:9,background:`${acHex}08`,border:`1px solid ${acHex}20`,marginBottom:8}}>
-        <span style={{fontSize:11,fontWeight:700}}>{bm.emoji} {c.name||bm.name}</span>
-        <span style={{fontSize:10,color:"var(--tx3)",marginLeft:6}}>
-          {c.monType?`${TYPES[c.monType]?.emoji}${TYPES[c.monType]?.name}`:"속성:없음"}
-        </span>
-      </div>}
-      {/* 속성 각인 */}
-      <div style={{fontSize:10,fontWeight:700,color:"var(--cyan)",marginBottom:5}}>💎 속성 각인 (진화석×2)</div>
-      <div style={{display:"flex",flexWrap:"wrap",gap:3,marginBottom:8}}>
-        {Object.entries(TYPES).map(([type,t])=>(
-          <button key={type} onClick={()=>useImprint("stone1",type)}
-            disabled={targetIdx===null||(myS.stones?.stone1||0)<2}
-            style={{padding:"3px 7px",borderRadius:7,border:"1px solid rgba(0,0,0,0.08)",
-              background:"white",cursor:"pointer",fontFamily:"inherit",
-              fontSize:11,display:"flex",alignItems:"center",gap:2}}>
-            {t.emoji}<span style={{fontSize:9,color:t.color}}>{t.name}</span>
-          </button>
-        ))}
+      <div style={{marginTop:12,padding:"8px 10px",borderRadius:9,background:"rgba(139,92,246,0.05)",
+        border:"1px solid rgba(139,92,246,0.12)",fontSize:10,color:"var(--tx3)",lineHeight:1.7}}>
+        💡 이중속성 각인권: 사냥터 보스급 몬스터 · 고급/전설 던전에서 낮은 확률 드롭<br/>
+        💡 이중속성 보유 시 두 속성 모두 상성 효과 적용
       </div>
-      {/* 랜덤 리롤 */}
-      <div style={{fontSize:10,fontWeight:700,color:"var(--gold)",marginBottom:5}}>🌈 속성 랜덤 변환</div>
-      <button onClick={useReroll} disabled={targetIdx===null||(myS.stones?.stone3||0)<=0}
-        style={{width:"100%",padding:"7px 0",borderRadius:9,border:"none",
-          background:targetIdx!==null&&(myS.stones?.stone3||0)>0?"linear-gradient(135deg,var(--gold),#d97706)":"rgba(0,0,0,0.06)",
-          color:targetIdx!==null&&(myS.stones?.stone3||0)>0?"#000":"rgba(0,0,0,0.2)",
-          fontSize:10,fontWeight:800,cursor:"pointer",fontFamily:"inherit"}}>
-        ⭐ 희귀진화석×1 소모 · 속성 랜덤 (보유:{myS.stones?.stone3||0}개)
-      </button>
     </div>;
   };
 
@@ -6043,7 +6195,7 @@ function SideLab({myS,col,setMy,toast,acHex,aliveCols}){
       진화석을 활용해 소환수를 강화하고 진화시키는 연구소입니다
     </div>
     <div style={{display:"flex",gap:5,marginBottom:12}}>
-      {[["evo","⚗️ 진화"],["awaken","💠 각성"],["research","🔬 속성연구"]].map(([k,l])=>(
+      {[["evo","⚗️ 진화"],["awaken","💠 각성"],["research","🌈 속성"]].map(([k,l])=>(
         <button key={k} onClick={()=>setLabTab(k)}
           style={{flex:1,padding:"8px 0",borderRadius:10,border:`1.5px solid ${labTab===k?acHex:"rgba(0,0,0,0.08)"}`,
             background:labTab===k?`${acHex}12`:"white",cursor:"pointer",fontFamily:"inherit",
@@ -6056,23 +6208,35 @@ function SideLab({myS,col,setMy,toast,acHex,aliveCols}){
     {labTab==="awaken"&&<div>
       <div style={{fontSize:11,color:"var(--tx3)",marginBottom:10,padding:"7px 9px",
         background:"rgba(6,182,212,0.05)",borderRadius:8,border:"1px solid rgba(6,182,212,0.15)"}}>
-        💠 각성석(1~3단계) · 🌀초월석(4~5단계) 소모 → 소환수 스탯 영구 강화
+        💠 각성은 <b>진화체</b>만 가능! 각성석(1~3단계) · 🌀초월석(4~5단계) 소모
       </div>
-      <div style={{fontSize:12,fontWeight:700,color:"var(--tx2)",marginBottom:6}}>대상 소환수</div>
-      <div style={{display:"flex",flexWrap:"wrap",gap:4,marginBottom:10}}>
-        {aliveCols.map((c2,i)=>{
-          const bm2=MONS.find(m=>m.id===(c2.baseId||c2.id))||{emoji:"❓"};
-          const isAwakened=c2.awakened||false;
-          return <button key={i} onClick={()=>setTargetIdx(targetIdx===i?null:i)}
-            style={{padding:"5px 4px",borderRadius:8,border:`1.5px solid ${targetIdx===i?"#06b6d4":"rgba(0,0,0,0.08)"}`,
-              background:targetIdx===i?"rgba(6,182,212,0.1)":"white",cursor:"pointer",fontFamily:"inherit",textAlign:"center",
-              position:"relative"}}>
-            <div style={{fontSize:16}}>{bm2.emoji}</div>
-            <div style={{fontSize:7,color:"var(--tx3)"}}>Lv{c2.lv}</div>
-            {isAwakened&&<div style={{position:"absolute",top:-2,right:-2,fontSize:8}}>💠</div>}
-          </button>;
-        })}
-      </div>
+      <div style={{fontSize:12,fontWeight:700,color:"var(--tx2)",marginBottom:6}}>진화체 소환수</div>
+      {(()=>{
+        // 진화체 ID 목록: EVO_CHAIN의 to/altTo에 해당하는 것들
+        const evoTargetIds=new Set(Object.values(EVO_CHAIN).flatMap(c=>[c.to,c.altTo].filter(Boolean)));
+        const awakenableCols=aliveCols.filter(c=>{
+          const id=c.baseId||c.id;
+          return evoTargetIds.has(id);
+        });
+        if(awakenableCols.length===0)return <div style={{textAlign:"center",padding:"16px 0",color:"var(--tx3)",fontSize:11}}>
+          진화체 소환수가 없습니다.<br/>먼저 소환수를 진화시켜주세요!
+        </div>;
+        return <div style={{display:"flex",flexWrap:"wrap",gap:4,marginBottom:10}}>
+          {awakenableCols.map((c2)=>{
+            const i=aliveCols.indexOf(c2);
+            const bm2=MONS.find(m=>m.id===(c2.baseId||c2.id))||{emoji:"❓"};
+            const isAwakened=c2.awakened||false;
+            return <button key={i} onClick={()=>setTargetIdx(targetIdx===i?null:i)}
+              style={{padding:"5px 4px",borderRadius:8,border:`1.5px solid ${targetIdx===i?"#06b6d4":"rgba(0,0,0,0.08)"}`,
+                background:targetIdx===i?"rgba(6,182,212,0.1)":"white",cursor:"pointer",fontFamily:"inherit",textAlign:"center",
+                position:"relative"}}>
+              <div style={{fontSize:16}}>{bm2.emoji}</div>
+              <div style={{fontSize:7,color:"var(--tx3)"}}>Lv{c2.lv}</div>
+              {isAwakened&&<div style={{position:"absolute",top:-2,right:-2,fontSize:8}}>💠</div>}
+            </button>;
+          })}
+        </div>;
+      })()}
       {targetIdx!==null&&(()=>{
         const c=aliveCols[targetIdx];
         const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{emoji:"❓",name:"??",atk:10,hp:30};
