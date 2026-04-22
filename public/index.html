@@ -2388,7 +2388,6 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
       toast("💀 대실패!! 소환수가 사망했다...","var(--red)");
     }
   };
-  };
 
   const reviveMon=(idx)=>{
     if((myS.specials?.revive||0)<=0){toast("부활권 없음!","var(--red)");return;}
