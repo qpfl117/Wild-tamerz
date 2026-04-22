@@ -278,7 +278,7 @@ const CONSUMABLES=[
   {id:"enhance_stone",name:"강화석",emoji:"🔩",desc:"소환수 강화에 사용"},
 ];
 const BOSS_ITEMS=[
-  {id:"boss_crystal",name:"보스 크리스탈",emoji:"🔴",desc:"합성 시 등급UP +30%"},
+  {id:"boss_crystal",name:"레이드 크리스탈",emoji:"🔴",desc:"합성 시 등급UP +30%"},
   {id:"ancient_shard",name:"고대의 파편",emoji:"💎",desc:"진화 100% 보장 (1회용)"},
   {id:"boss_eye",name:"보스의 눈",emoji:"👁️",desc:"미포획 몬스터 포획률 2배 (1회용)"},
   {id:"trophy",name:"트로피",emoji:"🏆",desc:"수집용 명예 아이템"},
@@ -1863,39 +1863,31 @@ function App(){
 
 
 function SidePanel({sideTabTop,setSideTabTop,
-  SIDE_TABS_TOP,SIDE_TABS_BOT,myS,col,tLv,tExpNeed,maxStorage,acHex,isSik,
+  myS,col,tLv,tExpNeed,maxStorage,acHex,isSik,
   todayDay,claimMonthly,dgExploring,dgRes,setDgRes,runDungeon,DUNGEONS,unlocks,aliveCols,
-  useStaminaPot,fa,fb,setFa,setFb,fuse,fusRes,fusAnim,bs,blog,lr,attack,resetB,
+  useStaminaPot,bs,blog,lr,attack,resetB,
   oppS,myPick,setMyPick,oppPick,setOppPick,oppHas,battleLeft,startPvp,claimAchReward,
-  MAX_ENHANCE,MONS,RCOL,sideScrollRef,sideScrollPos,setMy,toast}){
+  MONS,RCOL,sideScrollRef,sideScrollPos,setMy,toast}){
 
-  // 모든 탭을 1줄로 통합
+  // 오른쪽 패널 = 정보/관리 전용
   const ALL_TABS=[
     ["tamer","🏅","테이머"],
-    ["dungeon","🏰","던전"],
     ["monthly","📅","출석"],
-    ["battle","⚔️","배틀"],
-    ["raid","🌋","레이드"],
     ["breed","🥚","교배"],
     ["dex","📖","도감"],
     ["ach","🏆","업적"],
     ["lab","🔬","연구소"],
     ["help","❓","도움말"],
-    ["prob","📊","확률표"],
   ];
 
   const renderContent=()=>{
     if(sideTabTop==="tamer") return <SideTamer myS={myS} tLv={tLv} tExpNeed={tExpNeed} col={col} maxStorage={maxStorage} acHex={acHex} setMy={setMy}/>;
     if(sideTabTop==="monthly") return <SideMonthly myS={myS} todayDay={todayDay} claimMonthly={claimMonthly}/>;
-    if(sideTabTop==="dungeon") return <SideDungeon myS={myS} dgExploring={dgExploring} dgRes={dgRes} setDgRes={setDgRes} runDungeon={runDungeon} DUNGEONS={DUNGEONS} unlocks={unlocks} aliveCols={aliveCols} useStaminaPot={useStaminaPot}/>;
-    if(sideTabTop==="battle") return <SideBattle myS={myS} col={col} setMy={setMy} toast={toast} aliveCols={aliveCols} acHex={acHex} oppS={oppS} myPick={myPick} setMyPick={setMyPick} oppPick={oppPick} setOppPick={setOppPick} oppHas={oppHas} battleLeft={battleLeft} startPvp={startPvp} bs={bs} blog={blog} lr={lr} attack={attack} resetB={resetB}/>;
-    if(sideTabTop==="raid") return <SideRaid myS={myS} col={col} setMy={setMy} toast={toast} aliveCols={aliveCols} acHex={acHex}/>;
     if(sideTabTop==="breed") return <SideBreed myS={myS} col={col} setMy={setMy} toast={toast} aliveCols={aliveCols} acHex={acHex}/>;
     if(sideTabTop==="dex") return <SideDex myS={myS} col={col} acHex={acHex} setMy={setMy}/>;
     if(sideTabTop==="ach") return <SideAch myS={myS} acHex={acHex} claimAchReward={claimAchReward}/>;
     if(sideTabTop==="lab") return <SideLab myS={myS} col={col} setMy={setMy} toast={toast} acHex={acHex} aliveCols={aliveCols}/>;
-    if(sideTabTop==="help") return <SideHelp acHex={acHex}/>;
-    if(sideTabTop==="prob") return <SideProb/>;
+    if(sideTabTop==="help") return <SideHelpProb acHex={acHex}/>;
     return null;
   };
 
@@ -1904,7 +1896,7 @@ function SidePanel({sideTabTop,setSideTabTop,
       flexShrink:0,overflowX:"auto",scrollbarWidth:"none",msOverflowStyle:"none"}}>
       {ALL_TABS.map(([k,icon,name])=>(
         <button key={k}
-          style={{flexShrink:0,minWidth:48,padding:"9px 6px 7px",border:"none",
+          style={{flexShrink:0,minWidth:46,padding:"9px 6px 7px",border:"none",
             background:"transparent",fontSize:10,fontWeight:sideTabTop===k?800:500,
             color:sideTabTop===k?acHex:"#b0a8cc",cursor:"pointer",fontFamily:"inherit",
             borderBottom:`3px solid ${sideTabTop===k?acHex:"transparent"}`,
@@ -2311,7 +2303,8 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
   // 실시간 대전 - 배틀룸
   const [battleRoom,setBattleRoom]=useState(null); // Firebase 실시간 배틀룸
   const [battleRoomId,setBattleRoomId]=useState(null);
-  const [onlineUsers,setOnlineUsers]=useState({}); // 접속 중인 유저 목록
+  const [onlineUsers,setOnlineUsers]=useState({});
+  const [pvpSubTab,setPvpSubTab]=useState("battle"); // "battle" | "raid"
   const lr=useRef(null);
   const blr=useRef(null);
   const fieldRef=useRef(null);
@@ -3148,11 +3141,10 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
   const oppHas=(oppS?.collection||[]).filter(c=>c.alive!==false).length>0;
   const todayDay=new Date().getDate();
   const battleLeft=getBattleLeft();
-  const MAIN_TABS=[["field","🗺","필드"],["collection","📦","소환수"],["bag","🎒","가방"],["shop","🛒","상점"],["hunt","⚔️","사냥터"],["fusion","🔮","합성"],["pvp","👥","대전"]];
-  const MENU_TABS=[["monthly","📅","월간출석"],["tamer","🏅","테이머"],["dex","📖","도감"],["ach","🏆","업적"],["stonelab","💎","연구소"],["help","❓","도움말"],["prob","📊","확률표"]];
+  const MAIN_TABS=[["field","🗺","필드"],["collection","📦","소환수"],["bag","🎒","가방"],["shop","🛒","상점"],["dungeon","🏰","던전"],["hunt","⚔️","사냥터"],["fusion","🔮","합성"],["pvp","👥","대전"]];
+  const MENU_TABS=[["monthly","📅","월간출석"],["tamer","🏅","테이머"],["dex","📖","도감"],["ach","🏆","업적"],["lab","🔬","연구소"],["help","❓","도움말"]];
 
-  const SIDE_TABS_TOP=[["tamer","🏅","테이머"],["dungeon","🏰","던전"],["monthly","📅","출석"],["raid","⚔️","레이드"],["breed","🥚","교배"]];
-  const SIDE_TABS_BOT=[["dex","📖","도감"],["ach","🏆","업적"],["stonelab","💎","진화석"],["help","❓","도움말"],["prob","📊","확률표"]];
+  const SIDE_TABS_TOP=[["tamer","🏅","테이머"],["monthly","📅","출석"],["breed","🥚","교배"],["dex","📖","도감"],["ach","🏆","업적"],["lab","🔬","연구소"],["help","❓","도움말"]];
 
   return <div className="app-outer">
     <div className="game-col">
@@ -3590,7 +3582,7 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
         {title:"진화석",items:EVO_STONES,key:"stones",color:"var(--purple)"},
         {title:"특수 (교환전용)",items:SPECIALS,key:"specials",color:"var(--blue)"},
         {title:"소모품",items:CONSUMABLES,key:"consumables",color:"var(--gold)"},
-        {title:"보스 토벌 보상",items:BOSS_ITEMS,key:"bossItems",color:"var(--orange)"},
+        {title:"레이드 보상",items:BOSS_ITEMS,key:"bossItems",color:"var(--orange)"},
         {title:"배틀 아이템",items:[{id:"battle_token",name:"배틀 토큰",emoji:"🪙",desc:"배틀 전용 교환 화폐"}],key:"battleItems",color:"var(--cyan)"},
         {title:"속성 진화석",items:TYPE_STONES,key:"typeStones",color:"var(--purple)"},
       ].map(({title,items,key,color})=>(
@@ -3675,6 +3667,92 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
         })}
       </div>;
     })()}
+
+    {/* ── 던전 (메인탭) ── */}
+    {tab==="dungeon"&&<div style={{padding:12}}>
+      <div style={{position:"relative",overflow:"hidden",borderRadius:12,marginBottom:10}}>
+        <svg width="100%" height={80} viewBox="0 0 600 80" style={{display:"block",width:"100%"}}>
+          <defs><linearGradient id="dgsky" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#1c1917"/><stop offset="100%" stopColor="#292524"/>
+          </linearGradient></defs>
+          <rect width={600} height={80} fill="url(#dgsky)"/>
+          <ellipse cx={300} cy={55} rx={180} ry={35} fill="#f59e0b" opacity={0.08}/>
+          <text x={300} y={38} textAnchor="middle" fontSize={18} fontWeight="900" fill="#fbbf24">🏰 던전</text>
+          <text x={300} y={58} textAnchor="middle" fontSize={10} fill="rgba(251,191,36,0.7)">스태미나 소모 · 아이템 파밍</text>
+        </svg>
+      </div>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+        <span style={{fontSize:13,color:"var(--tx2)",fontWeight:700}}>⚡{myS.stamina||0}/{myS.maxStamina||10} 스태미나</span>
+        {(myS.consumables?.stamina_pot||0)>0&&<button onClick={useStaminaPot}
+          style={{padding:"5px 12px",borderRadius:8,border:"none",background:"rgba(6,182,212,0.12)",
+            color:"var(--cyan)",fontSize:12,cursor:"pointer",fontFamily:"inherit",fontWeight:700}}>
+          ⚡포션 사용 ({myS.consumables?.stamina_pot||0}개)</button>}
+      </div>
+      {dgExploring&&<div style={{borderRadius:10,overflow:"hidden",marginBottom:8}}>
+        <svg width="100%" height={70} viewBox="0 0 300 70" style={{display:"block",width:"100%"}}>
+          <rect width={300} height={70} fill="#1c1917"/>
+          <g style={{animation:"dungeonRun 2.2s linear forwards"}}>
+            <text x={25} y={55} textAnchor="middle" fontSize={26}>{dgExploring.mon?.emoji||"❓"}</text>
+          </g>
+          <text x={150} y={24} textAnchor="middle" fontSize={10} fontWeight="900" fill="#fbbf24">{dgExploring.dg.emoji} {dgExploring.dg.name} 탐험중...</text>
+        </svg>
+      </div>}
+      {dgRes&&!dgExploring&&<div style={{borderRadius:10,padding:"9px 12px",marginBottom:8,
+        background:"rgba(16,185,129,0.08)",border:"1px solid rgba(16,185,129,0.2)"}}>
+        <div style={{fontSize:13,fontWeight:700,color:"var(--green)"}}>✅ {dgRes.dg.name} ×{dgRes.runs}회 클리어!</div>
+        <div style={{fontSize:12,color:"var(--tx2)",marginTop:2}}>{dgRes.dt||"드롭 없음"}</div>
+        <button onClick={()=>setDgRes(null)} style={{marginTop:5,fontSize:11,padding:"3px 10px",borderRadius:7,
+          border:"none",background:"rgba(16,185,129,0.12)",color:"var(--green)",cursor:"pointer",fontFamily:"inherit"}}>닫기</button>
+      </div>}
+      {!dgExploring&&DUNGEONS.map(dg=>{
+        const locked=!unlocks.dungeons.includes(dg.id);
+        const canEnter=!locked&&(myS.stamina||0)>=dg.stamina&&aliveCols.length>0;
+        return <div key={dg.id} style={{border:`1.5px solid ${canEnter?"var(--green)30":"rgba(0,0,0,0.08)"}`,
+          borderRadius:12,padding:"11px 14px",marginBottom:8,
+          background:canEnter?"rgba(16,185,129,0.04)":"white",opacity:locked?0.4:1,
+          boxShadow:"0 2px 8px rgba(0,0,0,0.05)"}}>
+          <div style={{display:"flex",alignItems:"center",gap:10}}>
+            <div style={{fontSize:24}}>{locked?"🔒":dg.emoji}</div>
+            <div style={{flex:1}}>
+              <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3}}>
+                <span style={{fontWeight:800,fontSize:15}}>{dg.name}</span>
+                <Badge text={`⚡${dg.stamina}`} color="var(--gold)"/>
+              </div>
+              <div style={{fontSize:12,color:"var(--tx3)"}}>
+                드롭: {dg.drops.map(d=>{const it=[...FOODS,...EVO_STONES,{id:"enhance_stone",emoji:"🔩"}].find(i=>i.id===d.id);return it?`${it.emoji}(${Math.round(d.rate*100)}%)`:""}).filter(Boolean).join(" ")}
+              </div>
+            </div>
+          </div>
+          <div style={{marginTop:8}}>
+            <Btn onClick={()=>runDungeon(dg,1)} disabled={!canEnter} color="var(--green)" sm>
+              {locked?"🔒 잠금":!canEnter?(myS.stamina||0)<dg.stamina?"⚡ 스태미나 부족":"소환수 없음":"1회 소탕"}
+            </Btn>
+            {canEnter&&<div style={{display:"flex",gap:5,marginTop:5}}>
+              {[3,5,-1].map(n=>{
+                const cnt=n===-1?Math.floor((myS.stamina||0)/dg.stamina):n;
+                const enough=(myS.stamina||0)>=dg.stamina*Math.min(cnt,n===-1?cnt:n);
+                return <button key={n} onClick={()=>enough&&runDungeon(dg,n)}
+                  disabled={!enough||cnt<=0}
+                  style={{flex:1,padding:"5px 0",borderRadius:8,
+                    border:`1px solid ${enough?"var(--green)40":"rgba(0,0,0,0.08)"}`,
+                    background:enough?"rgba(16,185,129,0.07)":"rgba(0,0,0,0.02)",
+                    color:enough?"var(--green)":"var(--tx3)",fontSize:12,fontWeight:700,
+                    cursor:enough?"pointer":"default",fontFamily:"inherit"}}>
+                  {n===-1?`전부(${cnt}회)`:n===3?"3회":"5회"}
+                </button>;
+              })}
+            </div>}
+          </div>
+        </div>;
+      })}
+    </div>}
+
+    {/* ── 던전 ── */}
+    {tab==="dungeon"&&<div style={{padding:12}}>
+      <SideDungeon myS={myS} dgExploring={dgExploring} dgRes={dgRes} setDgRes={setDgRes}
+        runDungeon={runDungeon} DUNGEONS={DUNGEONS} unlocks={unlocks} aliveCols={aliveCols}
+        useStaminaPot={useStaminaPot}/>
+    </div>}
 
     {/* ── 사냥터 ── */}
     {tab==="hunt"&&<div>
@@ -3928,24 +4006,43 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
       </div>
     </div>}
 
-    {/* ── 멀티대전 (실시간) ── */}
+    {/* ── 대전 (배틀 + 레이드) ── */}
     {tab==="pvp"&&<div>
+      {/* 헤더 배너 */}
       <div style={{position:"relative",overflow:"hidden"}}>
-        <svg width="100%" height={90} viewBox="0 0 600 90" style={{display:"block",width:"100%"}}>
+        <svg width="100%" height={80} viewBox="0 0 600 80" style={{display:"block",width:"100%"}}>
           <defs><linearGradient id="pvpsky" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor="#1e1b4b"/><stop offset="100%" stopColor="#4c1d95"/>
           </linearGradient></defs>
-          <rect width={600} height={90} fill="url(#pvpsky)"/>
+          <rect width={600} height={80} fill="url(#pvpsky)"/>
           {[[40,12],[140,20],[300,8],[460,18],[550,12]].map(([sx,sy],i)=>(
             <circle key={i} cx={sx} cy={sy} r={i%2===0?2:1.2} fill="white" opacity={0.5}/>
           ))}
-          <rect x={0} y={64} width={600} height={26} fill="#2e1065"/>
-          <rect x={0} y={64} width={600} height={3} fill="#a855f7"/>
-          <text x={300} y={42} textAnchor="middle" fontSize={20} fontWeight="900" fill="white">⚔️ 실시간 멀티대전</text>
-          <text x={300} y={58} textAnchor="middle" fontSize={9} fill="rgba(255,255,255,0.6)">온라인 유저와 실시간 배틀 · 패배 시 소환수 전사</text>
+          <rect x={0} y={58} width={600} height={22} fill="#2e1065"/>
+          <rect x={0} y={58} width={600} height={3} fill="#a855f7"/>
+          <text x={300} y={38} textAnchor="middle" fontSize={18} fontWeight="900" fill="white">👥 대전</text>
+          <text x={300} y={54} textAnchor="middle" fontSize={9} fill="rgba(255,255,255,0.6)">실시간 배틀 · 레이드 보스 도전 · 패배 시 소환수 전사</text>
         </svg>
       </div>
-      <div style={{padding:"10px 12px"}}>
+      {/* 서브탭 */}
+      <div style={{display:"flex",borderBottom:"2px solid rgba(139,92,246,0.1)",background:"white"}}>
+        {[["battle","⚔️ 배틀"],["raid","🌋 레이드"]].map(([k,l])=>(
+          <button key={k} onClick={()=>setPvpSubTab(k)} style={{
+            flex:1,padding:"10px 0",border:"none",background:"transparent",
+            fontSize:13,fontWeight:pvpSubTab===k?800:500,fontFamily:"inherit",cursor:"pointer",
+            color:pvpSubTab===k?acHex:"var(--tx3)",
+            borderBottom:`3px solid ${pvpSubTab===k?acHex:"transparent"}`,
+            transition:"all 0.15s"}}>
+            {l}
+          </button>
+        ))}
+      </div>
+      {/* 레이드 서브탭 */}
+      {pvpSubTab==="raid"&&<div style={{padding:"10px 12px"}}>
+        <SideRaid myS={myS} col={col} setMy={setMy} toast={toast} aliveCols={aliveCols} acHex={acHex}/>
+      </div>}
+      {/* 배틀 서브탭 */}
+      {pvpSubTab==="battle"&&<div style={{padding:"10px 12px"}}>
 
         {/* 배틀 요청 수신 */}
         {myS.battleRequest&&<div style={{padding:"12px",borderRadius:14,background:"rgba(139,92,246,0.08)",
@@ -4115,7 +4212,7 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
 
           {bs&&<BV bs={bs} log={blog} lr={lr} ac={acHex} attack={attack} resetB={resetB}/>}
         </>}
-      </div>
+      </div>}
     </div>}
 
     {/* ── 합성 ── */}
@@ -4286,10 +4383,9 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
         </span>
       </div>
       <div className="mobile-panel-tabs">
-        {[["tamer","🏅","테이머"],["dungeon","🏰","던전"],["monthly","📅","출석"],
-          ["battle","⚔️","배틀"],["raid","🌋","레이드"],["breed","🥚","교배"],
-          ["dex","📖","도감"],["ach","🏆","업적"],["lab","🔬","연구소"],
-          ["help","❓","도움말"],["prob","📊","확률표"]].map(([k,icon,name])=>(
+        {[["tamer","🏅","테이머"],["monthly","📅","출석"],
+          ["breed","🥚","교배"],["dex","📖","도감"],["ach","🏆","업적"],
+          ["lab","🔬","연구소"],["help","❓","도움말"]].map(([k,icon,name])=>(
           <button key={k} className={`side-tab${mobilePanelTab===k?" active":""}`}
             onClick={()=>setMobilePanelTab(k)}>
             {icon}<br/>{name}
@@ -4298,16 +4394,12 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
       </div>
       <div className="mobile-panel-content">
         {mobilePanelTab==="tamer"&&<SideTamer myS={myS} tLv={tLv} tExpNeed={tExpNeed} col={col} maxStorage={maxStorage} acHex={acHex} setMy={setMy}/>}
-        {mobilePanelTab==="dungeon"&&<SideDungeon myS={myS} dgExploring={dgExploring} dgRes={dgRes} setDgRes={setDgRes} runDungeon={runDungeon} DUNGEONS={DUNGEONS} unlocks={unlocks} aliveCols={aliveCols} useStaminaPot={useStaminaPot}/>}
         {mobilePanelTab==="monthly"&&<SideMonthly myS={myS} todayDay={todayDay} claimMonthly={claimMonthly}/>}
-        {mobilePanelTab==="battle"&&<SideBattle myS={myS} col={col} setMy={setMy} toast={toast} aliveCols={aliveCols} acHex={acHex} oppS={oppS} myPick={myPick} setMyPick={setMyPick} oppPick={oppPick} setOppPick={setOppPick} oppHas={oppHas} battleLeft={battleLeft} startPvp={startPvp} bs={bs} blog={blog} lr={lr} attack={attack} resetB={resetB}/>}
-        {mobilePanelTab==="raid"&&<SideRaid myS={myS} col={col} setMy={setMy} toast={toast} aliveCols={aliveCols} acHex={acHex}/>}
         {mobilePanelTab==="breed"&&<SideBreed myS={myS} col={col} setMy={setMy} toast={toast} aliveCols={aliveCols} acHex={acHex}/>}
         {mobilePanelTab==="dex"&&<SideDex myS={myS} col={col} acHex={acHex} setMy={setMy}/>}
         {mobilePanelTab==="ach"&&<SideAch myS={myS} acHex={acHex} claimAchReward={claimAchReward}/>}
         {mobilePanelTab==="lab"&&<SideLab myS={myS} col={col} setMy={setMy} toast={toast} acHex={acHex} aliveCols={aliveCols}/>}
-        {mobilePanelTab==="help"&&<SideHelp acHex={acHex}/>}
-        {mobilePanelTab==="prob"&&<SideProb/>}
+        {mobilePanelTab==="help"&&<SideHelpProb acHex={acHex}/>}
       </div>
     </div>
 
@@ -4677,7 +4769,7 @@ function SideTamer({myS,tLv,tExpNeed,col,maxStorage,acHex,setMy}){
         </div>
       ))}
     </div>
-    <div style={{fontSize:11,fontWeight:700,color:"var(--tx2)",marginBottom:6}}>보스 토벌</div>
+    <div style={{fontSize:11,fontWeight:700,color:"var(--tx2)",marginBottom:6}}>🌋 레이드 토벌</div>
     {MONS.filter(m=>m.rarity==="BOSS").map(bm=>{
       const k=(myS.bossKills||{})[bm.id]||0;
       return <div key={bm.id} style={{display:"flex",alignItems:"center",gap:8,padding:"7px 10px",borderRadius:10,background:k>0?"rgba(239,68,68,0.06)":"rgba(0,0,0,0.02)",border:`1px solid ${k>0?"rgba(239,68,68,0.2)":"rgba(0,0,0,0.06)"}`,marginBottom:5}}>
@@ -5242,39 +5334,49 @@ function SideBreed({myS,col,setMy,toast,aliveCols,acHex}){
     </div>
 
     {breedTab==="select"&&<div>
-      <div style={{fontSize:10,fontWeight:700,color:"#3b82f6",marginBottom:4}}>♂ 수컷 선택</div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:3,marginBottom:8}}>
+      <div style={{fontSize:11,fontWeight:700,color:"#3b82f6",marginBottom:5}}>♂ 수컷 선택</div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:5,marginBottom:10}}>
         {males.map(({c},i)=>{
           const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{emoji:"❓",rarity:"COMMON"};
+          const enh=c.enhance||0;
           return <button key={i} onClick={()=>setParentMale(parentMale===i?null:i)}
-            style={{padding:"4px 2px",borderRadius:7,border:`1.5px solid ${parentMale===i?"#3b82f6":"rgba(0,0,0,0.08)"}`,
-              background:parentMale===i?"rgba(59,130,246,0.1)":"white",cursor:"pointer",fontFamily:"inherit",textAlign:"center"}}>
-            <div style={{fontSize:14}}>{bm.emoji}</div>
-            <div style={{fontSize:6,color:"var(--tx3)"}}>Lv{c.lv}</div>
-            <div style={{fontSize:6,color:RCOL[bm.rarity]||"#888"}}>{bm.rarity?.slice(0,4)}</div>
+            style={{padding:"8px 4px",borderRadius:10,border:`2px solid ${parentMale===i?"#3b82f6":"rgba(0,0,0,0.08)"}`,
+              background:parentMale===i?"rgba(59,130,246,0.1)":"white",cursor:"pointer",fontFamily:"inherit",textAlign:"center",
+              boxShadow:parentMale===i?"0 2px 8px rgba(59,130,246,0.3)":"0 1px 4px rgba(0,0,0,0.05)"}}>
+            <div style={{fontSize:20,marginBottom:2}}>{bm.emoji}</div>
+            <div style={{fontSize:8,fontWeight:700,color:"var(--tx1)",marginBottom:1,
+              whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{bm.name}</div>
+            <div style={{fontSize:8,color:"var(--tx3)"}}>Lv{c.lv}{enh>0&&<span style={{color:"var(--purple)",fontWeight:800}}> +{enh}</span>}</div>
+            <div style={{fontSize:8,fontWeight:700,color:RCOL[bm.rarity]||"#888"}}>{bm.rarity?.slice(0,4)}</div>
           </button>;
         })}
-        {males.length===0&&<div style={{gridColumn:"1/-1",fontSize:9,color:"var(--tx3)",padding:"6px 0",textAlign:"center"}}>♂수컷 없음</div>}
+        {males.length===0&&<div style={{gridColumn:"1/-1",fontSize:10,color:"var(--tx3)",padding:"8px 0",textAlign:"center"}}>♂수컷 없음</div>}
       </div>
-      <div style={{fontSize:10,fontWeight:700,color:"#ec4899",marginBottom:4}}>♀ 암컷 선택</div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:3,marginBottom:8}}>
+      <div style={{fontSize:11,fontWeight:700,color:"#ec4899",marginBottom:5}}>♀ 암컷 선택</div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:5,marginBottom:10}}>
         {females.map(({c},i)=>{
           const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{emoji:"❓",rarity:"COMMON"};
+          const enh=c.enhance||0;
           return <button key={i} onClick={()=>setParentFemale(parentFemale===i?null:i)}
-            style={{padding:"4px 2px",borderRadius:7,border:`1.5px solid ${parentFemale===i?"#ec4899":"rgba(0,0,0,0.08)"}`,
-              background:parentFemale===i?"rgba(236,72,153,0.1)":"white",cursor:"pointer",fontFamily:"inherit",textAlign:"center"}}>
-            <div style={{fontSize:14}}>{bm.emoji}</div>
-            <div style={{fontSize:6,color:"var(--tx3)"}}>Lv{c.lv}</div>
-            <div style={{fontSize:6,color:RCOL[bm.rarity]||"#888"}}>{bm.rarity?.slice(0,4)}</div>
+            style={{padding:"8px 4px",borderRadius:10,border:`2px solid ${parentFemale===i?"#ec4899":"rgba(0,0,0,0.08)"}`,
+              background:parentFemale===i?"rgba(236,72,153,0.1)":"white",cursor:"pointer",fontFamily:"inherit",textAlign:"center",
+              boxShadow:parentFemale===i?"0 2px 8px rgba(236,72,153,0.3)":"0 1px 4px rgba(0,0,0,0.05)"}}>
+            <div style={{fontSize:20,marginBottom:2}}>{bm.emoji}</div>
+            <div style={{fontSize:8,fontWeight:700,color:"var(--tx1)",marginBottom:1,
+              whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{bm.name}</div>
+            <div style={{fontSize:8,color:"var(--tx3)"}}>Lv{c.lv}{enh>0&&<span style={{color:"var(--purple)",fontWeight:800}}> +{enh}</span>}</div>
+            <div style={{fontSize:8,fontWeight:700,color:RCOL[bm.rarity]||"#888"}}>{bm.rarity?.slice(0,4)}</div>
           </button>;
         })}
-        {females.length===0&&<div style={{gridColumn:"1/-1",fontSize:9,color:"var(--tx3)",padding:"6px 0",textAlign:"center"}}>♀암컷 없음 (포획 시 랜덤 성별 부여)</div>}
+        {females.length===0&&<div style={{gridColumn:"1/-1",fontSize:10,color:"var(--tx3)",padding:"8px 0",textAlign:"center"}}>
+          ♀암컷 없음<br/><span style={{fontSize:9}}>포획 시 랜덤 성별 부여</span>
+        </div>}
       </div>
       <button onClick={startBreed} disabled={parentMale===null||parentFemale===null||!!egg}
-        style={{width:"100%",padding:"8px 0",borderRadius:10,border:"none",
+        style={{width:"100%",padding:"10px 0",borderRadius:11,border:"none",
           background:parentMale!==null&&parentFemale!==null&&!egg?"linear-gradient(135deg,var(--purple),#6d28d9)":"rgba(0,0,0,0.06)",
           color:parentMale!==null&&parentFemale!==null&&!egg?"white":"rgba(0,0,0,0.2)",
-          fontSize:11,fontWeight:800,cursor:"pointer",fontFamily:"inherit"}}>
+          fontSize:12,fontWeight:800,cursor:"pointer",fontFamily:"inherit"}}>
         {egg?"🥚 육아 중...":"🥚 교배 시작!"}
       </button>
     </div>}
@@ -5875,6 +5977,101 @@ function SideProb(){
     <div style={{marginTop:8,padding:"6px 8px",background:"rgba(245,158,11,0.04)",borderRadius:8,fontSize:10,color:"var(--tx3)",lineHeight:1.6}}>
       💡 보관함: Lv1=16칸 → Lv10=31칸 → Lv20=51칸 → Lv30=76칸 → Lv50=115칸
     </div>
+  </div>;
+}
+
+// ── 도움말 + 확률표 통합 ──
+function SideHelpProb({acHex}){
+  const [tab,setTab]=React.useState("basic");
+  const helps={
+    basic:[
+      {q:"🗺 필드",a:"야생 소환수 출현. 볼 던져 테이밍! 포획 시 속성·성별 자동 부여."},
+      {q:"📦 소환수",a:"보관 중인 소환수 목록. 먹이로 EXP, 강화·진화·속성변환 가능. ⭐즐겨찾기로 주력 설정."},
+      {q:"🎒 가방",a:"보유 아이템 전체 목록. 볼/먹이/진화석/강화석/특수아이템 확인."},
+      {q:"🛒 상점",a:"일반볼로 다양한 아이템 교환. 일부는 일일 구매 제한."},
+      {q:"🏰 던전",a:"스태미나 소모 → 자동 탐험 → 아이템 드롭. 일괄 소탕 가능."},
+      {q:"⚔️ 사냥터",a:"소환수로 야생 몬스터와 전투. 승리 시 강화석 획득, 패배 시 소환수 전사."},
+      {q:"🔮 합성",a:"+10강 소환수 2마리 합성 → 더 강한 등급 생성. MUTANT 포함 가능."},
+      {q:"👥 대전",a:"배틀: 실시간 온라인 유저와 대결. 레이드: 강력한 보스 도전, 세트 장비 획득."},
+    ],
+    system:[
+      {q:"⚡ 스태미나",a:"던전 입장에 소모. 시간이 지나면 자동 회복. 스태미나포션으로 즉시 회복."},
+      {q:"🔩 강화",a:"강화석 소모 → +1~+10. 실패 확률 있음. +7부터 자색, +10 황금색."},
+      {q:"💎 진화",a:"진화석+조건 충족 시 진화. 연구소에서 즉시진화(2배 소모) 가능."},
+      {q:"🧬 교배",a:"UNCOMMON↑ 암수 한 쌍 필요. 우성유전(높은 스탯 70%) 적용. 등급 상승 가능."},
+      {q:"🌋 레이드",a:"보스 HP 4000~5000. 내 소환수도 HP 소모됨. 강화+장비+타입 상성 중요!"},
+      {q:"🏅 테이머 Lv",a:"배틀/포획/업적/던전 시 EXP 획득. 레벨업 시 보관함 칸수 증가."},
+    ],
+    grade:[
+      {q:"등급 순서",a:"COMMON < UNCOMMON < RARE < UNIQUE < SUPER < EPIC < LEGEND < MUTANT < HYBRID < BOSS < DIVINE"},
+      {q:"HYBRID",a:"교배로만 탄생. 부모 등급 평균+1. 우성유전 적용. 고유 스탯."},
+      {q:"MUTANT",a:"합성 시 낮은 확률로 등장. 기본 스탯이 크게 강화됨."},
+      {q:"DIVINE",a:"??? 극히 드문 조우. 포획 불가."},
+    ],
+  };
+  const probSections=[
+    {title:"🔮 합성 확률",rows:[
+      ["COMMON+COMMON","RARE 50% / UNIQUE 15% / SUPER 5% / 실패 30%","#607080"],
+      ["UNCOMMON+UNCOMMON","UNIQUE 45% / SUPER 18% / EPIC 7% / 실패 30%","#1565c0"],
+      ["RARE+RARE","UNIQUE 42% / SUPER 20% / EPIC 8% / 실패 30%","#00838f"],
+      ["UNIQUE+UNIQUE","SUPER 38% / EPIC 18% / LEGEND 8% / 실패 36%","#e65100"],
+      ["한쪽 SUPER이상","EPIC 30% / LEGEND 15% / MUTANT 5% / 실패 50%","#ad1457"],
+    ]},
+    {title:"💎 진화 성공률",rows:[
+      ["COMMON","대성공 15% / 성공 65% / 실패 18% / 대실패 2%","#607080"],
+      ["UNCOMMON","대성공 12% / 성공 60% / 실패 22% / 대실패 6%","#1565c0"],
+      ["RARE","대성공 8% / 성공 55% / 실패 28% / 대실패 9%","#00838f"],
+      ["UNIQUE↑","대성공 5% / 성공 45% / 실패 35% / 대실패 15%","#e65100"],
+      ["희귀진화석","성공률 95%","#ad1457"],
+      ["초월진화석","성공률 60%","#6a1b9a"],
+    ]},
+    {title:"🔩 강화 성공률",rows:[
+      ["+1~+3","100%","#3b82f6"],
+      ["+4~+6","80%","#8b5cf6"],
+      ["+7~+8","55%","#d97706"],
+      ["+9","35%","#ef4444"],
+      ["+10","20%","#f59e0b"],
+    ]},
+    {title:"🕊️ 방생 보상",rows:[
+      ["COMMON","🌾×2 🟠×1","#607080"],
+      ["UNCOMMON","🌾×3 🟠×2 🔩×1","#1565c0"],
+      ["RARE","🍖×2 🟠×3 🔩×2","#00838f"],
+      ["UNIQUE","🍖×3 🟠×4 🔩×3","#e65100"],
+      ["SUPER↑","✨+🔵+🔩 다수","#ad1457"],
+    ]},
+  ];
+
+  return <div>
+    <div style={{fontSize:11,fontWeight:800,color:"var(--tx1)",marginBottom:8}}>❓ 도움말 & 📊 확률표</div>
+    <div style={{display:"flex",gap:3,marginBottom:10,flexWrap:"wrap"}}>
+      {[["basic","📖 기본"],["system","⚙️ 시스템"],["grade","🏅 등급"],["prob","📊 확률표"]].map(([k,l])=>(
+        <button key={k} onClick={()=>setTab(k)}
+          style={{padding:"4px 9px",borderRadius:8,border:`1.5px solid ${tab===k?acHex:"rgba(0,0,0,0.08)"}`,
+            background:tab===k?`${acHex}12`:"white",cursor:"pointer",fontFamily:"inherit",
+            fontSize:9,fontWeight:tab===k?800:500,color:tab===k?acHex:"var(--tx2)"}}>
+          {l}
+        </button>
+      ))}
+    </div>
+    {tab!=="prob"&&(helps[tab]||[]).map((h,i)=>(
+      <div key={i} style={{padding:"7px 9px",borderRadius:9,border:"1px solid rgba(139,92,246,0.08)",
+        marginBottom:5,background:"rgba(139,92,246,0.02)"}}>
+        <div style={{fontSize:10,fontWeight:800,color:acHex,marginBottom:2}}>{h.q}</div>
+        <div style={{fontSize:9,color:"var(--tx2)",lineHeight:1.6}}>{h.a}</div>
+      </div>
+    ))}
+    {tab==="prob"&&probSections.map(sec=>(
+      <div key={sec.title} style={{marginBottom:12}}>
+        <div style={{fontSize:10,fontWeight:800,color:"var(--tx2)",marginBottom:5}}>{sec.title}</div>
+        {sec.rows.map(([label,val,c])=>(
+          <div key={label} style={{display:"flex",justifyContent:"space-between",alignItems:"center",
+            padding:"4px 8px",borderBottom:"1px solid rgba(0,0,0,0.04)"}}>
+            <span style={{fontSize:9,fontWeight:700,color:c,minWidth:60}}>{label}</span>
+            <span style={{fontSize:9,color:"var(--tx3)",textAlign:"right",flex:1,paddingLeft:6}}>{val}</span>
+          </div>
+        ))}
+      </div>
+    ))}
   </div>;
 }
 
