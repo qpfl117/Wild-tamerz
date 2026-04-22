@@ -60,9 +60,14 @@
     .game-col{width:100%;max-width:600px;height:100%;display:flex;flex-direction:column;background:#f7f3ff;overflow:hidden;box-shadow:0 0 40px rgba(139,92,246,0.15);}
     .side-col{display:none;}
     @media(min-width:900px){
+    .app-outer{justify-content:center;}
     .side-col{display:flex;flex-direction:column;width:400px;min-width:360px;height:100%;background:#ffffff;border-left:2px solid rgba(139,92,246,0.10);overflow:hidden;position:relative;}
       .menu-btn-hide{display:none !important;}
       .mobile-panel-btn{display:none !important;}
+    }
+    /* 모바일: side-col을 아래쪽 오버레이로 표시 */
+    @media(max-width:899px){
+      .side-col-mobile-show{display:flex !important;position:fixed;bottom:0;left:0;right:0;height:65vh;z-index:200;border-radius:20px 20px 0 0;box-shadow:0 -4px 24px rgba(139,92,246,0.25);overflow:hidden;}
     }
     .side-tabs{display:flex;border-bottom:1.5px solid rgba(139,92,246,0.10);background:white;flex-shrink:0;overflow-x:auto;}
     .side-tabs::-webkit-scrollbar{height:0;}
@@ -605,26 +610,26 @@ const MONS=[
   // ══════════════════════════════════════════
   // 진화체 - COMMON→UNCOMMON (2차)
   // ══════════════════════════════════════════
-  {id:"prime_tangy",  name:"프라임탱귤",  emoji:"🟠",color:"#bf360c",rarity:"UNCOMMON",lineage:"nature",  hp:90,atk:35,spd:32,desc:"네오탱귤 진화체. 오렌지 최강 형태."},
-  {id:"luminos",      name:"루미노스",    emoji:"💎",color:"#ffe57f",rarity:"UNCOMMON",lineage:"mystic",  hp:75,atk:40,spd:38,desc:"래디언트 진화체. 순수한 빛의 결정."},
-  {id:"ultra_pomelo", name:"울트라포멜로",emoji:"🌕",color:"#a07800",rarity:"UNCOMMON",lineage:"nature",  hp:80,atk:40,spd:36,desc:"메가포멜로 진화체."},
-  {id:"ancient_sylvan",name:"고대실반",   emoji:"🌲",color:"#1b5e20",rarity:"UNCOMMON",lineage:"nature",  hp:95,atk:38,spd:28,desc:"실반 진화체. 원시 자연의 힘."},
-  {id:"titan_rocky",  name:"타이탄록키",  emoji:"⛰️",color:"#546e7a",rarity:"UNCOMMON",lineage:"nature",  hp:110,atk:22,spd:8,desc:"로키 진화체. 살아있는 산."},
-  {id:"tempest",      name:"템페스트",    emoji:"🌀",color:"#0d47a1",rarity:"UNCOMMON",lineage:"element",hp:68,atk:45,spd:48,desc:"폭풍브리지 진화체. 속도의 극한."},
+  {id:"prime_tangy",  name:"프라임탱귤",  emoji:"🟠",color:"#bf360c",rarity:"RARE",lineage:"nature",  hp:90,atk:35,spd:32,desc:"네오탱귤 진화체. 오렌지 최강 형태."},
+  {id:"luminos",      name:"루미노스",    emoji:"💎",color:"#ffe57f",rarity:"RARE",lineage:"mystic",  hp:75,atk:40,spd:38,desc:"래디언트 진화체. 순수한 빛의 결정."},
+  {id:"ultra_pomelo", name:"울트라포멜로",emoji:"🌕",color:"#a07800",rarity:"RARE",lineage:"nature",  hp:80,atk:40,spd:36,desc:"메가포멜로 진화체."},
+  {id:"ancient_sylvan",name:"고대실반",   emoji:"🌲",color:"#1b5e20",rarity:"RARE",lineage:"nature",  hp:95,atk:38,spd:28,desc:"실반 진화체. 원시 자연의 힘."},
+  {id:"titan_rocky",  name:"타이탄록키",  emoji:"⛰️",color:"#546e7a",rarity:"RARE",lineage:"nature",  hp:110,atk:22,spd:8,desc:"로키 진화체. 살아있는 산."},
+  {id:"tempest",      name:"템페스트",    emoji:"🌀",color:"#0d47a1",rarity:"RARE",lineage:"element",hp:68,atk:45,spd:48,desc:"폭풍브리지 진화체. 속도의 극한."},
   // ══════════════════════════════════════════
   // 진화체 - UNCOMMON 계열
   // ══════════════════════════════════════════
-  {id:"inferno",      name:"인페르노",    emoji:"🌋",color:"#b71c1c",rarity:"UNCOMMON",lineage:"element",hp:70,atk:35,spd:16,desc:"블레이즈 진화체. 지옥의 화염."},
-  {id:"abyssal",      name:"어비설",      emoji:"🌊",color:"#0d47a1",rarity:"UNCOMMON",lineage:"element",hp:88,atk:25,spd:13,desc:"아쿠아 진화체. 심해의 압력 파도."},
-  {id:"thunder_god",  name:"뇌신볼트",    emoji:"🌩️",color:"#f57f17",rarity:"UNCOMMON",lineage:"element",hp:62,atk:42,spd:26,desc:"볼트 진화체. 번개의 신."},
-  {id:"glacier",      name:"글레이셔",    emoji:"🧊",color:"#1565c0",rarity:"UNCOMMON",lineage:"element",hp:68,atk:28,spd:17,desc:"프로스티 진화체. 움직이는 빙하."},
-  {id:"pyrovant",     name:"파이로반트",  emoji:"🔴",color:"#c62828",rarity:"UNCOMMON",lineage:"element",hp:75,atk:32,spd:12,desc:"마그마이트 진화체. 폭발하는 마그마 거인."},
+  {id:"inferno",      name:"인페르노",    emoji:"🌋",color:"#b71c1c",rarity:"RARE",lineage:"element",hp:70,atk:35,spd:16,desc:"블레이즈 진화체. 지옥의 화염."},
+  {id:"abyssal",      name:"어비설",      emoji:"🌊",color:"#0d47a1",rarity:"RARE",lineage:"element",hp:88,atk:25,spd:13,desc:"아쿠아 진화체. 심해의 압력 파도."},
+  {id:"thunder_god",  name:"뇌신볼트",    emoji:"🌩️",color:"#f57f17",rarity:"RARE",lineage:"element",hp:62,atk:42,spd:26,desc:"볼트 진화체. 번개의 신."},
+  {id:"glacier",      name:"글레이셔",    emoji:"🧊",color:"#1565c0",rarity:"RARE",lineage:"element",hp:68,atk:28,spd:17,desc:"프로스티 진화체. 움직이는 빙하."},
+  {id:"pyrovant",     name:"파이로반트",  emoji:"🔴",color:"#c62828",rarity:"RARE",lineage:"element",hp:75,atk:32,spd:12,desc:"마그마이트 진화체. 폭발하는 마그마 거인."},
   {id:"cyclonix",     name:"사이클로닉스",emoji:"🌪️",color:"#01579b",rarity:"RARE",   lineage:"element",hp:80,atk:45,spd:35,desc:"거스터 진화체. 거대 토네이도 형태."},
   {id:"toxicron",     name:"코브라드라",  emoji:"🐍",color:"#4a148c",rarity:"RARE",   lineage:"beast",  hp:90,atk:50,spd:25,desc:"나가 진화체. 독이 결정화된 거대 코브라."},
   {id:"kaiser_draco", name:"카이저드라코",emoji:"🦕",color:"#b71c1c",rarity:"RARE",   lineage:"beast",  hp:110,atk:55,spd:20,desc:"드라코 진화체. 용족의 황제."},
   {id:"saber_tigrex", name:"세이버티그렉스",emoji:"🐅",color:"#e65100",rarity:"RARE",lineage:"beast",  hp:95,atk:58,spd:28,desc:"티그렉스 진화체. 검치호 형태."},
   {id:"velociking",   name:"벨로시킹",    emoji:"🦖",color:"#33691e",rarity:"RARE",   lineage:"beast",  hp:85,atk:60,spd:38,desc:"랩터 진화체. 속도의 왕."},
-  {id:"void_terro",   name:"보이드테로",  emoji:"🕳️",color:"#37474f",rarity:"UNCOMMON",lineage:"chaos", hp:75,atk:32,spd:15,desc:"테로 진화체. 허공을 지배하는 어둠."},
+  {id:"void_terro",   name:"보이드테로",  emoji:"🕳️",color:"#37474f",rarity:"RARE",lineage:"chaos", hp:75,atk:32,spd:15,desc:"테로 진화체. 허공을 지배하는 어둠."},
   {id:"celestia",     name:"셀레스티아",  emoji:"🌠",color:"#6a1b9a",rarity:"RARE",   lineage:"mystic", hp:100,atk:50,spd:30,desc:"샤이니 진화체. 별빛의 여신."},
   {id:"spectron",     name:"스펙트론",    emoji:"👁️",color:"#4527a0",rarity:"RARE",   lineage:"chaos",  hp:90,atk:52,spd:25,desc:"팬티 진화체. 공포의 악령."},
   // ══════════════════════════════════════════
@@ -683,9 +688,9 @@ const MONS=[
   // 누락 진화체 보완
   // ══════════════════════════════════════════
   // COMMON 동물계 진화체
-  {id:"swiftbun",   name:"스위프트번",  emoji:"🐇",color:"#e91e63",rarity:"UNCOMMON",lineage:"beast",  hp:55,atk:28,spd:38,desc:"플로피 진화체. 빛처럼 빠른 토끼."},
-  {id:"wolfhound",  name:"울프하운드",  emoji:"🐕",color:"#795548",rarity:"UNCOMMON",lineage:"beast",  hp:72,atk:35,spd:26,desc:"웰피 진화체. 충성스러운 전투견."},
-  {id:"eaglet",     name:"이글렛",      emoji:"🦅",color:"#f57c00",rarity:"UNCOMMON",lineage:"beast",  hp:60,atk:38,spd:32,desc:"처피 진화체. 독수리로 성장한 전사."},
+  {id:"swiftbun",   name:"스위프트번",  emoji:"🐇",color:"#e91e63",rarity:"RARE",lineage:"beast",  hp:55,atk:28,spd:38,desc:"플로피 진화체. 빛처럼 빠른 토끼."},
+  {id:"wolfhound",  name:"울프하운드",  emoji:"🐕",color:"#795548",rarity:"RARE",lineage:"beast",  hp:72,atk:35,spd:26,desc:"웰피 진화체. 충성스러운 전투견."},
+  {id:"eaglet",     name:"이글렛",      emoji:"🦅",color:"#f57c00",rarity:"RARE",lineage:"beast",  hp:60,atk:38,spd:32,desc:"처피 진화체. 독수리로 성장한 전사."},
   // UNCOMMON 원소계 진화체
   // 자연계 진화체
   {id:"thornwall",  name:"쏜월",        emoji:"🌵",color:"#2e7d32",rarity:"RARE",    lineage:"nature", hp:95,atk:38,spd:14,desc:"소르니아 진화체. 가시 요새 형태."},
@@ -3334,16 +3339,33 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
         padding:"16px 14px 36px",boxShadow:"0 -8px 32px rgba(139,92,246,0.18)"}}
         onClick={e=>e.stopPropagation()}>
         <div style={{width:40,height:4,borderRadius:2,background:"rgba(139,92,246,0.2)",margin:"0 auto 12px"}}/>
-        <div style={{fontSize:17,fontWeight:800,color:"var(--purple)",marginBottom:10,textAlign:"center"}}>MENU</div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8}}>
+        <div style={{fontSize:17,fontWeight:800,color:"var(--purple)",marginBottom:10,textAlign:"center"}}>메뉴</div>
+        {/* 메인 탭 */}
+        <div style={{fontSize:11,color:"var(--tx3)",fontWeight:700,marginBottom:6}}>🗺 게임</div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:6,marginBottom:12}}>
           {MENU_TABS.map(([k,icon,name])=>(
             <button key={k} onClick={()=>{setTab(k);setMenuOpen(false);resetB();}} style={{
-              padding:"12px 0 10px",borderRadius:14,
+              padding:"10px 0 8px",borderRadius:12,
               border:`2px solid ${tab===k?acHex:"rgba(139,92,246,0.1)"}`,
               background:tab===k?`${acHex}15`:"rgba(139,92,246,0.03)",
-              color:tab===k?acHex:"var(--tx2)",cursor:"pointer",fontSize:17,
+              color:tab===k?acHex:"var(--tx2)",cursor:"pointer",fontSize:15,
               fontWeight:tab===k?800:600,lineHeight:1.5,fontFamily:"inherit"}}>
-              {icon}<br/><span style={{fontSize:17}}>{name}</span>
+              {icon}<br/><span style={{fontSize:11}}>{name}</span>
+            </button>
+          ))}
+        </div>
+        {/* 사이드 패널 탭 */}
+        <div style={{fontSize:11,color:"var(--tx3)",fontWeight:700,marginBottom:6}}>📋 정보 / 관리</div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:6}}>
+          {[["tamer","🏅","테이머"],["monthly","📅","출석"],["breed","🥚","교배"],["dex","📖","도감"],
+            ["ach","🏆","업적"],["lab","🔬","연구소"],["help","❓","도움말"]].map(([k,icon,name])=>(
+            <button key={k} onClick={()=>{setSideTabTop(k);setMenuOpen(false);}} style={{
+              padding:"10px 0 8px",borderRadius:12,
+              border:`2px solid ${sideTabTop===k?acHex:"rgba(139,92,246,0.1)"}`,
+              background:sideTabTop===k?`${acHex}15`:"rgba(139,92,246,0.03)",
+              color:sideTabTop===k?acHex:"var(--tx2)",cursor:"pointer",fontSize:15,
+              fontWeight:sideTabTop===k?800:600,lineHeight:1.5,fontFamily:"inherit"}}>
+              {icon}<br/><span style={{fontSize:11}}>{name}</span>
             </button>
           ))}
         </div>
@@ -3404,15 +3426,6 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
             background:"rgba(16,185,129,0.1)",padding:"1px 6px",borderRadius:6}}>🟢 상대접속</span>}
         </div>
         <div style={{display:"flex",gap:5,alignItems:"center"}}>
-          <span style={{fontSize:11,color:"var(--cyan)",background:"rgba(6,182,212,0.1)",
-            padding:"2px 7px",borderRadius:7,fontWeight:700}}>⚡ {myS.stamina||0}</span>
-          <span style={{fontSize:11,color:battleLeft>0?"var(--green)":"var(--red)",
-            background:battleLeft>0?"rgba(16,185,129,0.1)":"rgba(239,68,68,0.1)",
-            padding:"2px 7px",borderRadius:7,fontWeight:700}}>⚔ {battleLeft}회</span>
-          {BALLS.filter(b=>unlocks.balls.includes(b.id)).map(b=>(
-            <span key={b.id} style={{color:"var(--tx2)",fontSize:11,background:"rgba(0,0,0,0.05)",
-              padding:"2px 6px",borderRadius:7,fontWeight:600}}>{b.emoji}{myS.balls[b.id]||0}</span>
-          ))}
           <button onClick={()=>setMenuOpen(true)} className="menu-btn-hide" style={{background:"rgba(139,92,246,0.1)",border:"none",
             borderRadius:8,color:"var(--purple)",fontSize:16,padding:"2px 8px",cursor:"pointer",fontFamily:"inherit"}}>☰</button>
         </div>
@@ -3670,17 +3683,22 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
                   const curLv=c.lv||1;
                   const targets=[5,10,maxLv].filter(t=>t>curLv&&t<=maxLv);
                   if(targets.length===0)return null;
-                  const bestFood=unlocks.foods.includes("food3")?"food3":unlocks.foods.includes("food2")?"food2":"food1";
+                  // 보유 먹이 중 가장 효율 좋은 것 우선 사용 (없으면 하위로 폴백)
+                  const foodPriority=["food3","food2","food1"].filter(f=>unlocks.foods.includes(f));
+                  const bestFood=foodPriority.find(f=>(myS.foods[f]||0)>0)||foodPriority[foodPriority.length-1];
                   const bestFoodEmoji=FOODS.find(f=>f.id===bestFood)?.emoji||"🌾";
                   const haveFood=myS.foods[bestFood]||0;
+                  // 먹이별 색상
+                  const foodColor=bestFood==="food3"?"#f59e0b":bestFood==="food2"?"#10b981":"var(--green)";
                   return <div style={{display:"flex",gap:3}}>
                     <span style={{fontSize:10,color:"var(--tx3)",alignSelf:"center",flexShrink:0}}>일괄:</span>
                     {targets.map(t=>(
                       <button key={t} onClick={()=>bulkFeed(i,bestFood,t)}
                         disabled={haveFood<=0}
-                        style={{flex:1,padding:"3px 0",borderRadius:7,border:"1px solid rgba(16,185,129,0.2)",
-                          background:haveFood>0?"rgba(16,185,129,0.08)":"rgba(0,0,0,0.03)",
-                          color:haveFood>0?"var(--green)":"rgba(0,0,0,0.2)",
+                        style={{flex:1,padding:"3px 0",borderRadius:7,
+                          border:`1px solid ${haveFood>0?foodColor+"40":"rgba(0,0,0,0.06)"}`,
+                          background:haveFood>0?`${foodColor}10`:"rgba(0,0,0,0.03)",
+                          color:haveFood>0?foodColor:"rgba(0,0,0,0.2)",
                           fontSize:11,fontWeight:700,cursor:haveFood>0?"pointer":"default",fontFamily:"inherit"}}>
                         {bestFoodEmoji}→Lv{t}
                       </button>
@@ -4322,51 +4340,6 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
 
     </div>{/* 콘텐츠 끝 */}
 
-    {/* 하단 상태바 */}
-    <div style={{flexShrink:0,borderTop:"1.5px solid rgba(139,92,246,0.08)",padding:"5px 14px",
-      fontSize:17,color:"var(--tx3)",display:"flex",justifyContent:"space-between",
-      background:"white",boxShadow:"0 -2px 8px rgba(139,92,246,0.05)"}}>
-      <span>Lv.{tLv} · {col.length}/{maxStorage}마리</span>
-      <span style={{display:"flex",alignItems:"center",gap:8}}>
-        <span>⚡{myS.stamina||0} · ⚔{battleLeft}회</span>
-        {/* 모바일 패널 버튼 */}
-        <button className="mobile-panel-btn" onClick={()=>setMobilePanelOpen(o=>!o)}
-          style={{padding:"3px 10px",borderRadius:8,border:`1.5px solid ${mobilePanelOpen?acHex:"rgba(139,92,246,0.2)"}`,
-            background:mobilePanelOpen?`${acHex}15`:"white",color:mobilePanelOpen?acHex:"var(--purple)",
-            fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>
-          {mobilePanelOpen?"▼ 패널":"▲ 패널"}
-        </button>
-      </span>
-    </div>
-
-    {/* 모바일 슬라이드 패널 */}
-    <div className={`mobile-panel ${mobilePanelOpen?"open":"closed"}`}>
-      <div className="mobile-panel-handle" onClick={()=>setMobilePanelOpen(o=>!o)}>
-        <span style={{fontSize:10,fontWeight:700,color:"var(--purple)"}}>
-          {mobilePanelOpen?"▼ 닫기":"▲ 패널 열기"}
-        </span>
-      </div>
-      <div className="mobile-panel-tabs">
-        {[["tamer","🏅","테이머"],["monthly","📅","출석"],
-          ["breed","🥚","교배"],["dex","📖","도감"],["ach","🏆","업적"],
-          ["lab","🔬","연구소"],["help","❓","도움말"]].map(([k,icon,name])=>(
-          <button key={k} className={`side-tab${mobilePanelTab===k?" active":""}`}
-            onClick={()=>setMobilePanelTab(k)}>
-            {icon}<br/>{name}
-          </button>
-        ))}
-      </div>
-      <div className="mobile-panel-content">
-        {mobilePanelTab==="tamer"&&<SideTamer myS={myS} tLv={tLv} tExpNeed={tExpNeed} col={col} maxStorage={maxStorage} acHex={acHex} setMy={setMy}/>}
-        {mobilePanelTab==="monthly"&&<SideMonthly myS={myS} todayDay={todayDay} claimMonthly={claimMonthly}/>}
-        {mobilePanelTab==="breed"&&<SideBreed myS={myS} col={col} setMy={setMy} toast={toast} aliveCols={aliveCols} acHex={acHex}/>}
-        {mobilePanelTab==="dex"&&<SideDex myS={myS} col={col} acHex={acHex} setMy={setMy}/>}
-        {mobilePanelTab==="ach"&&<SideAch myS={myS} acHex={acHex} claimAchReward={claimAchReward}/>}
-        {mobilePanelTab==="lab"&&<SideLab myS={myS} col={col} setMy={setMy} toast={toast} acHex={acHex} aliveCols={aliveCols}/>}
-        {mobilePanelTab==="help"&&<SideHelpProb acHex={acHex}/>}
-      </div>
-    </div>
-
     </div>{/* game-col 끝 */}
     <div className="side-col" id="side-col-panel">
       <SidePanel
@@ -4770,69 +4743,101 @@ function SideTamer({myS,tLv,tExpNeed,col,maxStorage,acHex,setMy}){
         ))}
       </div>
     </div>}
-    {/* 레이드 장비 슬롯 UI - 5부위 통합 */}
+    {/* 레이드 장비 슬롯 UI */}
     <div style={{marginTop:10}}>
-      <div style={{fontSize:12,fontWeight:700,color:"var(--tx2)",marginBottom:6}}>⚔️ 레이드 장비</div>
-      {/* 장착 효과 요약 */}
+      <div style={{fontSize:13,fontWeight:800,color:"var(--tx1)",marginBottom:8}}>⚔️ 장비 슬롯</div>
+      {/* 캐릭터 장비 슬롯 그리드 - 5부위 */}
       {(()=>{
         const myEquips=myS.equips||{};
         const myOn=myS.equipsOn||{};
         const equippedCount=BOSS_EQUIPS.filter(e=>myOn[e.slot]&&myEquips[e.id]).length;
-        const ownedCount=BOSS_EQUIPS.filter(e=>myEquips[e.id]).length;
         const bonus=getEquipBonus(myOn,myEquips);
-        const fullBonus=equippedCount===BOSS_EQUIPS.length?FULL_SET_BONUS:{atk:0,def:0};
-        const totalAtk=bonus.atk+(fullBonus.atk||0);
-        const totalDef=bonus.def+(fullBonus.def||0);
         const isFullSet=equippedCount===BOSS_EQUIPS.length;
-        return <div style={{padding:"8px 10px",borderRadius:10,marginBottom:8,
-          background:isFullSet?"rgba(245,158,11,0.1)":"rgba(0,0,0,0.04)",
-          border:`1.5px solid ${isFullSet?"rgba(245,158,11,0.4)":"rgba(0,0,0,0.08)"}`}}>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-            <div style={{fontSize:11,fontWeight:700,color:isFullSet?"var(--gold)":"var(--tx2)"}}>
-              {isFullSet?"✨ 풀셋 완성!":"⚔️ 장착 보너스"}
-            </div>
-            <div style={{fontSize:10,color:"var(--tx3)"}}>보유 {ownedCount}/{BOSS_EQUIPS.length}</div>
-          </div>
-          <div style={{fontSize:10,color:"var(--tx3)",marginTop:2}}>
-            <span style={{color:"var(--red)",fontWeight:700}}>ATK +{totalAtk}%</span>
-            <span style={{marginLeft:6,color:"var(--blue)",fontWeight:700}}>DEF +{totalDef}%</span>
-            {isFullSet&&<span style={{color:"var(--gold)",marginLeft:6}}>+풀셋 {FULL_SET_BONUS.desc}</span>}
-          </div>
-        </div>;
-      })()}
-      {/* 5부위 슬롯 */}
-      <div style={{display:"grid",gridTemplateColumns:"repeat(1,1fr)",gap:4}}>
-        {BOSS_EQUIPS.map(eq=>{
-          const have=(myS.equips||{})[eq.id];
-          const on=(myS.equipsOn||{})[eq.slot]===eq.id;
-          return <div key={eq.id} style={{padding:"7px 10px",borderRadius:10,
-            background:on?"rgba(245,158,11,0.08)":have?"white":"rgba(0,0,0,0.02)",
-            border:`1.5px solid ${on?"rgba(245,158,11,0.4)":have?"rgba(0,0,0,0.12)":"rgba(0,0,0,0.05)"}`,
-            opacity:have?1:0.4}}>
-            <div style={{display:"flex",alignItems:"center",gap:8}}>
-              <span style={{fontSize:18}}>{have?eq.emoji:"❓"}</span>
-              <div style={{flex:1}}>
-                <div style={{fontSize:11,fontWeight:700,color:have?"var(--tx1)":"var(--tx3)"}}>
-                  {have?eq.name:"미획득 - 레이드 클리어 시 드롭"}
-                </div>
-                {have&&<div style={{fontSize:10,color:"var(--tx3)"}}>{eq.desc}</div>}
+        const totalAtk=bonus.atk+(isFullSet?FULL_SET_BONUS.atk:0);
+        const totalDef=bonus.def+(isFullSet?FULL_SET_BONUS.def:0);
+
+        return <>
+          {/* 장착 효과 요약 바 */}
+          <div style={{padding:"8px 12px",borderRadius:10,marginBottom:10,
+            background:isFullSet?"linear-gradient(135deg,rgba(245,158,11,0.15),rgba(245,158,11,0.05))":"rgba(0,0,0,0.04)",
+            border:`1.5px solid ${isFullSet?"rgba(245,158,11,0.5)":"rgba(0,0,0,0.08)"}`,
+            display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <div>
+              <div style={{fontSize:11,fontWeight:800,color:isFullSet?"var(--gold)":"var(--tx2)"}}>
+                {isFullSet?"✨ 풀셋 완성! +ATK+5% DEF+5%":"장착 보너스"}
               </div>
-              {have&&<button onClick={()=>{
-                const cur=(myS.equipsOn||{})[eq.slot];
-                setMy(s=>({...s,equipsOn:{...(s.equipsOn||{}),[eq.slot]:cur===eq.id?undefined:eq.id}}));
-              }} style={{padding:"4px 10px",borderRadius:8,border:"none",fontFamily:"inherit",
-                background:on?"var(--gold)":"rgba(139,92,246,0.12)",
-                color:on?"#000":"var(--purple)",fontSize:10,fontWeight:700,cursor:"pointer",flexShrink:0}}>
-                {on?"해제":"착용"}
-              </button>}
+              <div style={{fontSize:10,marginTop:2}}>
+                <span style={{color:"#ef4444",fontWeight:700}}>⚔ ATK +{totalAtk}%</span>
+                <span style={{marginLeft:8,color:"#3b82f6",fontWeight:700}}>🛡 DEF +{totalDef}%</span>
+              </div>
             </div>
-          </div>;
-        })}
-      </div>
-      {Object.keys(myS.equips||{}).length===0&&<div style={{textAlign:"center",padding:"14px 0",
-        color:"var(--tx3)",fontSize:10}}>
-        레이드 클리어 시 장비 랜덤 드롭 · 3개 보스 각각 다른 아이템 파밍
-      </div>}
+            <div style={{fontSize:11,color:"var(--tx3)"}}>{equippedCount}/{BOSS_EQUIPS.length}착용</div>
+          </div>
+
+          {/* 슬롯 그리드 */}
+          <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:6,marginBottom:8}}>
+            {BOSS_EQUIPS.map(eq=>{
+              const have=myEquips[eq.id];
+              const on=myOn[eq.slot]===eq.id;
+              const slotLabels={helm:"투구",armor:"갑옷",glove:"장갑",boots:"신발",weapon:"무기"};
+              return <div key={eq.id} onClick={()=>{
+                  if(!have)return;
+                  const cur=myOn[eq.slot];
+                  setMy(s=>({...s,equipsOn:{...(s.equipsOn||{}),[eq.slot]:cur===eq.id?undefined:eq.id}}));
+                }}
+                style={{borderRadius:10,padding:"8px 4px",textAlign:"center",
+                  cursor:have?"pointer":"default",
+                  background:on?"rgba(245,158,11,0.12)":have?"white":"rgba(0,0,0,0.03)",
+                  border:`2px solid ${on?"rgba(245,158,11,0.6)":have?"rgba(0,0,0,0.15)":"rgba(0,0,0,0.06)"}`,
+                  boxShadow:on?"0 2px 8px rgba(245,158,11,0.3)":"none",
+                  opacity:have?1:0.5,transition:"all 0.15s",position:"relative"}}>
+                {/* 착용 표시 */}
+                {on&&<div style={{position:"absolute",top:-4,right:-4,width:14,height:14,
+                  borderRadius:"50%",background:"var(--gold)",
+                  display:"flex",alignItems:"center",justifyContent:"center",fontSize:8}}>✓</div>}
+                <div style={{fontSize:22}}>{have?eq.emoji:"❓"}</div>
+                <div style={{fontSize:8,fontWeight:700,color:on?"var(--gold)":have?"var(--tx2)":"var(--tx3)",
+                  marginTop:2,lineHeight:1.2}}>
+                  {have?eq.name.replace("탐험가의",""):slotLabels[eq.slot]||eq.slot}
+                </div>
+                {have&&<div style={{fontSize:7,color:on?"var(--gold)":"var(--tx3)",marginTop:1}}>
+                  {on?"착용중":"클릭착용"}
+                </div>}
+                {!have&&<div style={{fontSize:7,color:"var(--tx3)",marginTop:1}}>미획득</div>}
+              </div>;
+            })}
+          </div>
+
+          {/* 개별 스탯 상세 */}
+          {BOSS_EQUIPS.some(e=>myEquips[e.id])&&<div style={{display:"flex",flexDirection:"column",gap:3}}>
+            {BOSS_EQUIPS.filter(e=>myEquips[e.id]).map(eq=>{
+              const on=myOn[eq.slot]===eq.id;
+              return <div key={eq.id} style={{display:"flex",alignItems:"center",gap:6,padding:"4px 8px",
+                borderRadius:7,background:on?"rgba(245,158,11,0.06)":"rgba(0,0,0,0.02)",
+                border:`1px solid ${on?"rgba(245,158,11,0.2)":"rgba(0,0,0,0.05)"}`}}>
+                <span style={{fontSize:14}}>{eq.emoji}</span>
+                <div style={{flex:1,fontSize:10,fontWeight:600,color:on?"var(--tx1)":"var(--tx3)"}}>
+                  {eq.name}
+                </div>
+                <div style={{fontSize:9,color:"var(--tx3)"}}>{eq.desc}</div>
+                <button onClick={()=>{
+                  const cur=myOn[eq.slot];
+                  setMy(s=>({...s,equipsOn:{...(s.equipsOn||{}),[eq.slot]:cur===eq.id?undefined:eq.id}}));
+                }} style={{padding:"2px 8px",borderRadius:6,border:"none",fontFamily:"inherit",flexShrink:0,
+                  background:on?"var(--gold)":"rgba(139,92,246,0.1)",
+                  color:on?"#000":"var(--purple)",fontSize:9,fontWeight:700,cursor:"pointer"}}>
+                  {on?"해제":"착용"}
+                </button>
+              </div>;
+            })}
+          </div>}
+
+          {!BOSS_EQUIPS.some(e=>myEquips[e.id])&&<div style={{textAlign:"center",padding:"12px 0",
+            color:"var(--tx3)",fontSize:10,lineHeight:1.7}}>
+            레이드를 클리어하면<br/>장비가 랜덤 드롭됩니다
+          </div>}
+        </>;
+      })()}
     </div>
   </div>;
 }
