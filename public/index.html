@@ -237,15 +237,14 @@ function getTypeEvoMon(baseId,type){
     desc:`${base.desc} [${t.name} 속성 진화]`};
 }
 
-// 합성 확률 - 같은 등급 두 마리 합성 시
-// 기본 규칙: 합성 결과는 기존 등급보다 1단계 높은 게 주력
+// 합성 확률 - 앞(주결과) 높고, 뒤(보너스) 낮고, 등급 높을수록 실패↑
 const FUSION_TABLE={
-  "COMMON":   [{g:"UNCOMMON",r:0.50},{g:"RARE",r:0.20},{g:"fail",r:0.30}],
-  "UNCOMMON": [{g:"RARE",    r:0.50},{g:"UNIQUE",r:0.20},{g:"fail",r:0.30}],
-  "RARE":     [{g:"UNIQUE",  r:0.45},{g:"SUPER", r:0.20},{g:"fail",r:0.35}],
-  "UNIQUE":   [{g:"SUPER",   r:0.40},{g:"EPIC",  r:0.20},{g:"fail",r:0.40}],
-  "SUPER":    [{g:"EPIC",    r:0.35},{g:"LEGEND",r:0.15},{g:"MUTANT",r:0.05},{g:"fail",r:0.45}],
-  "EPIC":     [{g:"LEGEND",  r:0.25},{g:"MUTANT",r:0.05},{g:"fail",r:0.70}],
+  "COMMON":   [{g:"UNCOMMON",r:0.60},{g:"RARE",r:0.10},{g:"fail",r:0.30}],
+  "UNCOMMON": [{g:"RARE",    r:0.55},{g:"UNIQUE",r:0.10},{g:"fail",r:0.35}],
+  "RARE":     [{g:"UNIQUE",  r:0.45},{g:"SUPER", r:0.08},{g:"fail",r:0.47}],
+  "UNIQUE":   [{g:"SUPER",   r:0.35},{g:"EPIC",  r:0.06},{g:"fail",r:0.59}],
+  "SUPER":    [{g:"EPIC",    r:0.25},{g:"LEGEND",r:0.05},{g:"MUTANT",r:0.02},{g:"fail",r:0.68}],
+  "EPIC":     [{g:"LEGEND",  r:0.15},{g:"MUTANT",r:0.03},{g:"fail",r:0.82}],
 }
 const FUSION_POOL={
   "UNCOMMON":["blaze","aqua","bolt","frostie","venom","terro","shiny","draco"],
@@ -2909,7 +2908,7 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
         if(i!==idx)return c2;
         if(isGreat) return{...c2,enhance:Math.min(MAX_ENHANCE,cur+2)}; // 대성공: +2
         if(isOk)   return{...c2,enhance:cur+1};                        // 성공: +1
-        if(destroyed)return{...c2,alive:false,curHp:0,enhance:0};      // 대실패: 파괴
+        if(destroyed)return{...c2,alive:false,curHp:0};              // 대실패: 파괴 (강화수치 유지)
         if(isSafe) return{...c2};                                       // 실패(안전): 유지
         return{...c2,enhance:Math.max(0,cur-1)};                        // 실패: -1
       });
@@ -3187,7 +3186,7 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
   const oppHas=(oppS?.collection||[]).filter(c=>c.alive!==false).length>0;
   const todayDay=new Date().getDate();
   const battleLeft=getBattleLeft();
-  const MAIN_TABS=[["field","🗺","필드"],["collection","📦","소환수"],["bag","🎒","가방"],["shop","🛒","상점"],["dungeon","🏰","던전"],["hunt","⚔️","사냥터"],["fusion","🔮","합성"],["pvp","👥","대전"]];
+  const MAIN_TABS=[["field","🗺","필드"],["collection","📦","소환수"],["bag","🎒","가방"],["shop","🛒","상점"],["explore","⛏️","탐험"],["hunt","⚔️","사냥터"],["fusion","🔮","합성"],["pvp","👥","대전"]];
   const MENU_TABS=[["monthly","📅","월간출석"],["tamer","🏅","테이머"],["dex","📖","도감"],["ach","🏆","업적"],["lab","🔬","연구소"],["help","❓","도움말"]];
 
   const SIDE_TABS_TOP=[["tamer","🏅","테이머"],["monthly","📅","출석"],["breed","🥚","교배"],["dex","📖","도감"],["ach","🏆","업적"],["lab","🔬","연구소"],["help","❓","도움말"]];
@@ -3734,89 +3733,25 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
     })()}
 
     {/* ── 던전 (메인탭) ── */}
-    {tab==="dungeon"&&<div style={{padding:12}}>
-      <div style={{position:"relative",overflow:"hidden",borderRadius:12,marginBottom:10}}>
-        <svg width="100%" height={80} viewBox="0 0 600 80" style={{display:"block",width:"100%"}}>
-          <defs><linearGradient id="dgsky" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#1c1917"/><stop offset="100%" stopColor="#292524"/>
-          </linearGradient></defs>
-          <rect width={600} height={80} fill="url(#dgsky)"/>
-          <ellipse cx={300} cy={55} rx={180} ry={35} fill="#f59e0b" opacity={0.08}/>
-          <text x={300} y={38} textAnchor="middle" fontSize={18} fontWeight="900" fill="#fbbf24">🏰 던전</text>
-          <text x={300} y={58} textAnchor="middle" fontSize={10} fill="rgba(251,191,36,0.7)">스태미나 소모 · 아이템 파밍</text>
-        </svg>
-      </div>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-        <span style={{fontSize:13,color:"var(--tx2)",fontWeight:700}}>⚡{myS.stamina||0}/{myS.maxStamina||10} 스태미나</span>
-        {(myS.consumables?.stamina_pot||0)>0&&<button onClick={useStaminaPot}
-          style={{padding:"5px 12px",borderRadius:8,border:"none",background:"rgba(6,182,212,0.12)",
-            color:"var(--cyan)",fontSize:12,cursor:"pointer",fontFamily:"inherit",fontWeight:700}}>
-          ⚡포션 사용 ({myS.consumables?.stamina_pot||0}개)</button>}
-      </div>
-      {dgExploring&&<div style={{borderRadius:10,overflow:"hidden",marginBottom:8}}>
-        <svg width="100%" height={70} viewBox="0 0 300 70" style={{display:"block",width:"100%"}}>
-          <rect width={300} height={70} fill="#1c1917"/>
-          <g style={{animation:"dungeonRun 2.2s linear forwards"}}>
-            <text x={25} y={55} textAnchor="middle" fontSize={26}>{dgExploring.mon?.emoji||"❓"}</text>
-          </g>
-          <text x={150} y={24} textAnchor="middle" fontSize={10} fontWeight="900" fill="#fbbf24">{dgExploring.dg.emoji} {dgExploring.dg.name} 탐험중...</text>
-        </svg>
-      </div>}
-      {dgRes&&!dgExploring&&<div style={{borderRadius:10,padding:"9px 12px",marginBottom:8,
-        background:"rgba(16,185,129,0.08)",border:"1px solid rgba(16,185,129,0.2)"}}>
-        <div style={{fontSize:13,fontWeight:700,color:"var(--green)"}}>✅ {dgRes.dg.name} ×{dgRes.runs}회 클리어!</div>
-        <div style={{fontSize:12,color:"var(--tx2)",marginTop:2}}>{dgRes.dt||"드롭 없음"}</div>
-        <button onClick={()=>setDgRes(null)} style={{marginTop:5,fontSize:11,padding:"3px 10px",borderRadius:7,
-          border:"none",background:"rgba(16,185,129,0.12)",color:"var(--green)",cursor:"pointer",fontFamily:"inherit"}}>닫기</button>
-      </div>}
-      {!dgExploring&&DUNGEONS.map(dg=>{
-        const locked=!unlocks.dungeons.includes(dg.id);
-        const canEnter=!locked&&(myS.stamina||0)>=dg.stamina&&aliveCols.length>0;
-        return <div key={dg.id} style={{border:`1.5px solid ${canEnter?"var(--green)30":"rgba(0,0,0,0.08)"}`,
-          borderRadius:12,padding:"11px 14px",marginBottom:8,
-          background:canEnter?"rgba(16,185,129,0.04)":"white",opacity:locked?0.4:1,
-          boxShadow:"0 2px 8px rgba(0,0,0,0.05)"}}>
-          <div style={{display:"flex",alignItems:"center",gap:10}}>
-            <div style={{fontSize:24}}>{locked?"🔒":dg.emoji}</div>
-            <div style={{flex:1}}>
-              <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3}}>
-                <span style={{fontWeight:800,fontSize:15}}>{dg.name}</span>
-                <Badge text={`⚡${dg.stamina}`} color="var(--gold)"/>
-              </div>
-              <div style={{fontSize:12,color:"var(--tx3)"}}>
-                드롭: {dg.drops.map(d=>{const it=[...FOODS,...EVO_STONES,{id:"enhance_stone",emoji:"🔩"}].find(i=>i.id===d.id);return it?`${it.emoji}(${Math.round(d.rate*100)}%)`:""}).filter(Boolean).join(" ")}
-              </div>
-            </div>
-          </div>
-          <div style={{marginTop:8}}>
-            <Btn onClick={()=>runDungeon(dg,1)} disabled={!canEnter} color="var(--green)" sm>
-              {locked?"🔒 잠금":!canEnter?(myS.stamina||0)<dg.stamina?"⚡ 스태미나 부족":"소환수 없음":"1회 소탕"}
-            </Btn>
-            {canEnter&&<div style={{display:"flex",gap:5,marginTop:5}}>
-              {[3,5,-1].map(n=>{
-                const cnt=n===-1?Math.floor((myS.stamina||0)/dg.stamina):n;
-                const enough=(myS.stamina||0)>=dg.stamina*Math.min(cnt,n===-1?cnt:n);
-                return <button key={n} onClick={()=>enough&&runDungeon(dg,n)}
-                  disabled={!enough||cnt<=0}
-                  style={{flex:1,padding:"5px 0",borderRadius:8,
-                    border:`1px solid ${enough?"var(--green)40":"rgba(0,0,0,0.08)"}`,
-                    background:enough?"rgba(16,185,129,0.07)":"rgba(0,0,0,0.02)",
-                    color:enough?"var(--green)":"var(--tx3)",fontSize:12,fontWeight:700,
-                    cursor:enough?"pointer":"default",fontFamily:"inherit"}}>
-                  {n===-1?`전부(${cnt}회)`:n===3?"3회":"5회"}
-                </button>;
-              })}
-            </div>}
-          </div>
-        </div>;
-      })}
-    </div>}
 
-    {/* ── 던전 ── */}
-    {tab==="dungeon"&&<div style={{padding:12}}>
-      <SideDungeon myS={myS} dgExploring={dgExploring} dgRes={dgRes} setDgRes={setDgRes}
-        runDungeon={runDungeon} DUNGEONS={DUNGEONS} unlocks={unlocks} aliveCols={aliveCols}
-        useStaminaPot={useStaminaPot}/>
+    {/* ── 탐험 (던전 + 광산) ── */}
+    {tab==="explore"&&<div>
+      {/* 탐험 헤더 */}
+      <div style={{position:"relative",overflow:"hidden"}}>
+        <svg width="100%" height={70} viewBox="0 0 600 70" style={{display:"block",width:"100%"}}>
+          <defs><linearGradient id="exploresky" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#1c2526"/><stop offset="100%" stopColor="#2d3a1e"/>
+          </linearGradient></defs>
+          <rect width={600} height={70} fill="url(#exploresky)"/>
+          <text x={300} y={32} textAnchor="middle" fontSize={18} fontWeight="900" fill="white">⛏️ 탐험</text>
+          <text x={300} y={52} textAnchor="middle" fontSize={9} fill="rgba(255,255,255,0.6)">던전 탐험 · 광산 파견 · 아이템 파밍</text>
+        </svg>
+      </div>
+      {/* 서브탭 */}
+      <ExploreTab myS={myS} setMy={setMy} toast={toast} col={col} aliveCols={aliveCols}
+        dgExploring={dgExploring} dgRes={dgRes} setDgRes={setDgRes}
+        runDungeon={runDungeon} DUNGEONS={DUNGEONS} unlocks={unlocks}
+        useStaminaPot={useStaminaPot} acHex={acHex}/>
     </div>}
 
     {/* ── 사냥터 ── */}
@@ -3886,192 +3821,6 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
     </div>}
 
     {/* ── 던전 ── */}
-    {tab==="dungeon"&&<div>
-      <div style={{position:"relative",overflow:"hidden"}}>
-        <svg width="100%" height={100} viewBox="0 0 600 100" style={{display:"block",width:"100%"}}>
-          <defs>
-            <linearGradient id="dgsky" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#1c1917"/><stop offset="100%" stopColor="#292524"/>
-            </linearGradient>
-            <radialGradient id="dgflame" cx="50%" cy="60%">
-              <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.4"/>
-              <stop offset="100%" stopColor="#f59e0b" stopOpacity="0"/>
-            </radialGradient>
-          </defs>
-          <rect width={600} height={100} fill="url(#dgsky)"/>
-          {/* 별 */}
-          {[[30,12],[100,6],[180,18],[280,8],[380,14],[460,5],[540,18],[70,28],[310,24],[500,28]].map(([sx,sy],i)=>(
-            <circle key={i} cx={sx} cy={sy} r={i%3===0?2:1.2} fill="#fbbf24" opacity={0.4+i%3*0.15}
-              style={{animation:`pulse ${1.5+i%3*0.4}s ease-in-out infinite`,animationDelay:`${i*0.2}s`}}/>
-          ))}
-          {/* 돌기둥 왼쪽 */}
-          <rect x={20} y={30} width={28} height={70} rx={4} fill="#44403c"/>
-          <rect x={18} y={26} width={32} height={12} rx={3} fill="#57534e"/>
-          <rect x={22} y={38} width={24} height={4} rx={2} fill="#57534e" opacity={0.6}/>
-          <rect x={22} y={48} width={24} height={4} rx={2} fill="#57534e" opacity={0.6}/>
-          {/* 돌기둥 오른쪽 */}
-          <rect x={552} y={30} width={28} height={70} rx={4} fill="#44403c"/>
-          <rect x={550} y={26} width={32} height={12} rx={3} fill="#57534e"/>
-          <rect x={554} y={38} width={24} height={4} rx={2} fill="#57534e" opacity={0.6}/>
-          {/* 횃불 왼쪽 */}
-          <rect x={30} y={18} width={8} height={14} rx={2} fill="#92400e"/>
-          <ellipse cx={34} cy={16} rx={6} ry={9} fill="url(#dgflame)"/>
-          <ellipse cx={34} cy={18} rx={4} ry={6} fill="#f59e0b" opacity={0.9}
-            style={{animation:"pulse 0.6s ease-in-out infinite"}}/>
-          <ellipse cx={34} cy={16} rx={2.5} ry={4} fill="#fef08a" opacity={0.9}
-            style={{animation:"pulse 0.6s ease-in-out infinite",animationDelay:"0.1s"}}/>
-          {/* 횃불 오른쪽 */}
-          <rect x={562} y={18} width={8} height={14} rx={2} fill="#92400e"/>
-          <ellipse cx={566} cy={16} rx={6} ry={9} fill="url(#dgflame)"/>
-          <ellipse cx={566} cy={18} rx={4} ry={6} fill="#f59e0b" opacity={0.9}
-            style={{animation:"pulse 0.6s ease-in-out infinite",animationDelay:"0.15s"}}/>
-          <ellipse cx={566} cy={16} rx={2.5} ry={4} fill="#fef08a" opacity={0.9}
-            style={{animation:"pulse 0.6s ease-in-out infinite",animationDelay:"0.25s"}}/>
-          {/* 아치 */}
-          <path d="M48,100 L48,55 Q48,30 80,22 Q160,5 300,4 Q440,5 520,22 Q552,30 552,55 L552,100"
-            fill="none" stroke="#57534e" strokeWidth={4} opacity={0.7}/>
-          {/* 바닥 */}
-          <rect x={0} y={72} width={600} height={28} fill="#292524"/>
-          <rect x={0} y={72} width={600} height={4} fill="#a16207"/>
-          {/* 바닥 무늬 */}
-          {[60,160,260,360,460,540].map((x,i)=>(
-            <rect key={i} x={x} y={74} width={60} height={26} fill={i%2===0?"rgba(255,255,255,0.02)":"transparent"}/>
-          ))}
-          {/* 타이틀 */}
-          <text x={300} y={46} textAnchor="middle" fontSize={22} fontWeight="900" fill="#fbbf24" opacity={0.95}
-            style={{filter:"drop-shadow(0 0 8px rgba(245,158,11,0.6))"}}>🏰 던전</text>
-          <text x={300} y={64} textAnchor="middle" fontSize={10} fill="rgba(251,191,36,0.65)">스태미나 소모 · 아이템 파밍</text>
-          {/* 해골 장식 */}
-          <text x={110} y={68} textAnchor="middle" fontSize={16} opacity={0.5}>💀</text>
-          <text x={490} y={68} textAnchor="middle" fontSize={16} opacity={0.5}>💀</text>
-        </svg>
-      </div>
-      <div style={{padding:"10px 12px"}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-          <span style={{fontSize:17,color:"var(--tx2)",fontWeight:600}}>⚡{myS.stamina||0}/{myS.maxStamina||10} 스태미나</span>
-          {(myS.consumables?.stamina_pot||0)>0&&<button onClick={useStaminaPot}
-            style={{padding:"3px 9px",borderRadius:8,border:"none",background:"rgba(6,182,212,0.12)",
-              color:"var(--cyan)",fontSize:16,cursor:"pointer",fontFamily:"inherit"}}>
-            ⚡포션 사용({myS.consumables?.stamina_pot||0})</button>}
-        </div>
-
-        {/* 탐험 중 애니메이션 */}
-        {dgExploring&&<div style={{borderRadius:16,overflow:"hidden",marginBottom:12,boxShadow:"var(--shadow-lg)"}}>
-          <svg width="100%" height={140} viewBox="0 0 600 140" style={{display:"block",width:"100%"}}>
-            <defs>
-              <linearGradient id="dgexpbg" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#1c1917"/><stop offset="100%" stopColor="#292524"/>
-              </linearGradient>
-              <radialGradient id="dgexpglow" cx="50%" cy="50%">
-                <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.25"/>
-                <stop offset="100%" stopColor="#f59e0b" stopOpacity="0"/>
-              </radialGradient>
-            </defs>
-            <rect width={600} height={140} fill="url(#dgexpbg)"/>
-            <ellipse cx={300} cy={90} rx={200} ry={60} fill="url(#dgexpglow)"/>
-            {/* 배경 별 */}
-            {[[40,15],[120,8],[220,20],[380,10],[480,18],[550,8],[80,35],[310,28],[500,32]].map(([sx,sy],i)=>(
-              <circle key={i} cx={sx} cy={sy} r={1.2} fill="#fbbf24" opacity={0.4}
-                style={{animation:`pulse ${1.2+i%3*0.3}s ease-in-out infinite`,animationDelay:`${i*0.15}s`}}/>
-            ))}
-            {/* 바닥 */}
-            <rect x={0} y={105} width={600} height={35} fill="#292524"/>
-            <rect x={0} y={105} width={600} height={3} fill="#a16207"/>
-            {/* 왼쪽 횃불 */}
-            <rect x={60} y={78} width={7} height={12} rx={2} fill="#92400e"/>
-            <ellipse cx={63} cy={75} rx={5} ry={7} fill="#f59e0b" opacity={0.85}
-              style={{animation:"pulse 0.5s ease-in-out infinite"}}/>
-            <ellipse cx={63} cy={73} rx={3} ry={4} fill="#fef08a" opacity={0.9}
-              style={{animation:"pulse 0.5s ease-in-out infinite",animationDelay:"0.1s"}}/>
-            {/* 오른쪽 횃불 */}
-            <rect x={533} y={78} width={7} height={12} rx={2} fill="#92400e"/>
-            <ellipse cx={537} cy={75} rx={5} ry={7} fill="#f59e0b" opacity={0.85}
-              style={{animation:"pulse 0.5s ease-in-out infinite",animationDelay:"0.2s"}}/>
-            <ellipse cx={537} cy={73} rx={3} ry={4} fill="#fef08a" opacity={0.9}
-              style={{animation:"pulse 0.5s ease-in-out infinite",animationDelay:"0.3s"}}/>
-            {/* 소환수 달리는 애니 */}
-            <g style={{animation:"dungeonRun 2.2s linear forwards"}}>
-              <text x={60} y={102} textAnchor="middle" fontSize={42}>{dgExploring.mon?.emoji||"❓"}</text>
-            </g>
-            {/* 텍스트 */}
-            <text x={300} y={52} textAnchor="middle" fontSize={15} fontWeight="900" fill="#fbbf24"
-              style={{filter:"drop-shadow(0 0 6px rgba(245,158,11,0.7))"}}>
-              🏰 {dgExploring.dg.emoji} {dgExploring.dg.name} 탐험 중...
-            </text>
-            {/* 점점점 애니 */}
-            {[0,1,2].map(i=>(
-              <circle key={i} cx={285+i*15} cy={72} r={3.5} fill="#fbbf24"
-                style={{animation:`pulse 0.8s ease-in-out infinite`,animationDelay:`${i*0.25}s`}}/>
-            ))}
-            {/* 먼지 파티클 */}
-            {[0,1,2,3].map(i=>(
-              <ellipse key={i} cx={80+i*15} cy={108} rx={4+i*2} ry={2}
-                fill="#a16207" opacity={0.4}
-                style={{animation:`particleFly 0.6s ease-out infinite`,
-                  ['--dx']:`${-20-i*8}px`,['--dy']:'-5px',
-                  animationDelay:`${i*0.1}s`}}/>
-            ))}
-          </svg>
-        </div>}
-
-        {/* 클리어 결과 */}
-        {dgRes&&!dgExploring&&<div style={{borderRadius:14,overflow:"hidden",marginBottom:10,boxShadow:"var(--shadow-lg)"}}>
-          <svg width="100%" height={80} viewBox="0 0 600 80" style={{display:"block",width:"100%"}}>
-            <defs><linearGradient id="dgcl2" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#047857"/><stop offset="100%" stopColor="#10b981"/>
-            </linearGradient></defs>
-            <rect width={600} height={80} fill="url(#dgcl2)"/>
-            <text x={300} y={32} textAnchor="middle" fontSize={15} fontWeight="900" fill="white">✅ {dgRes.dg.emoji} {dgRes.dg.name} 클리어!</text>
-            <text x={300} y={58} textAnchor="middle" fontSize={13} fill="rgba(255,255,255,0.9)">{dgRes.dt||"드롭 없음"}</text>
-          </svg>
-          <button onClick={()=>setDgRes(null)} style={{width:"100%",padding:"7px 0",border:"none",
-            background:"rgba(4,120,87,0.08)",color:"var(--green)",fontSize:17,fontWeight:700,
-            cursor:"pointer",fontFamily:"inherit"}}>닫기</button>
-        </div>}
-        {!dgExploring&&DUNGEONS.map(dg=>{
-          const locked=!unlocks.dungeons.includes(dg.id);
-          const canEnter=!locked&&(myS.stamina||0)>=dg.stamina&&aliveCols.length>0;
-          return <div key={dg.id} style={{border:`1.5px solid ${canEnter?"var(--green)30":"rgba(0,0,0,0.07)"}`,
-            borderRadius:14,padding:"11px 13px",marginBottom:8,background:canEnter?"rgba(16,185,129,0.04)":"white",
-            opacity:locked?0.4:1,boxShadow:"var(--shadow)"}}>
-            <div style={{display:"flex",alignItems:"center",gap:9}}>
-              <div style={{fontSize:28}}>{locked?"🔒":dg.emoji}</div>
-              <div style={{flex:1}}>
-                <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:2}}>
-                  <span style={{fontWeight:700,fontSize:16,color:"var(--tx1)"}}>{dg.name}</span>
-                  <Badge text={`⚡${dg.stamina}`} color="var(--gold)"/>
-                </div>
-                <div style={{fontSize:17,color:"var(--tx3)"}}>{dg.desc}</div>
-                <div style={{fontSize:16,color:"var(--tx3)",marginTop:1}}>
-                  드롭: {dg.drops.map(d=>{const it=[...FOODS,...EVO_STONES,{id:"enhance_stone",emoji:"🔩"},{id:"TYPE_STONE_RANDOM",emoji:"🌈"}].find(i=>i.id===d.id);return it?`${it.emoji}(${Math.round(d.rate*100)}%)`:"";}).filter(Boolean).join(" ")}
-                </div>
-              </div>
-            </div>
-            <div style={{marginTop:8}}>
-              <Btn onClick={()=>runDungeon(dg,1)} disabled={!canEnter} color="var(--green)" sm>
-                {locked?"🔒 잠금":!canEnter?(myS.stamina||0)<dg.stamina?"스태미나 부족":"소환수 없음":"1회 소탕"}
-              </Btn>
-              {canEnter&&<div style={{display:"flex",gap:4,marginTop:4}}>
-                {[3,5,-1].map(n=>{
-                  const cnt=n===-1?Math.floor((myS.stamina||0)/dg.stamina):n;
-                  const enough=(myS.stamina||0)>=dg.stamina*Math.min(cnt,n===-1?cnt:n);
-                  return <button key={n} onClick={()=>enough&&runDungeon(dg,n)}
-                    disabled={!enough||cnt<=0}
-                    style={{flex:1,padding:"4px 0",borderRadius:7,border:`1px solid ${enough?"var(--green)30":"rgba(0,0,0,0.08)"}`,
-                      background:enough?"rgba(16,185,129,0.06)":"rgba(0,0,0,0.02)",
-                      color:enough?"var(--green)":"var(--tx3)",fontSize:11,fontWeight:700,
-                      cursor:enough?"pointer":"default",fontFamily:"inherit"}}>
-                    {n===-1?`일괄(${cnt}회)`:n===3?"3회":"5회"}
-                  </button>;
-                })}
-              </div>}
-            </div>
-          </div>;
-        })}
-      </div>
-    </div>}
-
-    {/* ── 대전 (배틀 + 레이드) ── */}
     {tab==="pvp"&&<div>
       {/* 헤더 배너 */}
       <div style={{position:"relative",overflow:"hidden"}}>
@@ -5123,6 +4872,243 @@ const RAID_BOSSES=[
   },
 ];
 
+// 광산 설정
+const MINE_CONFIGS=[
+  {id:"mine1",name:"구리 광산",emoji:"🟫",minLv:1, hours:1, slots:1, desc:"Lv1 · 1시간 · 소환수 1마리",
+   drops:[{id:"enhance_stone",amt:5,rate:1.0},{id:"stone1",amt:1,rate:0.4},{id:"ball1",amt:3,rate:0.7}]},
+  {id:"mine2",name:"철 광산",emoji:"⬛",minLv:5, hours:2, slots:2, desc:"Lv5 · 2시간 · 소환수 2마리",
+   drops:[{id:"enhance_stone",amt:12,rate:1.0},{id:"stone1",amt:2,rate:0.6},{id:"stone2",amt:1,rate:0.2},{id:"ball2",amt:1,rate:0.3}]},
+  {id:"mine3",name:"금 광산",emoji:"🟡",minLv:10,hours:4, slots:3, desc:"Lv10 · 4시간 · 소환수 3마리",
+   drops:[{id:"enhance_stone",amt:25,rate:1.0},{id:"stone2",amt:2,rate:0.5},{id:"stone3",amt:1,rate:0.15},{id:"awaken_stone",amt:1,rate:0.1},{id:"ball2",amt:2,rate:0.5}]},
+  {id:"mine4",name:"마법 광산",emoji:"💜",minLv:20,hours:6, slots:4, desc:"Lv20 · 6시간 · 소환수 4마리",
+   drops:[{id:"enhance_stone",amt:40,rate:1.0},{id:"stone2",amt:3,rate:0.7},{id:"stone3",amt:2,rate:0.3},{id:"awaken_stone",amt:1,rate:0.2},{id:"boss_crystal",amt:1,rate:0.1}]},
+];
+
+// 탐험 탭 (던전 + 광산 서브탭)
+function ExploreTab({myS,setMy,toast,col,aliveCols,dgExploring,dgRes,setDgRes,runDungeon,DUNGEONS,unlocks,useStaminaPot,acHex}){
+  const [exploreTab,setExploreTab]=React.useState("dungeon");
+
+  // 광산 파견 처리
+  const dispatchMine=(mineId,selectedIdxs)=>{
+    const mine=MINE_CONFIGS.find(m=>m.id===mineId);
+    if(!mine)return;
+    if(selectedIdxs.length<1){toast("소환수를 선택하세요!","var(--red)");return;}
+    if(selectedIdxs.length>mine.slots){toast(`최대 ${mine.slots}마리!`,"var(--red)");return;}
+    const now=Date.now();
+    const endTime=now+mine.hours*3600*1000;
+    setMy(s=>{
+      // 파견된 소환수들을 mining 상태로
+      const nc=(s.collection||[]).map((c,i)=>
+        selectedIdxs.includes(i)?{...c,mining:{mineId,endTime}}:c
+      );
+      return{...s,collection:nc};
+    });
+    toast(`⛏️ ${mine.name} 파견 완료! ${mine.hours}시간 후 회수 가능`,"#8b5cf6");
+  };
+
+  // 광산 회수
+  const recallMine=(mineId)=>{
+    const mine=MINE_CONFIGS.find(m=>m.id===mineId);
+    if(!mine)return;
+    const now=Date.now();
+    const miners=(myS.collection||[]).filter(c=>c.mining?.mineId===mineId);
+    if(miners.length===0){toast("파견된 소환수가 없습니다!","var(--red)");return;}
+    const ready=miners.every(c=>now>=c.mining.endTime);
+    if(!ready){
+      const earliest=Math.min(...miners.map(c=>c.mining.endTime));
+      const remain=Math.ceil((earliest-now)/60000);
+      toast(`⏰ ${remain}분 후 회수 가능!`,"var(--orange)");
+      return;
+    }
+    // 등급/강화 기반 보너스
+    const avgBonus=miners.reduce((acc,c)=>{
+      const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{rarity:"COMMON"};
+      const gradeBonus={COMMON:1,UNCOMMON:1.3,RARE:1.6,UNIQUE:2.0,SUPER:2.5,EPIC:3.0,LEGEND:4.0}[bm.rarity]||1;
+      return acc+gradeBonus*(1+(c.enhance||0)*0.05);
+    },0)/miners.length;
+
+    const dropped=[];
+    mine.drops.forEach(d=>{
+      if(Math.random()<d.rate){
+        const amt=Math.max(1,Math.round(d.amt*avgBonus));
+        dropped.push({id:d.id,amt});
+      }
+    });
+
+    setMy(s=>{
+      let ns={...s,collection:(s.collection||[]).map(c=>
+        c.mining?.mineId===mineId?{...c,mining:null}:c
+      )};
+      dropped.forEach(({id,amt})=>{ns=addItem(ns,id,amt);});
+      return addTamerExp(ns,mine.hours*10);
+    });
+
+    const dropStr=dropped.map(({id,amt})=>{
+      const it=[...CONSUMABLES,...EVO_STONES,...BOSS_ITEMS,...FOODS,...BALLS].find(x=>x.id===id)||{emoji:"📦"};
+      return `${it.emoji}×${amt}`;
+    }).join(" ")||"드롭 없음";
+    toast(`⛏️ 회수 완료! ${dropStr}`,"#8b5cf6");
+  };
+
+  return <div>
+    {/* 서브탭 */}
+    <div style={{display:"flex",borderBottom:"2px solid rgba(0,0,0,0.06)",background:"white",flexShrink:0}}>
+      {[["dungeon","🏰 던전"],["mine","⛏️ 광산"]].map(([k,l])=>(
+        <button key={k} onClick={()=>setExploreTab(k)}
+          style={{flex:1,padding:"10px 0",border:"none",background:"transparent",
+            fontSize:13,fontWeight:exploreTab===k?800:500,fontFamily:"inherit",cursor:"pointer",
+            color:exploreTab===k?acHex:"var(--tx3)",
+            borderBottom:`3px solid ${exploreTab===k?acHex:"transparent"}`,
+            transition:"all 0.15s"}}>
+          {l}
+        </button>
+      ))}
+    </div>
+
+    {/* 던전 서브탭 */}
+    {exploreTab==="dungeon"&&<div style={{padding:12}}>
+      <SideDungeon myS={myS} dgExploring={dgExploring} dgRes={dgRes} setDgRes={setDgRes}
+        runDungeon={runDungeon} DUNGEONS={DUNGEONS} unlocks={unlocks} aliveCols={aliveCols}
+        useStaminaPot={useStaminaPot}/>
+    </div>}
+
+    {/* 광산 서브탭 */}
+    {exploreTab==="mine"&&<MineTab myS={myS} col={col} aliveCols={aliveCols}
+      dispatchMine={dispatchMine} recallMine={recallMine} acHex={acHex} unlocks={unlocks}/>}
+  </div>;
+}
+
+// 광산 탭 UI
+function MineTab({myS,col,aliveCols,dispatchMine,recallMine,acHex,unlocks}){
+  const [selectedMine,setSelectedMine]=React.useState(null);
+  const [selectedMonIdxs,setSelectedMonIdxs]=React.useState([]);
+  const tLv=myS.tamerLv||1;
+  const now=Date.now();
+
+  const toggleMon=(idx)=>{
+    const mine=MINE_CONFIGS.find(m=>m.id===selectedMine);
+    if(!mine)return;
+    setSelectedMonIdxs(prev=>{
+      if(prev.includes(idx))return prev.filter(i=>i!==idx);
+      if(prev.length>=mine.slots){toast&&toast(`최대 ${mine.slots}마리!`,"var(--red)");return prev;}
+      return [...prev,idx];
+    });
+  };
+
+  // 현재 파견 현황
+  const miningMons=(myS.collection||[]).filter(c=>c.mining);
+  const mineStatus=MINE_CONFIGS.reduce((acc,mine)=>{
+    const miners=(myS.collection||[]).filter(c=>c.mining?.mineId===mine.id);
+    if(miners.length>0){
+      const ready=miners.every(c=>now>=c.mining.endTime);
+      const remaining=ready?0:Math.ceil((Math.min(...miners.map(c=>c.mining.endTime))-now)/60000);
+      acc[mine.id]={miners,ready,remaining};
+    }
+    return acc;
+  },{});
+
+  return <div style={{padding:12}}>
+    <div style={{fontSize:11,fontWeight:800,color:"var(--tx1)",marginBottom:4}}>⛏️ 광산 파견</div>
+    <div style={{fontSize:9,color:"var(--tx3)",marginBottom:10,padding:"5px 8px",
+      background:"rgba(139,92,246,0.05)",borderRadius:7,border:"1px solid rgba(139,92,246,0.12)"}}>
+      소환수를 광산에 보내 현실 시간 경과 후 아이템 수확. 파견 중 소환수는 다른 컨텐츠 사용 불가.
+    </div>
+
+    {/* 진행 중인 파견 현황 */}
+    {Object.entries(mineStatus).map(([mineId,status])=>{
+      const mine=MINE_CONFIGS.find(m=>m.id===mineId);
+      return <div key={mineId} style={{marginBottom:8,padding:"8px 10px",borderRadius:10,
+        background:status.ready?"rgba(16,185,129,0.08)":"rgba(139,92,246,0.06)",
+        border:`1px solid ${status.ready?"rgba(16,185,129,0.3)":"rgba(139,92,246,0.2)"}`}}>
+        <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:4}}>
+          <span style={{fontSize:16}}>{mine.emoji}</span>
+          <div style={{flex:1}}>
+            <div style={{fontSize:10,fontWeight:700,color:status.ready?"var(--green)":"var(--purple)"}}>
+              {mine.name} {status.ready?"✅ 회수 가능!":"⏳ 파견 중..."}
+            </div>
+            <div style={{fontSize:8,color:"var(--tx3)"}}>
+              {status.miners.map(c=>{const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{emoji:"❓"};return bm.emoji;}).join(" ")}
+              {!status.ready&&` · 약 ${status.remaining}분 남음`}
+            </div>
+          </div>
+          <button onClick={()=>recallMine(mineId)}
+            disabled={!status.ready}
+            style={{padding:"4px 10px",borderRadius:8,border:"none",fontFamily:"inherit",
+              background:status.ready?"var(--green)":"rgba(0,0,0,0.06)",
+              color:status.ready?"white":"rgba(0,0,0,0.2)",fontSize:9,fontWeight:700,cursor:status.ready?"pointer":"default"}}>
+            {status.ready?"회수":"대기"}
+          </button>
+        </div>
+      </div>;
+    })}
+
+    {/* 광산 목록 */}
+    {MINE_CONFIGS.map(mine=>{
+      const locked=tLv<mine.minLv;
+      const busy=mineStatus[mine.id];
+      const isSelected=selectedMine===mine.id;
+      return <div key={mine.id} style={{marginBottom:8,borderRadius:11,
+        border:`1.5px solid ${isSelected?acHex:locked?"rgba(0,0,0,0.05)":"rgba(0,0,0,0.1)"}`,
+        background:isSelected?`${acHex}08`:"white",opacity:locked?0.4:1}}>
+        <div style={{padding:"9px 11px",cursor:locked||busy?"default":"pointer"}}
+          onClick={()=>!locked&&!busy&&setSelectedMine(isSelected?null:mine.id)}>
+          <div style={{display:"flex",alignItems:"center",gap:8}}>
+            <span style={{fontSize:20}}>{locked?"🔒":mine.emoji}</span>
+            <div style={{flex:1}}>
+              <div style={{fontSize:11,fontWeight:700,color:"var(--tx1)"}}>{mine.name}</div>
+              <div style={{fontSize:9,color:"var(--tx3)"}}>{mine.desc}</div>
+              <div style={{fontSize:8,color:"var(--tx3)",marginTop:2}}>
+                드롭: {mine.drops.map(d=>{
+                  const it=[...CONSUMABLES,...EVO_STONES,...FOODS,...BOSS_ITEMS].find(x=>x.id===d.id)||{emoji:"📦"};
+                  return `${it.emoji}(${Math.round(d.rate*100)}%)`;
+                }).join(" ")}
+              </div>
+            </div>
+            {busy?<span style={{fontSize:9,color:"var(--purple)",fontWeight:700}}>파견중</span>
+              :locked?<span style={{fontSize:9,color:"var(--tx3)"}}>Lv{mine.minLv}</span>
+              :<span style={{fontSize:9,color:isSelected?acHex:"var(--tx3)"}}>{isSelected?"▲":"▼"}</span>}
+          </div>
+        </div>
+
+        {/* 소환수 선택 (선택된 광산만) */}
+        {isSelected&&!busy&&<div style={{padding:"0 11px 11px"}}>
+          <div style={{fontSize:9,color:"var(--tx2)",fontWeight:700,marginBottom:5}}>
+            파견 소환수 선택 ({selectedMonIdxs.length}/{mine.slots}마리)
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:3,marginBottom:8}}>
+            {aliveCols.map((c,i)=>{
+              const origIdx=col.indexOf(c);
+              const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{emoji:"❓",rarity:"COMMON"};
+              const isMining=c.mining;
+              const isChosen=selectedMonIdxs.includes(origIdx);
+              return <button key={i} onClick={()=>!isMining&&toggleMon(origIdx)}
+                disabled={!!isMining}
+                style={{padding:"5px 3px",borderRadius:8,textAlign:"center",fontFamily:"inherit",
+                  border:`1.5px solid ${isChosen?acHex:"rgba(0,0,0,0.08)"}`,
+                  background:isChosen?`${acHex}15`:isMining?"rgba(0,0,0,0.03)":"white",
+                  cursor:isMining?"default":"pointer",opacity:isMining?0.4:1}}>
+                <div style={{fontSize:14}}>{bm.emoji}</div>
+                <div style={{fontSize:6,color:"var(--tx3)"}}>Lv{c.lv}</div>
+                <div style={{fontSize:6,color:RCOL[bm.rarity]||"#888"}}>{bm.rarity?.slice(0,3)}</div>
+              </button>;
+            })}
+            {aliveCols.length===0&&<div style={{gridColumn:"1/-1",fontSize:9,color:"var(--tx3)",textAlign:"center",padding:"8px 0"}}>소환수 없음</div>}
+          </div>
+          <button onClick={()=>{dispatchMine(mine.id,selectedMonIdxs);setSelectedMine(null);setSelectedMonIdxs([]);}}
+            disabled={selectedMonIdxs.length===0}
+            style={{width:"100%",padding:"8px 0",borderRadius:9,border:"none",
+              background:selectedMonIdxs.length>0?"linear-gradient(135deg,#8b5cf6,#6d28d9)":"rgba(0,0,0,0.06)",
+              color:selectedMonIdxs.length>0?"white":"rgba(0,0,0,0.2)",
+              fontSize:11,fontWeight:800,cursor:selectedMonIdxs.length>0?"pointer":"default",fontFamily:"inherit"}}>
+            ⛏️ {mine.name} 파견!
+          </button>
+        </div>}
+      </div>;
+    })}
+  </div>;
+}
+
+
 function SideRaid({myS,col,setMy,toast,aliveCols,acHex}){
   const [raidState,setRaidState]=React.useState(null);
   const [pickedIdx,setPickedIdx]=React.useState(null);
@@ -6110,15 +6096,16 @@ function SideHelp({acHex}){
 
 function SideDex({myS,col,acHex,setMy}){
   const [dexF,setDexF]=React.useState("all");
-  const filters=["all",...GRADE_ORDER,...Object.keys(TYPES).map(t=>`type:${t}`)];
+  // HYBRID는 col에서 직접 가져옴 (교배 결과물)
+  const hybridOwned=col.filter(c=>c.rarity==="HYBRID"||c.hybrid);
   const seenCount=(myS.dexSeen||[]).length;
   const totalCount=MONS.filter(m=>m.rarity!=="DIVINE").length;
   const DEX_REWARDS=[
-    {need:5, label:"5종",reward:{enhance_stone:5},emoji:"📗",id:"dex5"},
-    {need:10,label:"10종",reward:{enhance_stone:10,food2:2},emoji:"📘",id:"dex10"},
-    {need:20,label:"20종",reward:{enhance_stone:20,stone1:1},emoji:"📙",id:"dex20"},
-    {need:30,label:"30종",reward:{enhance_stone:30,stone2:1,food3:2},emoji:"📕",id:"dex30"},
-    {need:40,label:"40종",reward:{enhance_stone:50,stone3:1,food3:3},emoji:"🏆",id:"dex40"},
+    {need:5, label:"5종",  reward:{enhance_stone:5},           emoji:"📗",id:"dex5"},
+    {need:10,label:"10종", reward:{enhance_stone:10,food2:2},   emoji:"📘",id:"dex10"},
+    {need:20,label:"20종", reward:{enhance_stone:20,stone1:1},  emoji:"📙",id:"dex20"},
+    {need:30,label:"30종", reward:{enhance_stone:30,stone2:1,food3:2},emoji:"📕",id:"dex30"},
+    {need:40,label:"40종", reward:{enhance_stone:50,stone3:1,food3:3},emoji:"🏆",id:"dex40"},
     {need:totalCount,label:"완성!",reward:{enhance_stone:100,stone3:2,ball3:3},emoji:"👑",id:"dexAll"},
   ];
   const claimDexReward=(tier)=>{
@@ -6131,12 +6118,19 @@ function SideDex({myS,col,acHex,setMy}){
       return ns;
     });
   };
+
+  const gradeFilters=["all","COMMON","UNCOMMON","RARE","UNIQUE","SUPER","EPIC","LEGEND","MUTANT","HYBRID"];
+
   return <div>
-    <div style={{fontSize:11,fontWeight:800,color:"var(--tx1)",marginBottom:6}}>📖 도감 <span style={{fontSize:11,color:"var(--tx3)",fontWeight:400}}>{seenCount}/{totalCount}종</span></div>
+    <div style={{fontSize:11,fontWeight:800,color:"var(--tx1)",marginBottom:6}}>
+      📖 도감 <span style={{fontSize:11,color:"var(--tx3)",fontWeight:400}}>{seenCount}/{totalCount}종</span>
+      {hybridOwned.length>0&&<span style={{fontSize:9,color:"#7c3aed",fontWeight:700,marginLeft:6}}>🧬 하이브리드 {hybridOwned.length}마리</span>}
+    </div>
     {/* 완성도 바 */}
     <div style={{marginBottom:8}}>
       <div style={{background:"rgba(0,0,0,0.07)",borderRadius:6,height:7,overflow:"hidden",marginBottom:4}}>
-        <div style={{width:`${Math.min(100,seenCount/totalCount*100)}%`,height:"100%",background:`linear-gradient(90deg,${acHex},${acHex}aa)`,borderRadius:6,transition:"width 0.4s"}}/>
+        <div style={{width:`${Math.min(100,seenCount/totalCount*100)}%`,height:"100%",
+          background:`linear-gradient(90deg,${acHex},${acHex}aa)`,borderRadius:6,transition:"width 0.4s"}}/>
       </div>
       <div style={{display:"flex",gap:3,flexWrap:"wrap"}}>
         {DEX_REWARDS.map(tier=>{
@@ -6144,78 +6138,177 @@ function SideDex({myS,col,acHex,setMy}){
           const claimed=(myS.dexRewardsClaimed||[]).includes(tier.id);
           const canClaim=done&&!claimed;
           return <button key={tier.id} onClick={()=>canClaim&&claimDexReward(tier)} style={{
-            padding:"3px 5px",borderRadius:7,border:`1px solid ${claimed?"rgba(245,158,11,0.3)":done?"rgba(245,158,11,0.6)":"rgba(0,0,0,0.07)"}`,
+            padding:"3px 5px",borderRadius:7,
+            border:`1px solid ${claimed?"rgba(245,158,11,0.3)":done?"rgba(245,158,11,0.6)":"rgba(0,0,0,0.07)"}`,
             background:claimed?"rgba(245,158,11,0.08)":done?"rgba(245,158,11,0.12)":"rgba(0,0,0,0.02)",
-            cursor:canClaim?"pointer":"default",fontFamily:"inherit",
-            opacity:done?1:0.45}}>
+            cursor:canClaim?"pointer":"default",fontFamily:"inherit",opacity:done?1:0.45}}>
             <span style={{fontSize:9}}>{tier.emoji}</span>
-            <span style={{fontSize:8,color:claimed?"var(--gold)":done?"var(--gold)":"var(--tx3)",fontWeight:600,marginLeft:2}}>{tier.label}{claimed?"✅":canClaim?"🆕":""}</span>
+            <span style={{fontSize:8,color:claimed?"var(--gold)":done?"var(--gold)":"var(--tx3)",fontWeight:600,marginLeft:2}}>
+              {tier.label}{claimed?"✅":canClaim?"🆕":""}
+            </span>
           </button>;
         })}
       </div>
     </div>
-    <div style={{display:"flex",flexWrap:"wrap",gap:4,marginBottom:10}}>
-      {filters.map(f=>{
-        const isType=f.startsWith("type:");
-        const tk=isType?f.replace("type:",""):null;
-        const label=tk?`${TYPES[tk].emoji}`:f==="all"?"전체":f;
-        const col2=tk?TYPES[tk].color:acHex;
-        return <button key={f} onClick={()=>setDexF(f)} style={{padding:"2px 8px",borderRadius:12,border:`1px solid ${dexF===f?col2:"rgba(0,0,0,0.07)"}`,background:dexF===f?`${col2}15`:"rgba(0,0,0,0.02)",color:dexF===f?col2:"var(--tx3)",fontSize:11,cursor:"pointer",fontWeight:dexF===f?800:400}}>{label}</button>;
-      })}
+    {/* 등급 필터 */}
+    <div style={{display:"flex",flexWrap:"wrap",gap:3,marginBottom:10}}>
+      {gradeFilters.map(f=>(
+        <button key={f} onClick={()=>setDexF(f)}
+          style={{padding:"2px 7px",borderRadius:12,
+            border:`1px solid ${dexF===f?(RCOL[f]||acHex):"rgba(0,0,0,0.07)"}`,
+            background:dexF===f?`${RCOL[f]||acHex}15`:"rgba(0,0,0,0.02)",
+            color:dexF===f?(RCOL[f]||acHex):"var(--tx3)",
+            fontSize:9,cursor:"pointer",fontWeight:dexF===f?800:400,fontFamily:"inherit"}}>
+          {f==="all"?"전체":f}
+        </button>
+      ))}
     </div>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:5}}>
+
+    {/* HYBRID 섹션 */}
+    {(dexF==="all"||dexF==="HYBRID")&&hybridOwned.length>0&&<div style={{marginBottom:12}}>
+      <div style={{fontSize:10,fontWeight:800,color:"#7c3aed",marginBottom:6}}>
+        🧬 HYBRID 보유 ({hybridOwned.length}마리)
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:5,marginBottom:8}}>
+        {hybridOwned.map((c,i)=>(
+          <div key={i} style={{border:"1.5px solid rgba(124,58,237,0.35)",borderRadius:10,
+            padding:"8px 4px",textAlign:"center",background:"rgba(124,58,237,0.06)"}}>
+            <div style={{fontSize:18}}>{c.emoji||"🧬"}</div>
+            <div style={{fontSize:10,fontWeight:700,color:"var(--tx1)",marginTop:1,
+              whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{c.name||"하이브리드"}</div>
+            <span style={{fontSize:9,fontWeight:800,padding:"1px 4px",borderRadius:6,
+              background:"rgba(124,58,237,0.15)",color:"#7c3aed",border:"1px solid rgba(124,58,237,0.25)"}}>
+              HYBRID
+            </span>
+            <div style={{fontSize:8,color:"var(--tx3)",marginTop:2}}>Lv{c.lv}</div>
+          </div>
+        ))}
+      </div>
+    </div>}
+
+    {/* 일반 도감 */}
+    {dexF!=="HYBRID"&&<div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:5}}>
       {MONS.filter(m=>{
-        if(m.rarity==="DIVINE") return dexF==="all"; // DIVINE은 전체 탭에서만
-        if(dexF==="all")return true;
-        if(dexF.startsWith("type:")){const t=dexF.replace("type:","");return MON_BASE_TYPE[m.id]===t||col.some(c=>c.baseId===m.id&&c.monType===t);}
+        if(m.rarity==="DIVINE") return dexF==="all";
+        if(dexF==="all") return true;
         return m.rarity===dexF;
       }).map(m=>{
         const owned=col.find(c=>c.id===m.id||(c.baseId&&c.baseId===m.id));
         const seen=(myS.dexSeen||[]).includes(m.id)||owned;
-        const bk=(myS.bossKills||{})[m.id];
         const isDivine=m.rarity==="DIVINE";
-        if(isDivine&&!seen)return null; // 미발견 DIVINE은 도감에 아예 안보임
+        if(isDivine&&!seen)return null;
         return <div key={m.id} style={{
-          border:`1.5px solid ${seen||bk?(isDivine?"#ff660070":m.color+"45"):"rgba(0,0,0,0.06)"}`,
+          border:`1.5px solid ${seen?(isDivine?"#ff660070":m.color+"45"):"rgba(0,0,0,0.06)"}`,
           borderRadius:10,padding:"8px 4px",textAlign:"center",
-          opacity:seen||bk?1:0.25,
-          background:seen||bk?(isDivine?"rgba(255,102,0,0.06)":`${m.color}08`):"rgba(0,0,0,0.01)",
+          opacity:seen?1:0.25,
+          background:seen?(isDivine?"rgba(255,102,0,0.06)":`${m.color}08`):"rgba(0,0,0,0.01)",
           boxShadow:isDivine&&seen?"0 0 8px rgba(255,102,0,0.3)":undefined}}>
-          <div style={{fontSize:18,filter:isDivine&&seen?"drop-shadow(0 0 4px #ff6600)":undefined}}>{seen||bk?m.emoji:"❓"}</div>
-          <div style={{fontSize:11,fontWeight:700,color:isDivine&&seen?"#ff6600":"var(--tx1)",marginTop:1}}>
-            {isDivine?"???":seen||bk?m.name:"????"}
+          <div style={{fontSize:18,filter:isDivine&&seen?"drop-shadow(0 0 4px #ff6600)":undefined}}>
+            {seen?m.emoji:"❓"}
           </div>
-          <span style={{fontSize:9,fontWeight:800,padding:"1px 4px",borderRadius:6,
-            background:isDivine?"rgba(255,102,0,0.15)":(`${RCOL[m.rarity]||"#888"}18`),
+          <div style={{fontSize:10,fontWeight:700,color:isDivine&&seen?"#ff6600":"var(--tx1)",marginTop:1,
+            whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>
+            {isDivine?"???":seen?m.name:"????"}
+          </div>
+          <span style={{fontSize:8,fontWeight:800,padding:"1px 4px",borderRadius:6,
+            background:isDivine?"rgba(255,102,0,0.15)":`${RCOL[m.rarity]||"#888"}18`,
             color:isDivine?"#ff6600":RCOL[m.rarity]||"#888",
-            border:`1px solid ${isDivine?"rgba(255,102,0,0.3)":RCOL[m.rarity]+"25"||"#88825"}`}}>
-            {isDivine?"???.":m.rarity}
+            border:`1px solid ${isDivine?"rgba(255,102,0,0.3)":RCOL[m.rarity]+"25"}`}}>
+            {isDivine?"???":m.rarity}
           </span>
-          {owned&&owned.monType&&<div style={{fontSize:11,color:TYPES[owned.monType]?.color,marginTop:1}}>{TYPES[owned.monType]?.emoji}</div>}
+          {owned&&owned.monType&&<div style={{fontSize:10,color:TYPES[owned.monType]?.color,marginTop:1}}>{TYPES[owned.monType]?.emoji}</div>}
         </div>;
       })}
-    </div>
+    </div>}
   </div>;
 }
 
 function SideAch({myS,acHex,claimAchReward}){
+  const [achFilter,setAchFilter]=React.useState("all");
+  const achDone=(myS.achievements||[]);
+  const achClaimed=(myS.achClaimed||[]);
+
+  // 업적 카테고리 분류
+  const categories=[
+    {id:"all",    label:"전체",emoji:"🏆"},
+    {id:"catch",  label:"포획",emoji:"🎯"},
+    {id:"fight",  label:"전투",emoji:"⚔️"},
+    {id:"grow",   label:"성장",emoji:"📈"},
+    {id:"explore",label:"탐험",emoji:"⛏️"},
+    {id:"collect",label:"수집",emoji:"📖"},
+  ];
+  // 업적별 카테고리 매핑
+  const getAchCat=(a)=>{
+    if(a.id.includes("catch")||a.id.includes("cap")||a.id.includes("ball"))return "catch";
+    if(a.id.includes("hunt")||a.id.includes("pvp")||a.id.includes("battle")||a.id.includes("boss"))return "fight";
+    if(a.id.includes("enhance")||a.id.includes("evo")||a.id.includes("lv")||a.id.includes("feed"))return "grow";
+    if(a.id.includes("dun")||a.id.includes("release")||a.id.includes("shop"))return "explore";
+    return "collect";
+  };
+
+  const filtered=ACHS.filter(a=>achFilter==="all"||getAchCat(a)===achFilter);
+  const doneCount=achDone.length;
+  const claimable=ACHS.filter(a=>achDone.includes(a.id)&&!achClaimed.includes(a.id)).length;
+
   return <div>
-    <div style={{fontSize:11,fontWeight:800,color:"var(--tx1)",marginBottom:8}}>🏆 업적 <span style={{fontSize:11,color:"var(--tx3)",fontWeight:400}}>{(myS.achievements||[]).length}/{ACHS.length}</span></div>
-    {ACHS.map(a=>{
-      const done=(myS.achievements||[]).includes(a.id);
-      const claimed=(myS.achClaimed||[]).includes(a.id);
+    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:6}}>
+      <div style={{fontSize:11,fontWeight:800,color:"var(--tx1)"}}>
+        🏆 업적 <span style={{fontSize:10,color:"var(--tx3)",fontWeight:400}}>{doneCount}/{ACHS.length}</span>
+      </div>
+      {claimable>0&&<span style={{fontSize:9,fontWeight:800,color:"var(--gold)",
+        background:"rgba(245,158,11,0.15)",padding:"2px 7px",borderRadius:10}}>
+        🆕 수령 {claimable}개
+      </span>}
+    </div>
+    {/* 진행도 바 */}
+    <div style={{background:"rgba(0,0,0,0.07)",borderRadius:5,height:5,overflow:"hidden",marginBottom:8}}>
+      <div style={{width:`${Math.min(100,doneCount/ACHS.length*100)}%`,height:"100%",
+        background:`linear-gradient(90deg,${acHex},${acHex}aa)`,borderRadius:5,transition:"width 0.4s"}}/>
+    </div>
+    {/* 카테고리 필터 */}
+    <div style={{display:"flex",gap:3,flexWrap:"wrap",marginBottom:8}}>
+      {categories.map(({id,label,emoji})=>(
+        <button key={id} onClick={()=>setAchFilter(id)}
+          style={{padding:"3px 7px",borderRadius:8,
+            border:`1px solid ${achFilter===id?acHex:"rgba(0,0,0,0.08)"}`,
+            background:achFilter===id?`${acHex}12`:"white",
+            color:achFilter===id?acHex:"var(--tx3)",
+            fontSize:9,fontWeight:achFilter===id?800:400,cursor:"pointer",fontFamily:"inherit"}}>
+          {emoji} {label}
+        </button>
+      ))}
+    </div>
+    {/* 업적 목록 */}
+    {filtered.map(a=>{
+      const done=achDone.includes(a.id);
+      const claimed=achClaimed.includes(a.id);
       const rStr=a.reward?Object.entries(a.reward).map(([id,v])=>{
-        const all=[...FOODS,...CONSUMABLES,...BOSS_ITEMS,{id:"battle_token",emoji:"🪙"},{id:"stone1",emoji:"💠"},{id:"stone2",emoji:"🔷"},{id:"stone3",emoji:"🌀"}].find(x=>x.id===id);
+        const all=[...FOODS,...CONSUMABLES,...BOSS_ITEMS,
+          {id:"battle_token",emoji:"🪙"},{id:"stone1",emoji:"💠"},
+          {id:"stone2",emoji:"🔷"},{id:"stone3",emoji:"🌀"}].find(x=>x.id===id);
         return all?`${all.emoji}×${v}`:"";
       }).filter(Boolean).join(" "):"";
-      return <div key={a.id} style={{display:"flex",alignItems:"center",gap:8,padding:"9px 10px",borderRadius:11,border:`1px solid ${done?acHex+"25":"rgba(0,0,0,0.05)"}`,marginBottom:5,background:done?`${acHex}05`:"rgba(0,0,0,0.01)",opacity:done?1:0.4}}>
-        <div style={{fontSize:11,width:24,textAlign:"center"}}>{a.icon}</div>
+      return <div key={a.id} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 10px",
+        borderRadius:10,border:`1px solid ${done?acHex+"25":"rgba(0,0,0,0.05)"}`,
+        marginBottom:4,background:done?`${acHex}05`:"rgba(0,0,0,0.01)",
+        opacity:done?1:0.5}}>
+        <div style={{fontSize:16,width:22,textAlign:"center",flexShrink:0}}>{a.icon}</div>
         <div style={{flex:1,minWidth:0}}>
-          <div style={{fontSize:11,fontWeight:700,color:done?acHex:"var(--tx2)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{a.name}{done&&!claimed&&" 🆕"}</div>
-          {a.reward&&<div style={{fontSize:11,color:"var(--gold)"}}>{rStr}{a.title?` + "${a.title}"`:""}</div>}
+          <div style={{fontSize:10,fontWeight:700,color:done?acHex:"var(--tx2)",
+            overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+            {a.name}{done&&!claimed&&<span style={{color:"var(--gold)",marginLeft:3}}>🆕</span>}
+          </div>
+          <div style={{fontSize:9,color:"var(--tx3)"}}>{a.desc}</div>
+          {a.reward&&<div style={{fontSize:9,color:"var(--gold)"}}>{rStr}{a.title?` + 칭호"${a.title}"`:""}</div>}
         </div>
-        {done&&!claimed&&<button onClick={()=>claimAchReward(a.id)} style={{padding:"4px 8px",borderRadius:7,border:"none",background:"linear-gradient(135deg,var(--gold),#cc8800)",color:"#fff",fontSize:11,fontWeight:800,cursor:"pointer",flexShrink:0}}>수령</button>}
-        {claimed&&<span style={{fontSize:11,color:"var(--green)"}}>✅</span>}
+        {done&&!claimed&&<button onClick={()=>claimAchReward(a.id)}
+          style={{padding:"3px 8px",borderRadius:7,border:"none",
+            background:"linear-gradient(135deg,var(--gold),#cc8800)",
+            color:"#fff",fontSize:9,fontWeight:800,cursor:"pointer",flexShrink:0,fontFamily:"inherit"}}>
+          수령
+        </button>}
+        {claimed&&<span style={{fontSize:12,color:"var(--green)",flexShrink:0}}>✅</span>}
+        {!done&&<span style={{fontSize:12,color:"rgba(0,0,0,0.15)",flexShrink:0}}>🔒</span>}
       </div>;
     })}
   </div>;
@@ -6316,10 +6409,13 @@ function SideHelpProb({acHex}){
       {q:"👥 대전",a:"배틀: 온라인 유저와 실시간 대결. 하루 15회 제한. 레이드: 강력한 보스에 도전해 세트 장비 획득. 소환수도 HP 소모됨."},
     ],
     enhance:[
-      {q:"🔩 강화 기본",a:"강화석 소모로 소환수 스탯 UP. COMMON~RARE: 실패해도 단계 유지. UNIQUE+: 실패 시 -1 하락. EPIC+: 대실패 시 소환수 파괴 가능!"},
-      {q:"🌟 대성공",a:"+3 이상부터 대성공 발동 가능. 대성공 시 +2 한번에 상승! 최고 +8→+10도 가능. 확률: +3(5%), +7(15%)."},
-      {q:"💥 강화 실패",a:"COMMON~RARE: 실패 = 현재 단계 유지(안전). UNIQUE 이상: 실패 = -1 하락. 대실패 = 소환수 파괴(EPIC+만)"},
-      {q:"💊 강화 팁",a:"RARE 이하는 무조건 시도. UNIQUE는 고강화 전에 비용 계산. EPIC+는 신중하게!"},
+      {q:"🔩 강화 기본",a:"강화석 소모로 소환수 스탯 UP. 최대 +10강. 강화 단계가 높을수록 실패 확률 증가."},
+      {q:"🌟 대성공 (+2)",a:"+3 이상부터 대성공 발동 가능. 성공 판정 후 추가로 대성공 확률 체크 → +2 한번에 상승! +7강에서 15%로 가장 높음."},
+      {q:"✅ 성공",a:"+1 상승. +1~+2는 100% 성공. +9~+10은 15~30%로 낮음."},
+      {q:"💥 실패 (유지)",a:"COMMON·UNCOMMON·RARE (등급 1~3): 실패해도 현재 강화 단계 유지! 안전구간."},
+      {q:"📉 실패 (하락)",a:"⚠️ UNIQUE 이상 (4단계~)부터 실패 시 -1 하락! 신중하게 도전하세요."},
+      {q:"💀 대실패 (파괴)",a:"⚠️ EPIC 이상 (6단계~)은 실패 시 낮은 확률로 소환수 파괴! 부활권으로 되살릴 수 있으며 강화수치는 유지됩니다."},
+      {q:"💊 부활권",a:"파괴된 소환수를 HP 50%로 되살림. 강화수치 유지. 상점에서 🟠×50으로 구매 가능."},
     ],
     evo:[
       {q:"💎 진화 기본",a:"각 소환수마다 고유 진화 조건 있음. 조건 미충족 시 진화 버튼 비활성. 진화석 소모 후 4단계 결과 중 하나."},
@@ -6344,6 +6440,14 @@ function SideHelpProb({acHex}){
       {q:"📊 등급 결정",a:"부모 등급 합산 기반으로 결정. 두 부모가 모두 높은 등급이면 더 높은 등급의 HYBRID 탄생 가능."},
       {q:"🍖 육아",a:"교배 후 알 생성 → 먹이로 육아 필요. 후반(50% 이후)은 고급먹이(🍖) 필요. 알 진행도 표시됨."},
       {q:"♂♀ 성별",a:"포획 시 랜덤으로 부여. 교배는 반드시 암수 한 쌍. 성별 표시: ♂파란색 ♀분홍색."},
+    ],
+    mine:[
+      {q:"⛏️ 광산 기본",a:"소환수를 광산에 파견 → 현실 시간 경과 후 회수 → 아이템 파밍. 파견 중인 소환수는 다른 컨텐츠(필드/사냥터/던전/레이드 등) 이용 불가."},
+      {q:"🟫 구리광산",a:"Lv1 해금 · 1시간 · 1마리 파견. 강화석·진화석·볼 파밍."},
+      {q:"⬛ 철광산",a:"Lv5 해금 · 2시간 · 2마리 파견. 더 많은 강화석과 희귀진화석 파밍."},
+      {q:"🟡 금광산",a:"Lv10 해금 · 4시간 · 3마리 파견. 초월석·각성석 파밍 가능."},
+      {q:"💜 마법광산",a:"Lv20 해금 · 6시간 · 4마리 파견. 최고급 아이템·레이드크리스탈 파밍."},
+      {q:"📈 파밍 보너스",a:"파견된 소환수의 등급·강화수치가 높을수록 파밍량 증가! 고급 소환수를 보내면 더 많이 가져옵니다."},
     ],
   };
   const probSections=[
@@ -6381,7 +6485,7 @@ function SideHelpProb({acHex}){
   return <div>
     <div style={{fontSize:11,fontWeight:800,color:"var(--tx1)",marginBottom:8}}>❓ 도움말 & 📊 확률표</div>
     <div style={{display:"flex",gap:3,marginBottom:10,flexWrap:"wrap"}}>
-      {[["basic","📖기본"],["enhance","🔩강화"],["evo","💎진화"],["raid","🌋레이드"],["breed","🥚교배"],["prob","📊확률"]].map(([k,l])=>(
+      {[["basic","📖기본"],["enhance","🔩강화"],["evo","💎진화"],["raid","🌋레이드"],["breed","🥚교배"],["mine","⛏️광산"],["prob","📊확률"]].map(([k,l])=>(
         <button key={k} onClick={()=>setTab(k)}
           style={{padding:"4px 9px",borderRadius:8,border:`1.5px solid ${tab===k?acHex:"rgba(0,0,0,0.08)"}`,
             background:tab===k?`${acHex}12`:"white",cursor:"pointer",fontFamily:"inherit",
