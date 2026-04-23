@@ -258,11 +258,11 @@ function getTypeEvoMon(baseId,type){
 // 합성 확률 - 앞 높고 뒤 낮고 실패 점점 증가
 // 에픽/레전드는 매우 낮은 확률로 조정
 const FUSION_TABLE={
-  "COMMON":   [{g:"UNCOMMON",r:0.50},{g:"RARE",    r:0.20},{g:"fail",r:0.30}],
-  "UNCOMMON": [{g:"RARE",    r:0.50},{g:"UNIQUE",  r:0.20},{g:"fail",r:0.30}],
-  "RARE":     [{g:"UNIQUE",  r:0.45},{g:"EPIC",    r:0.15},{g:"fail",r:0.40}],
-  "UNIQUE":   [{g:"EPIC",    r:0.40},{g:"LEGEND",  r:0.10},{g:"fail",r:0.50}],
-  "EPIC":     [{g:"LEGEND",  r:0.25},{g:"fail",r:0.75}],
+  "COMMON":   [{g:"UNCOMMON",r:0.50},{g:"RARE",  r:0.20},{g:"fail",r:0.30}],
+  "UNCOMMON": [{g:"RARE",    r:0.50},{g:"UNIQUE",r:0.20},{g:"fail",r:0.30}],
+  "RARE":     [{g:"UNIQUE",  r:0.40},{g:"fail",  r:0.60}],
+  "UNIQUE":   [{g:"EPIC",    r:0.30},{g:"fail",  r:0.70}],
+  "EPIC":     [{g:"LEGEND",  r:0.02},{g:"fail",  r:0.98}],
 };
 const FUSION_POOL={
   "UNCOMMON":["blaze","aqua","bolt","frostie","venom","terro","shiny","draco","thornia"],
@@ -286,7 +286,7 @@ function rollFusion(gradeA,gradeB){
   return null;
 }
 
-// 뮤턴트 이로치 풀 (EPIC+ 합성 시 3% 확률로 등장)
+// 뮤턴트 풀 (EPIC+ 합성 시 3% 확률로 등장)
 const MUTANT_POOL={
   "epic_godslayer":"mutant_godslayer",
   "epic_voidking":"mutant_voidking",
@@ -368,8 +368,8 @@ const SHOP_ITEMS=[
 const DUNGEONS=[
   {id:"dg1",name:"초보 던전",emoji:"🌿",minTamerLv:1,stamina:1,desc:"Lv1",drops:[{id:"food1",amt:3,rate:1.0},{id:"food2",amt:1,rate:0.4},{id:"stone1",amt:1,rate:0.15},{id:"enhance_stone",amt:3,rate:0.6}]},
   {id:"dg2",name:"중급 던전",emoji:"🔥",minTamerLv:5,stamina:2,desc:"Lv5",drops:[{id:"food2",amt:2,rate:1.0},{id:"stone1",amt:1,rate:0.4},{id:"stone2",amt:1,rate:0.1},{id:"enhance_stone",amt:4,rate:0.8}]},
-  {id:"dg3",name:"고급 던전",emoji:"⚡",minTamerLv:10,stamina:3,desc:"Lv10",drops:[{id:"food3",amt:2,rate:0.5},{id:"stone2",amt:1,rate:0.3},{id:"enhance_stone",amt:6,rate:1.0},{id:"dual_type",amt:1,rate:0.04}]},
-  {id:"dg4",name:"전설 던전",emoji:"🌟",minTamerLv:20,stamina:5,desc:"Lv20",drops:[{id:"food3",amt:3,rate:1.0},{id:"stone2",amt:2,rate:0.5},{id:"stone2",amt:1,rate:0.2},{id:"enhance_stone",amt:9,rate:1.0},{id:"dual_type",amt:1,rate:0.08}]},
+  {id:"dg3",name:"고급 던전",emoji:"⚡",minTamerLv:10,stamina:3,desc:"Lv10",drops:[{id:"food3",amt:2,rate:0.5},{id:"stone2",amt:1,rate:0.3},{id:"enhance_stone",amt:6,rate:1.0},{id:"awaken_stone",amt:1,rate:0.08}]},
+  {id:"dg4",name:"전설 던전",emoji:"🌟",minTamerLv:20,stamina:5,desc:"Lv20",drops:[{id:"food3",amt:3,rate:1.0},{id:"stone2",amt:2,rate:0.5},{id:"stone2",amt:1,rate:0.2},{id:"enhance_stone",amt:9,rate:1.0},{id:"awaken_stone",amt:1,rate:0.12}]},
 ];
 
 // 방생 보상 강화 (복합 보상: 배열)
@@ -425,39 +425,60 @@ const MONTHLY_REWARDS=[
 // 업적 (보상 포함)
 const ACHS=[
   {id:"first_catch",icon:"🎯",name:"첫 테이밍",desc:"처음으로 잡았다",reward:{enhance_stone:3},title:null,cond:s=>(s.dexSeen||[]).length>=1},
-  {id:"catch5",icon:"📦",name:"수집가",desc:"5종 포획",reward:{food2:3},title:"수집가",cond:s=>(s.dexSeen||[]).length>=5},
-  {id:"catch10",icon:"🗄️",name:"도감 마스터",desc:"10종 포획",reward:{food3:2,enhance_stone:5},title:"도감 마스터",cond:s=>(s.dexSeen||[]).length>=10},
-  {id:"win3",icon:"⚔️",name:"사냥꾼",desc:"사냥터 3승",reward:{enhance_stone:5},title:null,cond:s=>(s.huntWins||0)>=3},
-  {id:"win10",icon:"🏆",name:"사냥 마스터",desc:"사냥터 10승",reward:{enhance_stone:10,food3:1},title:"사냥 마스터",cond:s=>(s.huntWins||0)>=10},
-  {id:"win30",icon:"🗡️",name:"전설 사냥꾼",desc:"사냥터 30승",reward:{enhance_stone:20,stone2:1},title:"전설 사냥꾼",cond:s=>(s.huntWins||0)>=30},
-  {id:"pvp3",icon:"👥",name:"배틀러",desc:"배틀 3승",reward:{battle_token:10},title:null,cond:s=>(s.pvpWins||0)>=3},
-  {id:"pvp10",icon:"🥊",name:"배틀 마스터",desc:"배틀 10승",reward:{battle_token:30},title:"배틀 마스터",cond:s=>(s.pvpWins||0)>=10},
-  {id:"lv5",icon:"⬆️",name:"육성의 달인",desc:"소환수 Lv.5",reward:{food2:3},title:null,cond:s=>(s.collection||[]).some(c=>c.lv>=5)},
-  {id:"enhance5",icon:"🔩",name:"강화 입문",desc:"+5강 달성",reward:{enhance_stone:8},title:null,cond:s=>(s.collection||[]).some(c=>(c.enhance||0)>=5)},
-  {id:"enhance10",icon:"⚒️",name:"최강 강화",desc:"+10강 달성",reward:{enhance_stone:20,boss_crystal:1},title:"+10 달인",cond:s=>(s.collection||[]).some(c=>(c.enhance||0)>=10)},
-  {id:"evo1",icon:"✨",name:"첫 진화",desc:"진화 성공",reward:{food2:2},title:null,cond:s=>(s.totalEvos||0)>=1},
-  {id:"fusion1",icon:"🔮",name:"첫 합성",desc:"합성 성공",reward:{enhance_stone:5},title:null,cond:s=>(s.totalFusions||0)>=1},
-  {id:"legend1",icon:"🌈",name:"LEGEND 달성",desc:"레전드 등급 보유",reward:{stone2:1,enhance_stone:20},title:"레전드 테이머",cond:s=>(s.collection||[]).some(c=>c.rarity==="LEGEND")},
-  {id:"mutant_c",icon:"🧬",name:"MUTANT 포획",desc:"뮤턴트 획득",reward:{enhance_stone:10},title:null,cond:s=>(s.dexSeen||[]).includes("mutant1")||(s.dexSeen||[]).includes("mutant2")},
-  {id:"boss_titan_k", icon:"🌋",name:"이그나스 토벌",    desc:"이그나스 첫 격파",          reward:{boss_crystal:1,enhance_stone:10}, title:null,         cond:s=>((s.bossKills||{}).boss_titan||0)>=1},
-  {id:"boss_titan_5", icon:"🌋",name:"이그나스 5회",     desc:"이그나스 5회 격파",         reward:{stone2:1,enhance_stone:20},      title:null,         cond:s=>((s.bossKills||{}).boss_titan||0)>=5},
-  {id:"boss_void_k",  icon:"👾",name:"보이드로드 토벌",  desc:"보이드로드 첫 격파",        reward:{ancient_shard:1,enhance_stone:10},title:null,         cond:s=>((s.bossKills||{}).boss_void||0)>=1},
-  {id:"boss_void_5",  icon:"👾",name:"보이드로드 5회",   desc:"보이드로드 5회 격파",       reward:{stone2:1,enhance_stone:20},      title:null,         cond:s=>((s.bossKills||{}).boss_void||0)>=5},
-  {id:"boss_storm_k", icon:"⛈️",name:"스톰킹 토벌",     desc:"스톰킹 첫 격파",            reward:{boss_eye:1,enhance_stone:10},    title:null,         cond:s=>((s.bossKills||{}).boss_storm||0)>=1},
-  {id:"boss_storm_5", icon:"⛈️",name:"스톰킹 5회",      desc:"스톰킹 5회 격파",           reward:{stone2:1,enhance_stone:20},      title:null,         cond:s=>((s.bossKills||{}).boss_storm||0)>=5},
-  {id:"boss_all",     icon:"👑",name:"보스 마스터",      desc:"3보스 모두 토벌",           reward:{stone2:1,enhance_stone:30},      title:"보스 마스터",cond:s=>Object.keys(s.bossKills||{}).length>=3},
-  {id:"boss_all_10",  icon:"👑",name:"레이드 챔피언",    desc:"모든 보스 각 10회 이상",    reward:{stone2:2,enhance_stone:50},      title:"레이드 챔피언",cond:s=>["boss_titan","boss_void","boss_storm"].every(id=>((s.bossKills||{})[id]||0)>=10)},
-  {id:"revive1",icon:"💊",name:"기적의 부활",desc:"부활권 사용",reward:{food2:2},title:null,cond:s=>(s.totalRevives||0)>=1},
-  {id:"release1",icon:"🕊️",name:"첫 방생",desc:"방생 완료",reward:{food1:5},title:null,cond:s=>(s.totalReleases||0)>=1},
-  {id:"shop1",icon:"🛒",name:"첫 구매",desc:"교환 상점 이용",reward:{enhance_stone:2},title:null,cond:s=>(s.totalShops||0)>=1},
-  {id:"dungeon1",icon:"🏰",name:"던전 탐험가",desc:"던전 클리어",reward:{enhance_stone:5},title:null,cond:s=>(s.totalDungeons||0)>=1},
-  {id:"tamer10",icon:"🌟",name:"테이머 Lv.10",desc:"테이머 레벨 10",reward:{enhance_stone:15,food3:1},title:"숙련 테이머",cond:s=>(s.tamerLv||1)>=10},
-  {id:"tamer30",icon:"💫",name:"테이머 Lv.30",desc:"테이머 레벨 30",reward:{enhance_stone:30,stone2:2},title:"고급 테이머",cond:s=>(s.tamerLv||1)>=30},
-  {id:"tamer50",icon:"👑",name:"최강 테이머",desc:"테이머 레벨 50",reward:{stone2:2,enhance_stone:50},title:"최강 테이머",cond:s=>(s.tamerLv||1)>=50},
-  {id:"monthly7",icon:"📅",name:"7일 출석",desc:"월간 출석 7일",reward:{enhance_stone:10},title:null,cond:s=>(s.monthlyDays||0)>=7},
-  {id:"monthly30",icon:"🗓️",name:"출석왕",desc:"월간 출석 30일",reward:{enhance_stone:30,stone2:1},title:"출석왕",cond:s=>(s.monthlyDays||0)>=30},
-  {id:"loss",icon:"💀",name:"첫 패배",desc:"배틀에서 졌다",reward:{food1:2},title:null,cond:s=>(s.losses||0)>=1},
-  {id:"divine_enc",icon:"🍊",name:"전설의 목격자",desc:"???",reward:{enhance_stone:99,stone2:3},title:"오렌지의 선택",cond:s=>(s.dexSeen||[]).includes("_god_orange")},
+  // ── 포획·도감 ──
+  {id:"catch1",  icon:"🎯",name:"첫 포획",         desc:"첫 몬스터 포획",          reward:{ball1:5},                        title:null,            cond:s=>(s.dexSeen||[]).length>=1},
+  {id:"catch5",  icon:"📦",name:"수집가",           desc:"5종 도감 등록",           reward:{food2:3},                        title:"수집가",        cond:s=>(s.dexSeen||[]).length>=5},
+  {id:"catch10", icon:"🗄️",name:"도감 마스터",      desc:"10종 도감 등록",          reward:{food3:2,enhance_stone:5},        title:"도감 마스터",   cond:s=>(s.dexSeen||[]).length>=10},
+  {id:"catch20", icon:"📖",name:"박사",             desc:"20종 도감 등록",          reward:{enhance_stone:15,stone2:1},      title:"몬스터 박사",   cond:s=>(s.dexSeen||[]).length>=20},
+  {id:"catch30", icon:"🔬",name:"연구자",           desc:"30종 도감 등록",          reward:{enhance_stone:25,stone2:1,food3:2},title:"몬스터 연구자",cond:s=>(s.dexSeen||[]).length>=30},
+  {id:"catch50", icon:"🌍",name:"탐험대장",         desc:"50종 도감 등록",          reward:{enhance_stone:40,stone2:2,food3:3},title:"탐험대장",     cond:s=>(s.dexSeen||[]).length>=50},
+  {id:"catch_all",icon:"👑",name:"도감 완성",       desc:"모든 몬스터 도감 등록",   reward:{enhance_stone:100,ball3:3},      title:"완전 도감",     cond:s=>{const tot=MONS.filter(m=>m.rarity!=="DIVINE").length;return(s.dexSeen||[]).length>=tot;}},
+  // ── 사냥 ──
+  {id:"win3",    icon:"⚔️",name:"사냥꾼",           desc:"사냥터 3승",              reward:{enhance_stone:5},                title:null,            cond:s=>(s.huntWins||0)>=3},
+  {id:"win10",   icon:"🏆",name:"사냥 마스터",      desc:"사냥터 10승",             reward:{enhance_stone:10,food3:1},       title:"사냥 마스터",   cond:s=>(s.huntWins||0)>=10},
+  {id:"win30",   icon:"🗡️",name:"전설 사냥꾼",      desc:"사냥터 30승",             reward:{enhance_stone:20,stone2:1},      title:"전설 사냥꾼",   cond:s=>(s.huntWins||0)>=30},
+  {id:"win100",  icon:"⚡",name:"사냥왕",           desc:"사냥터 100승",            reward:{enhance_stone:40,stone2:2},      title:"사냥왕",        cond:s=>(s.huntWins||0)>=100},
+  // ── 배틀 ──
+  {id:"pvp3",    icon:"👥",name:"배틀러",           desc:"배틀 3승",                reward:{battle_token:10},                title:null,            cond:s=>(s.pvpWins||0)>=3},
+  {id:"pvp10",   icon:"🥊",name:"배틀 마스터",      desc:"배틀 10승",               reward:{battle_token:30},                title:"배틀 마스터",   cond:s=>(s.pvpWins||0)>=10},
+  {id:"pvp30",   icon:"🏅",name:"챔피언",           desc:"배틀 30승",               reward:{battle_token:60,enhance_stone:20},title:"배틀 챔피언",  cond:s=>(s.pvpWins||0)>=30},
+  // ── 성장 ──
+  {id:"lv5",     icon:"⬆️",name:"육성의 달인",      desc:"몬스터 Lv.5 달성",        reward:{food2:3},                        title:null,            cond:s=>(s.collection||[]).some(c=>c.lv>=5)},
+  {id:"lv10",    icon:"⬆️",name:"육성 고수",        desc:"몬스터 Lv.10 달성",       reward:{food3:2},                        title:null,            cond:s=>(s.collection||[]).some(c=>c.lv>=10)},
+  {id:"lv25",    icon:"🔥",name:"최강 육성",        desc:"몬스터 Lv.25 달성",       reward:{food3:5,enhance_stone:10},       title:"육성 마스터",   cond:s=>(s.collection||[]).some(c=>c.lv>=25)},
+  {id:"enhance5",icon:"🔩",name:"강화 입문",        desc:"+5강 달성",               reward:{enhance_stone:8},                title:null,            cond:s=>(s.collection||[]).some(c=>(c.enhance||0)>=5)},
+  {id:"enhance10",icon:"⚒️",name:"최강 강화",       desc:"+10강 달성",              reward:{enhance_stone:20,boss_crystal:1},title:"+10 달인",      cond:s=>(s.collection||[]).some(c=>(c.enhance||0)>=10)},
+  {id:"evo1",    icon:"✨",name:"첫 진화",          desc:"진화 성공",               reward:{food2:2},                        title:null,            cond:s=>(s.totalEvos||0)>=1},
+  {id:"evo5",    icon:"🌟",name:"진화 전문가",      desc:"진화 5회 성공",           reward:{stone2:1,enhance_stone:10},      title:"진화 전문가",   cond:s=>(s.totalEvos||0)>=5},
+  {id:"fusion1", icon:"🔮",name:"첫 합성",          desc:"합성 성공",               reward:{enhance_stone:5},                title:null,            cond:s=>(s.totalFusions||0)>=1},
+  {id:"fusion5", icon:"🔮",name:"합성 전문가",      desc:"합성 5회 성공",           reward:{enhance_stone:15,stone2:1},      title:"합성 전문가",   cond:s=>(s.totalFusions||0)>=5},
+  {id:"legend1", icon:"🌈",name:"LEGEND 달성",      desc:"레전드 등급 보유",         reward:{stone2:1,enhance_stone:20},      title:"레전드 테이머", cond:s=>(s.collection||[]).some(c=>MONS.find(m=>m.id===(c.baseId||c.id))?.rarity==="LEGEND")},
+  {id:"mutant_c",icon:"💠",name:"뮤턴트 획득",      desc:"뮤턴트 합성 성공",         reward:{enhance_stone:15},               title:"돌연변이 사냥꾼",cond:s=>(s.collection||[]).some(c=>MONS.find(m=>m.id===(c.baseId||c.id))?.rarity==="MUTANT")},
+  {id:"awaken1", icon:"💠",name:"첫 각성",          desc:"몬스터 각성 성공",         reward:{awaken_stone:1},                 title:null,            cond:s=>(s.collection||[]).some(c=>(c.awakenLv||0)>=1)},
+  {id:"breed1",  icon:"🥚",name:"첫 교배",          desc:"알 부화 성공",             reward:{food2:3},                        title:null,            cond:s=>(s.totalBreeds||0)>=1},
+  // ── 레이드·보스 ──
+  {id:"boss_titan_k", icon:"🌋",name:"이그나스 토벌",   desc:"이그나스 첫 격파",        reward:{boss_crystal:1,enhance_stone:10}, title:null,           cond:s=>((s.bossKills||{}).boss_titan||0)>=1},
+  {id:"boss_titan_5", icon:"🌋",name:"이그나스 5회",    desc:"이그나스 5회 격파",       reward:{stone2:1,enhance_stone:20},       title:null,           cond:s=>((s.bossKills||{}).boss_titan||0)>=5},
+  {id:"boss_void_k",  icon:"👾",name:"보이드로드 토벌", desc:"보이드로드 첫 격파",      reward:{ancient_shard:1,enhance_stone:10},title:null,           cond:s=>((s.bossKills||{}).boss_void||0)>=1},
+  {id:"boss_void_5",  icon:"👾",name:"보이드로드 5회",  desc:"보이드로드 5회 격파",     reward:{stone2:1,enhance_stone:20},       title:null,           cond:s=>((s.bossKills||{}).boss_void||0)>=5},
+  {id:"boss_storm_k", icon:"⛈️",name:"스톰킹 토벌",    desc:"스톰킹 첫 격파",          reward:{boss_eye:1,enhance_stone:10},     title:null,           cond:s=>((s.bossKills||{}).boss_storm||0)>=1},
+  {id:"boss_storm_5", icon:"⛈️",name:"스톰킹 5회",     desc:"스톰킹 5회 격파",         reward:{stone2:1,enhance_stone:20},       title:null,           cond:s=>((s.bossKills||{}).boss_storm||0)>=5},
+  {id:"boss_all",     icon:"👑",name:"보스 마스터",     desc:"3보스 모두 토벌",         reward:{stone2:1,enhance_stone:30},       title:"보스 마스터",  cond:s=>Object.keys(s.bossKills||{}).length>=3},
+  {id:"boss_all_10",  icon:"👑",name:"레이드 챔피언",   desc:"모든 보스 각 10회",       reward:{stone2:2,enhance_stone:50},       title:"레이드 챔피언",cond:s=>["boss_titan","boss_void","boss_storm"].every(id=>((s.bossKills||{})[id]||0)>=10)},
+  // ── 테이머·출석·기타 ──
+  {id:"revive1",  icon:"💊",name:"기적의 부활",     desc:"부활권 사용",              reward:{food2:2},                         title:null,           cond:s=>(s.totalRevives||0)>=1},
+  {id:"release1", icon:"🕊️",name:"첫 방생",        desc:"몬스터 방생",              reward:{food1:5},                         title:null,           cond:s=>(s.totalReleases||0)>=1},
+  {id:"release10",icon:"🕊️",name:"방생 전문가",    desc:"10회 방생",                reward:{food2:3,enhance_stone:5},         title:null,           cond:s=>(s.totalReleases||0)>=10},
+  {id:"shop1",    icon:"🛒",name:"첫 구매",         desc:"상점 이용",                reward:{enhance_stone:2},                 title:null,           cond:s=>(s.totalShops||0)>=1},
+  {id:"dungeon1", icon:"🏰",name:"던전 탐험가",     desc:"던전 클리어",              reward:{enhance_stone:5},                 title:null,           cond:s=>(s.totalDungeons||0)>=1},
+  {id:"dungeon10",icon:"⚡",name:"던전 마스터",     desc:"던전 10회 클리어",         reward:{enhance_stone:20,stone2:1},       title:"던전 마스터",  cond:s=>(s.totalDungeons||0)>=10},
+  {id:"tamer10",  icon:"🌟",name:"테이머 Lv.10",   desc:"테이머 레벨 10",           reward:{enhance_stone:15,food3:1},        title:"숙련 테이머",  cond:s=>(s.tamerLv||1)>=10},
+  {id:"tamer30",  icon:"💫",name:"테이머 Lv.30",   desc:"테이머 레벨 30",           reward:{enhance_stone:30,stone2:2},       title:"고급 테이머",  cond:s=>(s.tamerLv||1)>=30},
+  {id:"tamer50",  icon:"👑",name:"최강 테이머",     desc:"테이머 레벨 50",           reward:{stone2:2,enhance_stone:50},       title:"최강 테이머",  cond:s=>(s.tamerLv||1)>=50},
+  {id:"monthly7", icon:"📅",name:"7일 출석",        desc:"월간 출석 7일",            reward:{enhance_stone:10},                title:null,           cond:s=>(s.monthlyDays||0)>=7},
+  {id:"monthly30",icon:"🗓️",name:"출석왕",         desc:"월간 출석 30일",           reward:{enhance_stone:30,stone2:1},       title:"출석왕",       cond:s=>(s.monthlyDays||0)>=30},
+  {id:"loss",     icon:"💀",name:"첫 패배",         desc:"배틀에서 졌다",            reward:{food1:2},                         title:null,           cond:s=>(s.losses||0)>=1},
+  {id:"divine_enc",icon:"🍊",name:"전설의 목격자",  desc:"???",                      reward:{enhance_stone:99,stone2:3},       title:"오렌지의 선택",cond:s=>(s.dexSeen||[]).includes("_god_orange")},
 ];
 
 // ══════════════════════
@@ -555,13 +576,14 @@ function checkEvoConds(chain, c, myS){
 // 대성공: altTo 존재 시 더 강한 몬스터로 / 없으면 스탯 보너스
 // 성공: 일반 진화
 // 실패: 강화석 보상, 소환수 유지
-// 강화진화(대성공/성공/실패), 기본진화(100% 성공)
+// 특수진화(대성공/성공/실패), 진화(100% 성공)
 // [대성공률, 성공률] - 나머지는 실패 (진화석만 소모, 소환수 유지)
 const EVO_RATES={
   "COMMON":   [0.20, 0.70], // 대성공20% / 성공70% / 실패10%
-  "UNCOMMON": [0.15, 0.65], // 대성공15% / 성공65% / 실패20%
-  "RARE":     [0.10, 0.50], // 대성공10% / 성공50% / 실패40%
-  "UNIQUE":   [0.07, 0.38], // 대성공7%  / 성공38% / 실패55%  "EPIC":     [0.03, 0.15], // 대성공3%  / 성공15% / 실패82%
+  "UNCOMMON": [0.15, 0.60], // 대성공15% / 성공60% / 실패25%
+  "RARE":     [0.08, 0.42], // 대성공8%  / 성공42% / 실패50%
+  "UNIQUE":   [0.04, 0.26], // 대성공4%  / 성공26% / 실패70%
+  "EPIC":     [0.02, 0.10], // 대성공2%  / 성공10% / 실패88%
 };
 
 // MONS - 몬스터 목록 (이모지 중복 없음, 속성·진화 계보 명확)
@@ -776,7 +798,6 @@ const WILD_IDS=[
 const BOSS_IDS=["boss_titan","boss_void","boss_storm"];
 
 
-
 function initState(){
   return{
     tamerLv:1,tamerExp:0,
@@ -894,9 +915,6 @@ function prepare(data){
   s=refillStamina(s);
   return checkAch(s);
 }
-
-
-
 
 
 // ══════════════════════
@@ -1685,7 +1703,6 @@ function FieldBg({wild,cr,throwing,isSik,frame,w,h,isBoss,ballFlying,ballEmoji,m
 }
 
 
-
 // ══════════ Rev2 업데이트 초기화 ══════════
 // 리셋 없음 - 코드 기반 로그인
 
@@ -2026,7 +2043,6 @@ function SidePanel({sideTabTop,setSideTabTop,
     </div>
   </>;
 }
-
 
 
 // ── 뚝딱이 (빨간 후드 소년) ──
@@ -2686,19 +2702,19 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
     }
     const bm=MONS.find(m=>m.id===lookupId)||{rarity:"COMMON"};
     const useShardOverride=(myS.bossItems?.ancient_shard||0)>0;
-    // 진화 결과 4단계 롤 (진화증표 진화는 100% 성공)
-    let evoResult; // "great"|"success"|"fail"|"fatal"
+    // 진화 결과 롤 (진화증표/고대파편은 무조건 성공)
+    let evoResult; // "great"|"success"|"fail"
     if(isLegendProof){
-      evoResult="success"; // 레전드 진화는 무조건 성공
+      evoResult="success"; // 레전드 진화 확정 성공
     }else if(useShardOverride){
-      evoResult="success"; // 고대파편: 무조건 성공
+      evoResult="success"; // 고대파편 확정 성공
     }else{
       const rates=EVO_RATES[bm.rarity]||EVO_RATES["COMMON"];
       const roll=Math.random();
+      // rates[0]=특수진화율(great), rates[1]=일반진화율(success), 나머지=실패
       if(roll<rates[0]) evoResult="great";
       else if(roll<rates[0]+rates[1]) evoResult="success";
-      else if(roll<rates[0]+rates[1]+rates[2]) evoResult="fail";
-      else evoResult="fatal";
+      else evoResult="fail";
     }
     setMy(s=>{
       let ns;
@@ -2711,11 +2727,6 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
       if(evoResult==="fail"){
         ns=addItem(ns,"enhance_stone",3);
         return checkAch({...ns,evoFails:(ns.evoFails||0)+1});
-      }
-      if(evoResult==="fatal"){
-        // 소환수 사망
-        const nc=(ns.collection||[]).map((ci,i)=>i!==idx?ci:{...ci,alive:false,curHp:0});
-        return checkAch({...ns,collection:nc,evoFails:(ns.evoFails||0)+1});
       }
       // 성공 or 대성공
       const toId=evoResult==="great"&&chain.altTo ? chain.altTo : chain.to;
@@ -2740,13 +2751,11 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
     });
     if(evoResult==="great"){
       const altName=chain.altName||chain.name;
-      toast(`🌟 대성공! ${altName}으로 진화!`,"#f59e0b");
+      toast(`⭐ 특수진화 성공! ${altName}으로 진화!`,"#f59e0b");
     }else if(evoResult==="success"){
       toast(`✨ ${chain.name} 진화 성공!`,"var(--purple)");
     }else if(evoResult==="fail"){
-      toast("💔 진화 실패... 🔩×3 위로 보상","var(--orange)");
-    }else{
-      toast("💀 대실패!! 소환수가 사망했다...","var(--red)");
+      toast("💔 진화 실패... 진화석 소모 · 🔩×3 위로 보상","var(--orange)");
     }
   };
 
@@ -3189,6 +3198,21 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
     if(isMutantEpicCombo){
       const legendPool=FUSION_POOL["LEGEND"]||[];
       if(legendPool.length===0){toast("레전드 풀 없음","var(--red)");return;}
+      // 뮤턴트+에픽: 70% 레전드 / 30% 실패 (양쪽 소멸)
+      const mutEpicSuccess=Math.random()<0.70;
+      if(!mutEpicSuccess){
+        setFusAnim("fail");
+        setTimeout(()=>setFusAnim(null),2200);
+        setMy(s=>{
+          const sortedRemove=[fa,fb].sort((a,b)=>b-a);
+          let nc=[...(s.collection||[])];
+          sortedRemove.forEach(ri=>nc.splice(ri,1));
+          return addTamerExp({...s,collection:nc},5);
+        });
+        setFa(null);setFb(null);
+        toast("💥 뮤턴트+에픽 합성 실패... 두 몬스터 소멸 (70% 도전)","var(--red)");
+        return;
+      }
       const resultId=legendPool[Math.floor(Math.random()*legendPool.length)];
       const res=MONS.find(m=>m.id===resultId);if(!res)return;
       setFusAnim("great");
@@ -3249,14 +3273,13 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
       const fusionBonusTable={
         "RARE":{atk:[1,2],hp:[1,2]},
         "UNIQUE":{atk:[1,3],hp:[1,3]},
-        "SUPER":{atk:[1,3],hp:[1,3]},
-        "EPIC":{atk:[2,4],hp:[2,4]},
+                "EPIC":{atk:[2,4],hp:[2,4]},
         "LEGEND":{atk:[2,4],hp:[2,4]},
       };
       const fbt=fusionBonusTable[resultGrade]||{atk:[1,2],hp:[1,2]};
       const rndRange=(r)=>r[0]+Math.floor(Math.random()*(r[1]-r[0]+1));
       const fusionBonus={atk:rndRange(fbt.atk),hp:rndRange(fbt.hp)};
-      // 뮤턴트 이로치: EPIC+ 결과일 때 3% 확률로 뮤턴트 버전 등장
+      // 뮤턴트: EPIC+ 결과일 때 3% 확률로 뮤턴트 버전 등장
       let finalRes=res;
       let isMutant=false;
       if((resultGrade==="EPIC"||resultGrade==="LEGEND")&&MUTANT_POOL[res.id]&&Math.random()<0.03){
@@ -3871,7 +3894,7 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
                 </div>}
                 {c.isMutant&&<div style={{fontSize:10,padding:"3px 8px",borderRadius:8,fontWeight:700,
                   background:"rgba(0,172,193,0.15)",color:"#00acc1",border:"1px solid rgba(0,172,193,0.35)"}}>
-                  💠 이로치
+                  💠 뮤턴트
                 </div>}
                 {bm.rarity==="MUTANT"&&<div style={{fontSize:10,padding:"3px 8px",borderRadius:8,fontWeight:700,
                   background:"rgba(0,172,193,0.1)",color:"#00acc1",border:"1px solid rgba(0,172,193,0.25)"}}>
@@ -4394,7 +4417,7 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
           background:"rgba(139,92,246,0.04)",borderRadius:10,lineHeight:1.6,border:"1px solid rgba(139,92,246,0.1)"}}>
           ⚠️ <b>두 마리 모두 +10강 필요</b> · 같은 등급끼리<br/>
           실패 시 A 소멸, B는 50% 생존 · 🔴크리스탈로 등급UP<br/>
-          💡 MUTANT+EPIC = 랜덤 레전드 확정!
+          💡 MUTANT+EPIC = 랜덤 레전드 70%!
         </div>
         {col.length<2?<div style={{textAlign:"center",padding:"24px 0",color:"var(--tx3)"}}>몬스터 2마리 이상 필요!</div>:<>
           <div style={{display:"flex",flexWrap:"wrap",gap:7,marginBottom:12}}>
@@ -5296,7 +5319,7 @@ function ExploreTab({myS,setMy,toast,col,aliveCols,dgExploring,dgRes,setDgRes,ru
     // 등급/강화 기반 보너스
     const avgBonus=miners.reduce((acc,c)=>{
       const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{rarity:"COMMON"};
-      const gradeBonus={COMMON:1,UNCOMMON:1.3,RARE:1.6,UNIQUE:2.0,SUPER:2.5,EPIC:3.0,LEGEND:4.0}[bm.rarity]||1;
+      const gradeBonus={COMMON:1,UNCOMMON:1.3,RARE:1.6,UNIQUE:2.0,EPIC:3.0,LEGEND:4.0}[bm.rarity]||1;
       return acc+gradeBonus*(1+(c.enhance||0)*0.05);
     },0)/miners.length;
 
@@ -6072,7 +6095,7 @@ function SideBreed({myS,col,setMy,toast,aliveCols,acHex}){
   const BREED_MIN_IDX=GRADE_ORDER.indexOf("UNCOMMON");
   const breedable=aliveCols.map((c,i)=>({c,i})).filter(({c})=>{
     const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{rarity:"COMMON"};
-    return GRADE_ORDER.indexOf(bm.rarity)>=BREED_MIN_IDX&&!c.isHybrid;
+    return GRADE_ORDER.indexOf(bm.rarity)>=BREED_MIN_IDX;
   });
   const males=breedable.filter(({c})=>c.gender==="♂"||!c.gender);
   const females=breedable.filter(({c})=>c.gender==="♀");
@@ -6407,9 +6430,9 @@ function SideLab({myS,col,setMy,toast,acHex,aliveCols}){
   // 진화 탭 - 조건 충족 후 연구소에서 진화
   const renderEvo=()=>{
     // 등급별 기본 진화석 소모량
-    const EVO_COST={COMMON:1,UNCOMMON:2,RARE:3,UNIQUE:5,SUPER:8,EPIC:12};
-    // 강화진화 추가 소모 (대성공 가능)
-    const EVO_EXTRA_COST={COMMON:1,UNCOMMON:2,RARE:3,UNIQUE:4,SUPER:6,EPIC:8};
+    const EVO_COST={COMMON:1,UNCOMMON:2,RARE:3,UNIQUE:5,EPIC:12};
+    // 특수진화 추가 소모 (대성공 가능)
+    const EVO_EXTRA_COST={COMMON:1,UNCOMMON:2,RARE:3,UNIQUE:4,EPIC:8};
 
     const doEvolve=(c,i,isEnhanced)=>{
       const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{rarity:"COMMON"};
@@ -6423,8 +6446,8 @@ function SideLab({myS,col,setMy,toast,acHex,aliveCols}){
       const have=myS.stones?.[chain.stone]||0;
       if(have<totalCost){toast(`진화석 ${totalCost}개 필요! (보유:${have})`,"var(--red)");return;}
 
-      // 강화진화: [대성공률, 성공률] 기반, 나머지는 실패(진화석만 소모)
-      // 기본진화: 무조건 100% 성공
+      // 특수진화: [대성공률, 성공률] 기반, 나머지는 실패(진화석만 소모)
+      // 진화: 무조건 100% 성공
       let evoResult="success";
       if(isEnhanced){
         const rates=EVO_RATES[bm.rarity]||EVO_RATES["COMMON"];
@@ -6437,7 +6460,7 @@ function SideLab({myS,col,setMy,toast,acHex,aliveCols}){
       if(evoResult==="fail"){
         // 실패: 진화석만 소모, 소환수 유지
         setMy(s=>({...s,stones:{...s.stones,[chain.stone]:Math.max(0,(s.stones[chain.stone]||0)-totalCost)}}));
-        toast(`💔 강화진화 실패... 진화석 ${totalCost}개 소모`,"var(--orange)");
+        toast(`💔 특수진화 실패... 진화석 ${totalCost}개 소모`,"var(--orange)");
         return;
       }
 
@@ -6475,7 +6498,7 @@ function SideLab({myS,col,setMy,toast,acHex,aliveCols}){
     return <div>
       <div style={{fontSize:11,color:"var(--tx3)",marginBottom:10,padding:"7px 9px",
         background:"rgba(139,92,246,0.05)",borderRadius:8,border:"1px solid rgba(139,92,246,0.12)"}}>
-        🔬 진화 조건 충족 후 진화석 소모. 강화진화는 추가 진화석으로 <b>대성공</b> 가능!
+        🔬 진화 조건 충족 후 진화석 소모. 특수진화는 추가 진화석으로 <b>대성공</b> 가능!
       </div>
       {evolveList.length===0&&<div style={{color:"var(--tx3)",fontSize:12,textAlign:"center",padding:"16px 0"}}>
         진화 가능한 몬스터가 없습니다
@@ -6542,39 +6565,65 @@ function SideLab({myS,col,setMy,toast,acHex,aliveCols}){
             <span style={{fontSize:20}}>{bm.emoji}</span>
             <span style={{fontSize:12,color:"var(--tx3)"}}>→</span>
             <div>
-              <div style={{fontSize:12,fontWeight:700,color:"var(--purple)"}}>{toMon?.name||chain.to}</div>
-              {altMon&&<div style={{fontSize:10,color:"var(--gold)"}}>🌟대성공: {altMon.name}</div>}
+              {bm.rarity==="EPIC"
+                ?<div style={{fontSize:13,fontWeight:900,color:"#bf360c"}}>
+                  🌈 {toMon?.name||chain.to} <span style={{fontSize:9,background:"rgba(191,54,12,0.12)",padding:"2px 6px",borderRadius:6}}>LEGEND</span>
+                </div>
+                :<>
+                  <div style={{fontSize:12,fontWeight:700,color:"var(--purple)"}}>{toMon?.name||chain.to}</div>
+                  {altMon&&<div style={{fontSize:10,color:"var(--gold)"}}>⭐비밀진화: {altMon.name}</div>}
+                </>}
             </div>
           </div>
 
           {/* 진화석 현황 */}
           <div style={{fontSize:11,color:"var(--tx3)",marginBottom:8}}>
-            {st?.emoji||"💠"} 보유: {have}개
+            {chain.stone==="legend_proof"
+              ? <span>🏆 진화증표 보유: {myS.consumables?.legend_proof||0}개</span>
+              : <span>{st?.emoji||"💠"} 보유: {have}개</span>}
           </div>
 
-          {/* 진화 버튼 2가지 */}
-          <div style={{display:"flex",gap:6}}>
-            {/* 기본 진화 - 무조건 성공 */}
-            <button onClick={()=>doEvolve(c,origIdx,false)}
-              disabled={!canBasic}
-              style={{flex:1,padding:"9px 0",borderRadius:10,border:"none",
-                background:canBasic?"linear-gradient(135deg,var(--purple),#6d28d9)":"rgba(0,0,0,0.06)",
-                color:canBasic?"white":"rgba(0,0,0,0.2)",
-                fontSize:11,fontWeight:800,cursor:canBasic?"pointer":"default",fontFamily:"inherit"}}>
-              ✅ 기본진화<br/>
-              <span style={{fontSize:9,opacity:0.85}}>{st?.emoji}×{baseCost} · 100% 성공</span>
-            </button>
-            {/* 강화 진화 - 대성공 가능 */}
-            {chain.altTo&&<button onClick={()=>doEvolve(c,origIdx,true)}
-              disabled={!canEnhanced}
-              style={{flex:1,padding:"9px 0",borderRadius:10,border:"none",
-                background:canEnhanced?"linear-gradient(135deg,var(--gold),#d97706)":"rgba(0,0,0,0.06)",
-                color:canEnhanced?"#000":"rgba(0,0,0,0.2)",
-                fontSize:11,fontWeight:800,cursor:canEnhanced?"pointer":"default",fontFamily:"inherit"}}>
-              🌟 강화진화<br/>
-              <span style={{fontSize:9,opacity:0.85}}>{st?.emoji}×{baseCost+extraCost} · 대성공{Math.round(rates[0]*100)}% 성공{Math.round(rates[1]*100)}%</span>
-            </button>}
-          </div>
+          {/* 진화 버튼 - 에픽은 레전드 진화 버튼 하나만 / 나머지는 진화+비밀진화 */}
+          {(()=>{
+            const isEpic=bm.rarity==="EPIC";
+            if(isEpic){
+              // 에픽: 진화증표로 레전드 진화 버튼 하나만
+              const haveProof=(myS.consumables?.legend_proof||0)>0;
+              const canLegend=condOk&&haveProof;
+              return <button onClick={()=>doEvolve(c,origIdx,false)}
+                disabled={!canLegend}
+                style={{width:"100%",padding:"12px 0",borderRadius:10,border:"none",fontFamily:"inherit",
+                  background:canLegend?"linear-gradient(135deg,#bf360c,#e53935)":"rgba(0,0,0,0.06)",
+                  color:canLegend?"white":"rgba(0,0,0,0.25)",
+                  fontSize:13,fontWeight:900,cursor:canLegend?"pointer":"default",
+                  boxShadow:canLegend?"0 4px 16px rgba(191,54,12,0.4)":"none"}}>
+                🏆 레전드 진화<br/>
+                <span style={{fontSize:9,opacity:0.85}}>진화증표×1 소모 · 100% 성공 확정</span>
+              </button>;
+            }else{
+              // COMMON~UNIQUE: 진화(to) + 비밀진화(altTo)
+              return <div style={{display:"flex",gap:6}}>
+                <button onClick={()=>doEvolve(c,origIdx,false)}
+                  disabled={!canBasic}
+                  style={{flex:1,padding:"9px 0",borderRadius:10,border:"none",
+                    background:canBasic?"linear-gradient(135deg,#8b5cf6,#6d28d9)":"rgba(0,0,0,0.06)",
+                    color:canBasic?"white":"rgba(0,0,0,0.2)",
+                    fontSize:11,fontWeight:800,cursor:canBasic?"pointer":"default",fontFamily:"inherit"}}>
+                  ✨ 진화<br/>
+                  <span style={{fontSize:9,opacity:0.85}}>{st?.emoji}×{baseCost} · 성공{Math.round(rates[1]*100)}% 실패{Math.round((1-rates[0]-rates[1])*100)}%</span>
+                </button>
+                {chain.altTo&&<button onClick={()=>doEvolve(c,origIdx,true)}
+                  disabled={!canEnhanced}
+                  style={{flex:1,padding:"9px 0",borderRadius:10,border:"none",
+                    background:canEnhanced?"linear-gradient(135deg,var(--gold),#d97706)":"rgba(0,0,0,0.06)",
+                    color:canEnhanced?"#000":"rgba(0,0,0,0.2)",
+                    fontSize:11,fontWeight:800,cursor:canEnhanced?"pointer":"default",fontFamily:"inherit"}}>
+                  ⭐ 비밀진화<br/>
+                  <span style={{fontSize:9,opacity:0.85}}>{st?.emoji}×{baseCost+extraCost} · {Math.round(rates[0]*100)}% {altMon?.name||"?"}</span>
+                </button>}
+              </div>;
+            }
+          })()}
         </div>;
       })}
     </div>;
@@ -6786,7 +6835,7 @@ function SideHelp({acHex}){
     system:[
       {q:"⚡ 스태미나",a:"던전 입장에 소모. 1시간마다 1 자동 충전. 스태미나 포션으로 즉시 회복."},
       {q:"🔩 강화",a:"강화석 소모로 몬스터 스탯 UP. COMMON~RARE는 실패 시 유지 ✅, UNIQUE는 -1 하락 ⚠️, EPIC+는 파괴 위험 💀."},
-      {q:"✨ 진화",a:"조건 충족 + 진화석 소모. 결과: 🌟대성공/✨성공/💔실패(🔩×3)/💀대실패(사망). 레전드 진화는 🏆진화증표 필요."},
+      {q:"✨ 진화",a:"조건 충족 + 진화석 소모. 결과: ⭐비밀진화/✨진화성공/💔실패(진화석소모+🔩×3). 레전드 진화는 🏆진화증표 100% 확정."},
       {q:"💠 각성",a:"각성석 1개로 2번째 속성 랜덤 부여. 최대 2회 (2회차=재랜덤). 합성/진화 시 각성 리셋."},
       {q:"🥚 교배",a:"UNCOMMON+ 몬스터 ♂♀ 한 쌍. 알 등급=부모 평균(올림/내림 50:50). 스탯 우성유전 70:30."},
       {q:"🏆 진화증표",a:"뮤턴트)XXX 방생 시 획득. 에픽→레전드 공식 진화에 사용 (갓슬레이어→오메가 등)."},
@@ -7171,18 +7220,18 @@ function SideAch({myS,acHex,claimAchReward}){
   // 업적 카테고리 분류
   const categories=[
     {id:"all",    label:"전체",emoji:"🏆"},
-    {id:"catch",  label:"포획",emoji:"🎯"},
+    {id:"catch",  label:"도감",emoji:"📖"},
     {id:"fight",  label:"전투",emoji:"⚔️"},
     {id:"grow",   label:"성장",emoji:"📈"},
     {id:"explore",label:"탐험",emoji:"⛏️"},
-    {id:"collect",label:"수집",emoji:"📖"},
+    {id:"collect",label:"기타",emoji:"⭐"},
   ];
   // 업적별 카테고리 매핑
   const getAchCat=(a)=>{
-    if(a.id.includes("catch")||a.id.includes("cap")||a.id.includes("ball"))return "catch";
-    if(a.id.includes("hunt")||a.id.includes("pvp")||a.id.includes("battle")||a.id.includes("boss"))return "fight";
-    if(a.id.includes("enhance")||a.id.includes("evo")||a.id.includes("lv")||a.id.includes("feed"))return "grow";
-    if(a.id.includes("dun")||a.id.includes("release")||a.id.includes("shop"))return "explore";
+    if(["catch1","catch5","catch10","catch20","catch30","catch50","catch_all"].includes(a.id))return "catch";
+    if(["win3","win10","win30","win100","pvp3","pvp10","pvp30","boss_titan_k","boss_titan_5","boss_void_k","boss_void_5","boss_storm_k","boss_storm_5","boss_all","boss_all_10","loss"].includes(a.id))return "fight";
+    if(["lv5","lv10","lv25","enhance5","enhance10","evo1","evo5","fusion1","fusion5","legend1","mutant_c","awaken1","breed1"].includes(a.id))return "grow";
+    if(["dungeon1","dungeon10","release1","release10","shop1","monthly7","monthly30","tamer10","tamer30","tamer50","revive1"].includes(a.id))return "explore";
     return "collect";
   };
 
@@ -7257,79 +7306,102 @@ function SideAch({myS,acHex,claimAchReward}){
 function SideProb(){
   return <div>
     <div style={{fontSize:11,fontWeight:800,color:"var(--tx1)",marginBottom:10}}>📊 확률표</div>
-    <div style={{fontSize:11,fontWeight:700,color:"var(--tx2)",marginBottom:6}}>🔮 합성 확률</div>
+
+    {/* 합성 확률 */}
+    <div style={{fontSize:11,fontWeight:700,color:"var(--tx2)",marginBottom:6}}>🔮 합성 확률 (+10강 필수)</div>
     {[
-      ["COMMON+COMMON","RARE 50% / UNIQUE 15% / SUPER 5% / 실패 30%","#607080"],
-      ["UNCOMMON+UNCOMMON","UNIQUE 45% / SUPER 18% / EPIC 7% / 실패 30%","#1565c0"],
-      ["RARE+RARE","UNIQUE 42% / SUPER 20% / EPIC 8% / 실패 30%","#00838f"],
-      ["UNIQUE+UNIQUE","SUPER 40% / EPIC 12% / LEGEND 0.8% / 실패 47%","#e65100"],
-      ["SUPER+SUPER","EPIC 30% / LEGEND 3% / 실패 67%","#ad1457"],
-      ["EPIC+EPIC","LEGEND 2% / 실패 98%","#6a1b9a"],
-      ["MUTANT+다른등급","±1단계 50% 변동","#00695c"],
+      ["COMMON+COMMON",    "UNCOMMON 50% / RARE 20% / 실패 30%",    "#607080"],
+      ["UNCOMMON+UNCOMMON","RARE 50% / UNIQUE 20% / 실패 30%",      "#1565c0"],
+      ["RARE+RARE",        "UNIQUE 40% / 실패 60%",                  "#00838f"],
+      ["UNIQUE+UNIQUE",    "EPIC 30% / 실패 70%",                    "#e65100"],
+      ["EPIC+EPIC",        "LEGEND 2% / 실패 98%",                   "#6a1b9a"],
+      ["💠뮤턴트+EPIC",    "랜덤 LEGEND 70% / 실패 30% (양쪽 소멸)",  "#00acc1"],
     ].map(([k,v,c])=>(
-      <div key={k} style={{padding:"6px 8px",borderBottom:"1px solid rgba(0,0,0,0.04)",display:"flex",flexDirection:"column",gap:2}}>
-        <span style={{fontSize:11,fontWeight:700,color:c}}>⚠️+10강 · {k}</span>
-        <span style={{fontSize:11,color:"var(--tx3)"}}>{v}</span>
+      <div key={k} style={{padding:"5px 8px",borderBottom:"1px solid rgba(0,0,0,0.04)",display:"flex",justifyContent:"space-between",alignItems:"center",gap:6}}>
+        <span style={{fontSize:10,fontWeight:700,color:c,flexShrink:0}}>{k}</span>
+        <span style={{fontSize:10,color:"var(--tx3)",textAlign:"right"}}>{v}</span>
       </div>
     ))}
-    <div style={{fontSize:11,fontWeight:700,color:"var(--tx2)",marginBottom:6,marginTop:12}}>⚔️ 속성 상성 (×1.5/×0.7)</div>
-    {Object.entries(TYPE_CHART).map(([atk,v])=>(
-      <div key={atk} style={{display:"flex",gap:6,padding:"4px 8px",borderBottom:"1px solid rgba(0,0,0,0.04)",alignItems:"center"}}>
-        <span style={{fontSize:11}}>{TYPES[atk]?.emoji}</span>
-        <span style={{fontSize:11,color:"var(--tx2)",minWidth:24}}>{TYPES[atk]?.name}</span>
-        <span style={{fontSize:11,color:"var(--green)"}}>강: {v.strong.map(t=>TYPES[t]?.emoji).join("")}</span>
-        <span style={{fontSize:11,color:"var(--red)",marginLeft:4}}>약: {v.weak.map(t=>TYPES[t]?.emoji).join("")}</span>
+
+    {/* 진화 확률 */}
+    <div style={{fontSize:11,fontWeight:700,color:"var(--tx2)",marginBottom:4,marginTop:12}}>✨ 진화 확률 (COMMON~UNIQUE)</div>
+    <div style={{fontSize:9,color:"var(--tx3)",marginBottom:5,lineHeight:1.5}}>
+      ⭐비밀진화=altTo 진화체 · ✨진화=일반진화체 · 💔실패=진화석소모+🔩×3<br/>
+      🏆 에픽→레전드: 진화증표 사용 시 <b>100% 확정</b> (아래 확률 미적용)
+    </div>
+    {[
+      ["COMMON",   "20%","70%","10%","#607080"],
+      ["UNCOMMON", "15%","60%","25%","#1565c0"],
+      ["RARE",      "8%","42%","50%","#00838f"],
+      ["UNIQUE",    "4%","26%","70%","#e65100"],
+    ].map(([g,gs,s,f,c])=>(
+      <div key={g} style={{display:"flex",gap:3,alignItems:"center",padding:"4px 6px",borderBottom:"1px solid rgba(0,0,0,0.04)",fontSize:9}}>
+        <span style={{fontWeight:700,color:c,minWidth:52}}>{g}</span>
+        <span style={{color:"#d97706",background:"rgba(245,158,11,0.1)",padding:"1px 4px",borderRadius:3}}>⭐{gs}</span>
+        <span style={{color:"var(--green)",background:"rgba(16,185,129,0.1)",padding:"1px 4px",borderRadius:3}}>✨{s}</span>
+        <span style={{color:"var(--orange)",background:"rgba(249,115,22,0.1)",padding:"1px 4px",borderRadius:3}}>💔{f}</span>
       </div>
     ))}
-    <div style={{fontSize:11,fontWeight:700,color:"var(--tx2)",marginBottom:6,marginTop:12}}>🔩 강화 확률 & 비용</div>
-    {[["+0→+1","90%","var(--green)","✓안전"],["+1→+2","95%","var(--green)","✓안전"],["+2→+3","90%","var(--green)","✓안전"],["+3→+4","85%","var(--gold)","✓안전(UNIQUE↓)"],["+4→+5","75%","var(--gold)","✓안전(UNIQUE↓)"],["+5→+6","65%","var(--gold)",""],["+6→+7","55%","var(--orange)",""],["+7→+8","45%","var(--orange)",""],["+8→+9","30%","var(--red)",""],["+9→+10","15%","var(--red)",""]].map(([l,v,c,safe])=>(
-      <div key={l} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"4px 8px",borderBottom:"1px solid rgba(0,0,0,0.04)"}}>
-        <span style={{fontSize:11,color:"var(--tx2)"}}>{l}</span>
-        <div style={{display:"flex",gap:6,alignItems:"center"}}>
-          {safe&&<span style={{fontSize:9,color:"var(--green)"}}>{safe}</span>}
-          <span style={{fontSize:11,fontWeight:700,color:c}}>{v}</span>
+    <div style={{marginTop:4,fontSize:9,color:"var(--tx3)",padding:"4px 6px",background:"rgba(0,0,0,0.02)",borderRadius:6}}>
+      💡 대실패(사망)는 UNIQUE+ 등급만 해당 · 고대파편💎 사용 시 무조건 성공
+    </div>
+
+    {/* 강화 확률 */}
+    <div style={{fontSize:11,fontWeight:700,color:"var(--tx2)",marginBottom:4,marginTop:12}}>🔩 강화 확률 (실제 코드값)</div>
+    <div style={{fontSize:9,color:"var(--tx3)",marginBottom:5}}>
+      🌟대성공=+2단계 상승 · COMMON~RARE: 실패=유지 ✅ · UNIQUE: 실패=-1 ⚠️ · EPIC+: 실패=파괴위험 💀
+    </div>
+    {[["+0→+1","100%","0%",  "안전"],
+      ["+1→+2", "95%","0%",  "안전"],
+      ["+2→+3", "90%","5%",  "안전"],
+      ["+3→+4", "85%","10%", "안전"],
+      ["+4→+5", "75%","12%", "안전"],
+      ["+5→+6", "65%","13%", ""],
+      ["+6→+7", "55%","14%", ""],
+      ["+7→+8", "45%","15%", ""],
+      ["+8→+9", "30%","12%", ""],
+      ["+9→+10","15%","8%",  ""],
+    ].map(([l,succ,great,safe])=>(
+      <div key={l} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"3px 8px",borderBottom:"1px solid rgba(0,0,0,0.04)"}}>
+        <span style={{fontSize:10,color:"var(--tx2)",minWidth:52}}>{l}</span>
+        <div style={{display:"flex",gap:5,alignItems:"center"}}>
+          {safe&&<span style={{fontSize:8,color:"var(--green)",background:"rgba(16,185,129,0.1)",padding:"1px 4px",borderRadius:3}}>✅{safe}</span>}
+          {great!=="0%"&&<span style={{fontSize:9,color:"#d97706",background:"rgba(245,158,11,0.1)",padding:"1px 4px",borderRadius:3}}>🌟{great}</span>}
+          <span style={{fontSize:10,fontWeight:700,color:parseFloat(succ)>=75?"var(--green)":parseFloat(succ)>=50?"var(--gold)":"var(--red)"}}>{succ}</span>
         </div>
       </div>
     ))}
-    <div style={{fontSize:11,fontWeight:700,color:"var(--tx2)",marginBottom:6,marginTop:12}}>✨ 진화 결과 확률 (4단계)</div>
-    <div style={{fontSize:10,color:"var(--tx3)",marginBottom:5}}>🌟대성공=다른진화체 / ✨성공=일반진화 / 💔실패=🔩×3 / 💀대실패=사망</div>
-    {[
-      ["COMMON",   "15%","65%","18%","2%",  "#607080"],
-      ["UNCOMMON", "10%","60%","25%","5%",  "#1565c0"],
-      ["RARE",      "8%","55%","27%","10%", "#00838f"],
-      ["UNIQUE",    "5%","50%","30%","15%", "#e65100"],
-      ["SUPER",     "3%","42%","35%","20%", "#ad1457"],
-      ["EPIC",      "2%","33%","40%","25%", "#6a1b9a"],
-    ].map(([g,gs,s,f,ff,c])=>(
-      <div key={g} style={{display:"flex",gap:3,alignItems:"center",padding:"4px 6px",borderBottom:"1px solid rgba(0,0,0,0.04)",fontSize:10}}>
-        <span style={{fontWeight:700,color:c,minWidth:50}}>{g}</span>
-        <span style={{color:"#d97706",background:"rgba(245,158,11,0.1)",padding:"1px 3px",borderRadius:3}}>🌟{gs}</span>
-        <span style={{color:"var(--purple)",background:"rgba(139,92,246,0.1)",padding:"1px 3px",borderRadius:3}}>✨{s}</span>
-        <span style={{color:"var(--orange)",background:"rgba(249,115,22,0.1)",padding:"1px 3px",borderRadius:3}}>💔{f}</span>
-        <span style={{color:"var(--red)",background:"rgba(239,68,68,0.1)",padding:"1px 3px",borderRadius:3}}>💀{ff}</span>
+
+    {/* 속성 상성 */}
+    <div style={{fontSize:11,fontWeight:700,color:"var(--tx2)",marginBottom:6,marginTop:12}}>⚡ 속성 상성 (강:×1.5 / 약:×0.7)</div>
+    {Object.entries(TYPE_CHART).map(([atk,v])=>(
+      <div key={atk} style={{display:"flex",gap:6,padding:"3px 8px",borderBottom:"1px solid rgba(0,0,0,0.04)",alignItems:"center"}}>
+        <span style={{fontSize:11,minWidth:18}}>{TYPES[atk]?.emoji}</span>
+        <span style={{fontSize:10,color:"var(--tx2)",minWidth:24}}>{TYPES[atk]?.name}</span>
+        <span style={{fontSize:10,color:"var(--green)"}}>강: {v.strong.map(t=>TYPES[t]?.emoji).join("")}</span>
+        <span style={{fontSize:10,color:"var(--red)",marginLeft:2}}>약: {v.weak.map(t=>TYPES[t]?.emoji).join("")}</span>
       </div>
     ))}
-    <div style={{marginTop:6,fontSize:10,color:"var(--tx3)",lineHeight:1.7,padding:"4px 6px",background:"rgba(245,158,11,0.04)",borderRadius:8}}>
-      💡 고대파편💎 사용 시 무조건 성공<br/>
-      💡 진화 조건: Lv · 강화 · 사냥승 · 먹이횟수 · 던전 · 배틀 · 보스토벌 · 테이머Lv
-    </div>
+
+    {/* 방생 보상 */}
     <div style={{fontSize:11,fontWeight:700,color:"var(--tx2)",marginBottom:6,marginTop:12}}>🕊️ 방생 보상</div>
     {[
-      ["COMMON","🌾×2 🟠×1","#607080"],
-      ["UNCOMMON","🌾×3 🟠×2 🔩×1","#1565c0"],
-      ["RARE","🍖×2 🟠×3 🔩×2","#00838f"],
-      ["UNIQUE","🍖×3 🟠×4 🔩×3","#e65100"],
-      ["SUPER","✨×1 🔵×1 🔩×5","#ad1457"],
-      ["EPIC","✨×2 🔵×2 🔩×8 💠×1","#6a1b9a"],
-      ["LEGEND","✨×3 🟣×1 🔩×15 🔷×1","#bf360c"],
+      ["COMMON",  "🌾×2 🟠×1",          "#607080"],
+      ["UNCOMMON","🌾×3 🟠×2 🔩×1",     "#1565c0"],
+      ["RARE",    "🍖×2 🟠×3 🔩×2",     "#00838f"],
+      ["UNIQUE",  "🍖×3 🟠×4 🔩×3",     "#e65100"],
+      ["EPIC",    "✨×2 🔵×2 🔩×8",     "#6a1b9a"],
+      ["LEGEND",  "✨×3 🟣×1 🔩×15 🔷×1","#bf360c"],
+      ["💠뮤턴트", "위 보상 + 🏆진화증표×1","#00acc1"],
     ].map(([grade,reward,c])=>(
       <div key={grade} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"4px 8px",borderBottom:"1px solid rgba(0,0,0,0.04)"}}>
-        <span style={{fontSize:11,fontWeight:700,color:c}}>{grade}</span>
-        <span style={{fontSize:10,color:"var(--tx3)"}}>{reward} <span style={{color:"var(--gold)"}}>+Lv보너스</span></span>
+        <span style={{fontSize:10,fontWeight:700,color:c}}>{grade}</span>
+        <span style={{fontSize:10,color:"var(--tx3)"}}>{reward} <span style={{fontSize:9,color:"var(--gold)"}}>+Lv보너스</span></span>
       </div>
     ))}
+
     <div style={{marginTop:8,padding:"6px 8px",background:"rgba(245,158,11,0.04)",borderRadius:8,fontSize:10,color:"var(--tx3)",lineHeight:1.6}}>
-      💡 보관함: Lv1=16칸 → Lv10=31칸 → Lv20=51칸 → Lv30=76칸 → Lv50=115칸
+      💡 보관함: Lv1=16칸 · Lv10=31칸 · Lv20=51칸 · Lv30=76칸 · Lv50=115칸
     </div>
   </div>;
 }
@@ -7340,14 +7412,14 @@ function SideHelpProb({acHex}){
   const helps={
     basic:[
       {q:"🗺 필드",a:"야생 소환수 출현. 볼을 던져 테이밍! 포획 시 속성·성별 자동 부여. 오렌지볼(🟠) 기본, 슈퍼볼·마스터볼로 포획률 향상."},
-      {q:"📊 등급별 레벨 상한",a:"COMMON Lv15 / UNCOMMON Lv25 / RARE Lv40 / UNIQUE Lv60 / SUPER Lv80 / EPIC Lv100 / LEGEND Lv100. 상한 도달 시 먹이 불가."},
+      {q:"📊 등급별 레벨 상한",a:"COMMON Lv15 / UNCOMMON Lv25 / RARE Lv40 / UNIQUE Lv60 / EPIC Lv100 / LEGEND Lv100. 상한 도달 시 먹이 불가."},
       {q:"🕊️ 자동방생",a:"같은 종류 소환수가 10마리를 초과하면 포획 시 잠금되지 않은 중복 소환수가 자동방생 됩니다. 잠금(🔒)하면 자동방생 대상 제외."},
       {q:"🍖 일괄 먹이",a:"몬스터 탭에서 먹이 버튼 아래 일괄 버튼 표시. Lv5/Lv10/최대 목표로 보유 먹이를 한 번에 사용."},
       {q:"📦 소환수",a:"보관 중인 몬스터 목록. 먹이로 EXP 획득, 강화·진화 가능. 🔒잠금으로 실수 방생 방지. ⭐즐겨찾기로 주력 몬스터 상단 표시."},
       {q:"🎒 가방",a:"볼/먹이/진화석/강화석/특수아이템/레이드보상 확인."},
       {q:"🛒 상점",a:"일반볼(🟠)로 다양한 아이템 교환. 일부 아이템은 일일 구매 제한. 성별교환권(🔄) 1일 1회 구매 가능."},
       {q:"⚔️ 사냥터",a:"내 몬스터로 야생 몬스터와 전투. 승리 시 강화석·볼 획득 + 진화 조건 달성."},
-      {q:"🔮 합성",a:"+10강 몬스터 2마리 합성 → 더 강한 등급 생성. 실패 시 A 소멸, B는 50% 생존. 보스크리스탈 사용 시 등급 UP."},
+      {q:"⚗️ 제련소 합성",a:"+10강 몬스터 2마리 합성 → 더 강한 등급 생성. 실패 시 A 소멸, B는 50% 생존. 💠뮤턴트+EPIC → 레전드 70%."},
       {q:"👥 대전",a:"배틀: 온라인 유저와 실시간 대결 하루 15회. 레이드: 협력 레이드 참전 가능, Firebase 실시간 공유."},
     ],
     enhance:[
@@ -7360,20 +7432,21 @@ function SideHelpProb({acHex}){
       {q:"💊 부활권",a:"파괴된 소환수를 HP 50%로 되살림. 강화수치 유지. 상점에서 🟠×50으로 구매 가능."},
     ],
     evo:[
-      {q:"💎 진화 기본",a:"각 몬스터마다 고유 진화 조건 있음. 조건 충족 후 연구소 진화 탭에서 기본진화(100% 성공) 또는 강화진화(대성공 가능) 선택."},
-      {q:"✅ 기본진화",a:"진화석 N개 소모. 무조건 100% 성공. 안전하게 진화하고 싶을 때 사용."},
-      {q:"🌟 강화진화",a:"진화석 N+추가 소모. 대성공 시 더 강한 진화체(altTo)로 변신! COMMON 대성공 20%, EPIC 대성공 3%."},
-      {q:"💔 강화진화 실패",a:"실패해도 소환수는 유지, 진화석만 소모됨. 고등급일수록 실패 확률 높음."},
+      {q:"💎 진화 기본",a:"각 몬스터마다 고유 진화 조건. 연구소 진화 탭에서 진행. COMMON~UNIQUE: ✨진화(일반) + ⭐비밀진화(altTo) 선택 가능. EPIC: 🏆진화증표로만 레전드 진화."},
+      {q:"✨ 진화",a:"진화석 소모. 정해진 진화체로 진화. 등급이 높을수록 실패 확률 증가 (COMMON 10% 실패 / EPIC 없음)."},
+      {q:"⭐ 비밀진화",a:"진화석 추가 소모. altTo 진화체(다른 강한 진화체)로 변신 시도! COMMON 20% / EPIC 없음. 실패 시 진화석만 소모."},
+      {q:"🏆 레전드 진화 (에픽 전용)",a:"진화증표 1개로 100% 확정 레전드 진화. 갓슬레이어→오메가 / 솔라리스→오로라 / 드래곤로드→원시신. 보이드킹/어비설/메카조드는 진화 루트 없음."},
+      
       {q:"💠 각성",a:"몬스터의 2번째 속성을 랜덤 부여! 각성석 1개 소모, 최대 2회 (1회차=부여, 2회차=리롤). 합성/진화 시 각성 속성 리셋됨."},
       {q:"🌿 COMMON 진화 트리",a:"탱귤이→네오탱귤→프라임탱귤 / 포멜로→메가포멜로→울트라포멜로 / 리피→실반→고대실반 / 로키→타이탄록키→콜로서스 / 브리지→폭풍브리지→템페스트 / 글리머→래디언트→루미노스"},
       {q:"🔥 UNCOMMON 진화 트리",a:"블레이즈→인페르노→라그나로스 / 아쿠아→어비설→리바이어던 / 볼트→뇌신볼트→제우스 / 프로스티→글레이셔→퍼마프로스트 / 나가→코브라드라→나가로드 / 테로→보이드테로→어비스로드 / 샤이니→셀레스티아→디바이니티 / 드라코→카이저드라코→드래곤갓"},
-      {q:"🐺 합성체 진화 트리",a:"레어울프→SR키메라 / 레어피닉스→SR리바이어던 / 레어골렘→SR타이탄 (RARE→SUPER) / 유니크드래곤→에픽갓슬레이어 / 유니크크라켄→에픽보이드킹 / 유니크스핑크스→에픽솔라리스 (UNIQUE→EPIC)"},
-      {q:"🥚 교배 개요",a:"부모 몬스터의 스탯을 물려받은 새 몬스터 탄생. 스탯 뽑기용! 부모 둘 중 낮은 등급 기준."},
+      {q:"🐺 합성체 진화 트리",a:"레어울프→SR키메라 / 레어피닉스→SR리바이어던 / 레어골렘→SR타이탄 (RARE→EPIC) / 유니크드래곤→에픽갓슬레이어 / 유니크크라켄→에픽보이드킹 / 유니크스핑크스→에픽솔라리스 (UNIQUE→EPIC)"},
+      {q:"🥚 교배 개요",a:"부모 몬스터의 스탯을 물려받은 새 몬스터 탄생. 스탯 뽑기용! 부모 평균 등급 기준 (올림/내림 50:50 랜덤)."},
     ],
     raid:[
       {q:"🌋 레이드 기본",a:"3종 레이드 보스. 보스 HP 700~800. 내 몬스터도 HP 소모! 몬스터가 죽으면 전사."},
       {q:"🔥 이그나스",a:"불꽃+빙하 이중속성. 2페이즈에서 ATK+30%, 3페이즈 ATK+60% 강해짐. 약점: 물, 번개. 파밍: 용암코어·빙결파편·각성석."},
-      {q:"🌑 보이드로드",a:"어둠+빛 이중속성. 3페이즈 ATK×2 위험. 약점: 빛, 풀. 파밍: 허공의정수·광명결정·고대파편·각성석."},
+      {q:"👾 보이드로드",a:"어둠+빛 이중속성. 3페이즈 ATK×2 위험. 약점: 빛, 풀. 파밍: 허공의정수·광명결정·고대파편·각성석."},
       {q:"⛈️ 스톰킹",a:"번개+대지 이중속성. 빠른 공격 속도. 약점: 얼음, 독. 파밍: 뇌격보석·대지결정·보스의눈·각성석."},
       {q:"⚔️ 타입 상성",a:"약점 타입 소환수 사용 시 대미지 증가! 강화+장비+타입 3가지 다 챙기면 클리어 쉬워짐."},
       {q:"🎁 세트 장비",a:"보스별 2부위씩. 해당 보스 클리어 시 확률 드롭. 세트 완성 시 보너스 효과. 테이머 탭에서 착용/해제."},
@@ -7381,7 +7454,7 @@ function SideHelpProb({acHex}){
     breed:[
       {q:"🥚 교배 조건",a:"UNCOMMON 이상 + Lv.3 이상 + 암수(♂♀) 한 쌍 필요. COMMON은 교배 불가."},
       {q:"🧬 유전 방식",a:"우성유전: 높은 스탯 70% + 낮은 스탯 30% 계산. 부모 중 좋은 스탯을 가진 쪽이 유리."},
-      {q:"📊 교배 등급",a:"결과 몬스터 등급은 부모 중 낮은 쪽과 동일. (하향 안전)"},
+      {q:"📊 교배 등급",a:"결과 등급=부모 평균 (올림/내림 50:50 랜덤). ex) UNCOMMON+RARE → RARE or UNCOMMON"},
       {q:"🍖 육아",a:"교배 후 알 생성 → 먹이로 육아 필요. 후반(50% 이후)은 고급먹이(🍖) 필요. 알 진행도 표시됨."},
       {q:"♂♀ 성별",a:"포획 시 랜덤으로 부여. 교배는 반드시 암수 한 쌍. 성별 표시: ♂파란색 ♀분홍색."},
     ],
@@ -7396,54 +7469,50 @@ function SideHelpProb({acHex}){
     fusion:[
       {q:"🔮 합성 기본",a:"+10강 몬스터 2마리를 합성 → 더 높은 등급의 새 소환수 탄생. 두 마리 모두 반드시 +10강이어야 합니다."},
       {q:"📊 합성 결과 등급",a:"같은 등급끼리 합성 시 한 단계 위 등급이 주 결과. 예) COMMON+COMMON → 주로 UNCOMMON. 낮은 확률로 2단계 위 등급도 가능."},
-      {q:"💥 합성 실패",a:"등급이 높을수록 실패 확률 증가. EPIC+EPIC는 실패 91%! 실패 시 A 소환수는 무조건 소멸, B 소환수는 50% 확률로 생존."},
+      {q:"💥 합성 실패",a:"등급이 높을수록 실패 확률 증가. EPIC+EPIC는 실패 98%! 실패 시 A 소환수는 무조건 소멸, B 소환수는 50% 확률로 생존."},
       {q:"⚠️ 실패 시 B 생존",a:"실패해도 B 소환수가 50% 확률로 살아남을 수 있습니다! 운이 좋으면 한 마리만 잃고 끝날 수도 있어요."},
-      {q:"🧬 MUTANT 합성",a:"SUPER 이상 합성 시 낮은 확률로 MUTANT 등장. 결과 등급 ±1 변동 효과. MUTANT끼리는 합성 불가."},
+      {q:"🧬 MUTANT 합성",a:"EPIC+ 합성 시 3% 확률로 뮤턴트 등장. 에픽 대비 +15% 스탯. 방생 시 🏆진화증표 획득."},
       {q:"💎 레이드 크리스탈",a:"합성 시 레이드 크리스탈(🔴) 사용 가능. 결과 등급 UP 확률 +30% 보너스. 자동 사용됩니다."},
       {q:"♂♀ 성별",a:"합성 결과 소환수는 50% 확률로 암수 랜덤 부여됩니다. 성별교환권(🔄)으로 변경 가능."},
       {q:"📈 합성 전략",a:"고등급 합성은 실패율이 매우 높습니다. 레이드 크리스탈을 모아서 쓰고, 합성 전 가방에 몬스터 수 여유를 확인하세요."},
     ],
   };
   const probSections=[
-    {title:"🔮 합성 확률 (실제 적용값)",rows:[
-      ["COMMON+COMMON",  "UNCOMMON 50% / RARE 20% / 실패 30%",                "#607080"],
-      ["UNCOMMON+UNCOMMON","RARE 50% / UNIQUE 20% / 실패 30%",                 "#1565c0"],
-      ["RARE+RARE",      "UNIQUE 45% / EPIC 15% / 실패 40%",                   "#00838f"],
-      ["UNIQUE+UNIQUE",  "EPIC 40% / LEGEND 10% / 실패 50%",                   "#e65100"],
-      ["EPIC+EPIC",      "LEGEND 25% / 실패 75%",                               "#6a1b9a"],
-      ["💠 뮤턴트 이로치","EPIC+ 결과 시 3% 확률 뮤턴트 등장 (스탯 +30%)",    "#00acc1"],
+    {title:"🔮 합성 확률",rows:[
+      ["COMMON+COMMON",   "UNCOMMON 50% / RARE 20% / 실패 30%",         "#607080"],
+      ["UNCOMMON+UNCOMMON","RARE 50% / UNIQUE 20% / 실패 30%",           "#1565c0"],
+      ["RARE+RARE",       "UNIQUE 40% / 실패 60%",                        "#00838f"],
+      ["UNIQUE+UNIQUE",   "EPIC 30% / 실패 70%",                          "#e65100"],
+      ["EPIC+EPIC",       "LEGEND 2% / 실패 98%",                         "#6a1b9a"],
+      ["💠뮤턴트+EPIC",   "LEGEND 70% / 실패 30% (양쪽 소멸)",           "#00acc1"],
     ]},
-    {title:"💎 강화진화 확률 (기본진화=100% 성공)",rows:[
-      ["COMMON",  "🌟대성공 20% / ✅성공 70% / 💔실패 10%","#607080"],
-      ["UNCOMMON","🌟대성공 15% / ✅성공 65% / 💔실패 20%","#1565c0"],
-      ["RARE",    "🌟대성공 10% / ✅성공 50% / 💔실패 40%","#00838f"],
-      ["UNIQUE",  "🌟대성공 7%  / ✅성공 38% / 💔실패 55%","#e65100"],
-      ["EPIC",    "🌟대성공 3%  / ✅성공 15% / 💔실패 82%","#6a1b9a"],
+    {title:"✨ 진화 확률 (COMMON~UNIQUE)",rows:[
+      ["COMMON",  "⭐비밀20% / ✨진화70% / 💔실패10%","#607080"],
+      ["UNCOMMON","⭐비밀15% / ✨진화60% / 💔실패25%","#1565c0"],
+      ["RARE",    "⭐비밀8%  / ✨진화42% / 💔실패50%","#00838f"],
+      ["UNIQUE",  "⭐비밀4%  / ✨진화26% / 💔실패70%","#e65100"],
+      ["EPIC",    "🏆진화증표 → LEGEND 100% 확정",     "#6a1b9a"],
     ]},
-    {title:"💎 진화 결과",rows:[
-      ["COMMON","🌟대성공15% / ✅성공65% / 💔실패18% / 💀대실패2%","#607080"],
-      ["UNCOMMON","🌟대성공10% / ✅성공60% / 💔실패25% / 💀대실패5%","#1565c0"],
-      ["RARE","🌟대성공8% / ✅성공55% / 💔실패27% / 💀대실패10%","#00838f"],
-      ["UNIQUE↑","🌟대성공5% / ✅성공50% / 💔실패30% / 💀대실패15%","#e65100"],
-    ]},
-    {title:"🔩 강화 성공률 (실제 코드값)",rows:[
-      ["+0→+1","✅ 100% 성공 (대성공 없음)","#3b82f6"],
-      ["+1→+2","✅ 95% 성공 / ❌ 실패 5% (대성공 없음)","#3b82f6"],
-      ["+2→+3","✅ 90% / 🌟대성공 5% / ❌ 실패 10%","#8b5cf6"],
-      ["+3→+4","✅ 85% / 🌟대성공 10% / ❌ 실패 15%","#8b5cf6"],
-      ["+4→+5","✅ 75% / 🌟대성공 12% / ❌ 실패 25%","#d97706"],
-      ["+5→+6","✅ 65% / 🌟대성공 13% / ❌ 실패 35%","#d97706"],
-      ["+6→+7","✅ 55% / 🌟대성공 14% / ❌ 실패 45%","#d97706"],
-      ["+7→+8","✅ 45% / 🌟대성공 15% / ❌ 실패 55%","#ef4444"],
-      ["+8→+9","✅ 30% / 🌟대성공 12% / ❌ 실패 70%","#ef4444"],
-      ["+9→+10","✅ 15% / 🌟대성공 8% / ❌ 실패 85%","#f59e0b"],
+    {title:"🔩 강화 확률",rows:[
+      ["+0→+1", "✅100% (대성공없음)",              "#3b82f6"],
+      ["+1→+2", "✅95% / ❌실패5%",                "#3b82f6"],
+      ["+2→+3", "✅90% / 🌟대성공5% / ❌실패10%",  "#8b5cf6"],
+      ["+3→+4", "✅85% / 🌟10% / ❌15%",           "#8b5cf6"],
+      ["+4→+5", "✅75% / 🌟12% / ❌25%",           "#d97706"],
+      ["+5→+6", "✅65% / 🌟13% / ❌35%",           "#d97706"],
+      ["+6→+7", "✅55% / 🌟14% / ❌45%",           "#d97706"],
+      ["+7→+8", "✅45% / 🌟15% / ❌55%",           "#ef4444"],
+      ["+8→+9", "✅30% / 🌟12% / ❌70%",           "#ef4444"],
+      ["+9→+10","✅15% / 🌟8%  / ❌85%",           "#f59e0b"],
     ]},
     {title:"🕊️ 방생 보상",rows:[
-      ["COMMON","🌾×2 🟠×1","#607080"],
+      ["COMMON",  "🌾×2 🟠×1","#607080"],
       ["UNCOMMON","🌾×3 🟠×2 🔩×1","#1565c0"],
-      ["RARE","🍖×2 🟠×3 🔩×2","#00838f"],
-      ["UNIQUE","🍖×3 🟠×4 🔩×3","#e65100"],
-      ["SUPER↑","✨+🔵+🔩 다수","#ad1457"],
+      ["RARE",    "🍖×2 🟠×3 🔩×2","#00838f"],
+      ["UNIQUE",  "🍖×3 🟠×4 🔩×3","#e65100"],
+      ["EPIC",    "✨×2 🔵×2 🔩×8","#6a1b9a"],
+      ["LEGEND",  "✨×3 🟣×1 🔩×15 🔷×1","#bf360c"],
+      ["💠뮤턴트","위 보상 + 🏆진화증표×1","#00acc1"],
     ]},
   ];
 
