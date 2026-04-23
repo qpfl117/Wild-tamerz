@@ -234,6 +234,19 @@ const MON_BASE_TYPE={
   shiny:"light",draco:"fire",
   neo_tangy:"grass",mega_pomelo:"grass",sylvan:"grass",titan_rocky:"ground",storm_breezy:"thunder",
   prime_tangy:"grass",ultra_pomelo:"grass",ancient_sylvan:"grass",colossus:"ground",tempest:"thunder",
+  luminos:"light",
+  // COMMON 비밀진화체
+  golden_tangy:"fire",nova_pomelo:"grass",verdant_leafy:"grass",
+  crystal_pebby:"ground",gale_breezy:"thunder",prisma:"light",
+  // UNCOMMON 비밀진화체
+  inferno_rex:"fire",abyssal_king:"water",storm_zeus:"thunder",
+  blizzard_frost:"water",venom_lord:"dark",void_sovereign:"dark",
+  sacred_shiny:"light",kaiser_god:"fire",specter_king:"dark",
+  // 짧은 체인 비밀진화체
+  bloom_sprouty:"grass",aqua_bubby:"water",swift_shadow:"dark",
+  dire_wolf:"dark",storm_eagle:"thunder",
+  magma_titan:"fire",hurricane:"thunder",saber_king:"fire",
+  veloci_rex:"grass",thorn_queen:"dark",
   inferno:"fire",abyssal:"water",thunder_god:"thunder",glacier:"water",toxicron:"dark",
   void_terro:"dark",celestia:"light",kaiser_draco:"fire",divinity:"light",dragon_god:"fire",
   ragnaros:"fire",leviathan:"water",zeus:"thunder",permafrost:"water",omega_venom:"dark",abyss_lord:"dark",
@@ -497,17 +510,17 @@ const ACHS=[
 // ══════════════════════
 const EVO_CHAIN={
   // ── COMMON 1차 진화 ──
-  tangy:     {to:"neo_tangy",    altTo:"prime_tangy",    name:"네오탱귤",      altName:"프라임탱귤(대성공!)",  stone:"stone1", conds:[{type:"lv",val:5},{type:"feed",val:3}],                              condDesc:"Lv.5 + 먹이 3회"},
-  pomelo:    {to:"mega_pomelo",  altTo:"ultra_pomelo",   name:"메가포멜로",     altName:"울트라포멜로(대성공!)",stone:"stone1", conds:[{type:"lv",val:5},{type:"feed",val:3}],                              condDesc:"Lv.5 + 먹이 3회"},
-  leafy:     {to:"sylvan",       altTo:"ancient_sylvan", name:"실반",           altName:"고대실반(대성공!)",    stone:"stone1", conds:[{type:"lv",val:5},{type:"feed",val:3}],                              condDesc:"Lv.5 + 먹이 3회"},
-  pebby:     {to:"rocky",        altTo:"titan_rocky",    name:"로키",           altName:"타이탄록키(대성공!)",  stone:"stone1", conds:[{type:"lv",val:5},{type:"hunt",val:2}],                              condDesc:"Lv.5 + 사냥 2승"},
-  breezy:    {to:"storm_breezy", altTo:"tempest",        name:"폭풍브리지",     altName:"템페스트(대성공!)",    stone:"stone1", conds:[{type:"lv",val:5},{type:"hunt",val:2}],                              condDesc:"Lv.5 + 사냥 2승"},
-  sprouty:   {to:"verdant",      altTo:null,             name:"버던트",         altName:null,                   stone:"stone1", conds:[{type:"lv",val:5},{type:"feed",val:4}],                              condDesc:"Lv.5 + 먹이 4회"},
-  bubby:     {to:"tidebub",      altTo:null,             name:"타이드버브",     altName:null,                   stone:"stone1", conds:[{type:"lv",val:5},{type:"dungeon",val:2}],                           condDesc:"Lv.5 + 던전 2회"},
-  floppy:    {to:"swiftbun",     altTo:null,             name:"스위프트번",     altName:null,                   stone:"stone1", conds:[{type:"lv",val:5},{type:"hunt",val:3}],                              condDesc:"Lv.5 + 사냥 3승"},
-  whelpy:    {to:"wolfhound",    altTo:null,             name:"울프하운드",     altName:null,                   stone:"stone1", conds:[{type:"lv",val:5},{type:"feed",val:5}],                              condDesc:"Lv.5 + 먹이 5회"},
-  chirpy:    {to:"eaglet",       altTo:null,             name:"이글렛",         altName:null,                   stone:"stone1", conds:[{type:"lv",val:5},{type:"pvp",val:2}],                               condDesc:"Lv.5 + 배틀 2승"},
-  glimmer:   {to:"radiant",      altTo:"luminos",        name:"래디언트",       altName:"루미노스(대성공!)",    stone:"stone1", conds:[{type:"lv",val:5},{type:"feed",val:3}],                              condDesc:"Lv.5 + 먹이 3회"},
+  tangy:     {to:"neo_tangy",    altTo:"golden_tangy",   name:"네오탱귤",      altName:"골든탱귤(비밀진화!)",  stone:"stone1", conds:[{type:"lv",val:5},{type:"feed",val:3}],                              condDesc:"Lv.5 + 먹이 3회"},
+  pomelo:    {to:"mega_pomelo",  altTo:"nova_pomelo",    name:"메가포멜로",     altName:"노바포멜로(비밀진화!)",stone:"stone1", conds:[{type:"lv",val:5},{type:"feed",val:3}],                              condDesc:"Lv.5 + 먹이 3회"},
+  leafy:     {to:"sylvan",       altTo:"verdant_leafy",  name:"실반",           altName:"베르단트(비밀진화!)",    stone:"stone1", conds:[{type:"lv",val:5},{type:"feed",val:3}],                              condDesc:"Lv.5 + 먹이 3회"},
+  pebby:     {to:"rocky",        altTo:"crystal_pebby",  name:"로키",           altName:"크리스탈페비(비밀진화!)",  stone:"stone1", conds:[{type:"lv",val:5},{type:"hunt",val:2}],                              condDesc:"Lv.5 + 사냥 2승"},
+  breezy:    {to:"storm_breezy", altTo:"gale_breezy",    name:"폭풍브리지",     altName:"게일브리지(비밀진화!)",    stone:"stone1", conds:[{type:"lv",val:5},{type:"hunt",val:2}],                              condDesc:"Lv.5 + 사냥 2승"},
+  sprouty:   {to:"verdant",      altTo:"bloom_sprouty",  name:"버던트",         altName:"블룸새싹(비밀진화!)",                   stone:"stone1", conds:[{type:"lv",val:5},{type:"feed",val:4}],                              condDesc:"Lv.5 + 먹이 4회"},
+  bubby:     {to:"tidebub",      altTo:"aqua_bubby",     name:"타이드버브",     altName:"아쿠아버블(비밀진화!)",                   stone:"stone1", conds:[{type:"lv",val:5},{type:"dungeon",val:2}],                           condDesc:"Lv.5 + 던전 2회"},
+  floppy:    {to:"swiftbun",     altTo:"swift_shadow",   name:"스위프트번",     altName:"스위프트섀도(비밀진화!)",                   stone:"stone1", conds:[{type:"lv",val:5},{type:"hunt",val:3}],                              condDesc:"Lv.5 + 사냥 3승"},
+  whelpy:    {to:"wolfhound",    altTo:"dire_wolf",      name:"울프하운드",     altName:"다이어울프(비밀진화!)",                   stone:"stone1", conds:[{type:"lv",val:5},{type:"feed",val:5}],                              condDesc:"Lv.5 + 먹이 5회"},
+  chirpy:    {to:"eaglet",       altTo:"storm_eagle",    name:"이글렛",         altName:"스톰이글(비밀진화!)",                   stone:"stone1", conds:[{type:"lv",val:5},{type:"pvp",val:2}],                               condDesc:"Lv.5 + 배틀 2승"},
+  glimmer:   {to:"radiant",      altTo:"prisma",         name:"래디언트",       altName:"프리즈마(비밀진화!)",    stone:"stone1", conds:[{type:"lv",val:5},{type:"feed",val:3}],                              condDesc:"Lv.5 + 먹이 3회"},
   // ── COMMON 2차 진화 ──
   neo_tangy:    {to:"prime_tangy",   altTo:null, name:"프라임탱귤",  altName:null, stone:"stone2", conds:[{type:"lv",val:10},{type:"enhance",val:2},{type:"feed",val:8}],    condDesc:"Lv.10 + +2강 + 먹이 8회"},
   mega_pomelo:  {to:"ultra_pomelo",  altTo:null, name:"울트라포멜로",altName:null, stone:"stone2", conds:[{type:"lv",val:10},{type:"enhance",val:2},{type:"feed",val:8}],    condDesc:"Lv.10 + +2강 + 먹이 8회"},
@@ -516,20 +529,20 @@ const EVO_CHAIN={
   storm_breezy: {to:"tempest",       altTo:null, name:"템페스트",    altName:null, stone:"stone2", conds:[{type:"lv",val:10},{type:"enhance",val:2},{type:"pvp",val:4}],     condDesc:"Lv.10 + +2강 + 배틀 4승"},
   radiant:      {to:"luminos",       altTo:null, name:"루미노스",    altName:null, stone:"stone2", conds:[{type:"lv",val:10},{type:"enhance",val:2},{type:"dungeon",val:3}], condDesc:"Lv.10 + +2강 + 던전 3회"},
   // ── UNCOMMON 1차 진화 ──
-  blaze:     {to:"inferno",      altTo:"ragnaros",    name:"인페르노",      altName:"라그나로스(대성공!)",  stone:"stone1", conds:[{type:"lv",val:8},{type:"dungeon",val:3}],                              condDesc:"Lv.8 + 던전 3회"},
-  aqua:      {to:"abyssal",      altTo:"leviathan",   name:"어비설",        altName:"리바이어던(대성공!)",  stone:"stone1", conds:[{type:"lv",val:8},{type:"dungeon",val:3}],                              condDesc:"Lv.8 + 던전 3회"},
-  bolt:      {to:"thunder_god",  altTo:"zeus",        name:"뇌신볼트",      altName:"제우스(대성공!)",      stone:"stone1", conds:[{type:"lv",val:8},{type:"hunt",val:3}],                                 condDesc:"Lv.8 + 사냥 3승"},
-  frostie:   {to:"glacier",      altTo:"permafrost",  name:"글레이셔",      altName:"퍼마프로스트(대성공!)",stone:"stone1", conds:[{type:"lv",val:8},{type:"feed",val:5}],                                 condDesc:"Lv.8 + 먹이 5회"},
-  venom:     {to:"toxicron",     altTo:"omega_venom", name:"코브라드라",    altName:"나가로드(대성공!)",    stone:"stone1", conds:[{type:"lv",val:8},{type:"pvp",val:2}],                                  condDesc:"Lv.8 + 배틀 2승"},
-  terro:     {to:"void_terro",   altTo:"abyss_lord",  name:"보이드테로",    altName:"어비스로드(대성공!)",  stone:"stone1", conds:[{type:"lv",val:8},{type:"pvp",val:2}],                                  condDesc:"Lv.8 + 배틀 2승"},
-  shiny:     {to:"celestia",     altTo:"divinity",    name:"셀레스티아",    altName:"디바이니티(대성공!)",  stone:"stone2", conds:[{type:"lv",val:12},{type:"enhance",val:3},{type:"dungeon",val:5}],      condDesc:"Lv.12 + +3강 + 던전 5회"},
-  draco:     {to:"kaiser_draco", altTo:"dragon_god",  name:"카이저드라코",  altName:"드래곤갓(대성공!)",    stone:"stone2", conds:[{type:"lv",val:12},{type:"enhance",val:3},{type:"pvp",val:3}],          condDesc:"Lv.12 + +3강 + 배틀 3승"},
-  magmite:   {to:"pyrovant",     altTo:null,          name:"파이로반트",    altName:null,                   stone:"stone1", conds:[{type:"lv",val:8},{type:"hunt",val:4}],                                 condDesc:"Lv.8 + 사냥 4승"},
-  guster:    {to:"cyclonix",     altTo:null,          name:"사이클로닉스",  altName:null,                   stone:"stone1", conds:[{type:"lv",val:8},{type:"pvp",val:3}],                                  condDesc:"Lv.8 + 배틀 3승"},
-  tigrex:    {to:"saber_tigrex", altTo:null,          name:"세이버티그렉스",altName:null,                   stone:"stone2", conds:[{type:"lv",val:10},{type:"enhance",val:2},{type:"hunt",val:6}],          condDesc:"Lv.10 + +2강 + 사냥 6승"},
-  raptor:    {to:"velociking",   altTo:null,          name:"벨로시킹",      altName:null,                   stone:"stone2", conds:[{type:"lv",val:10},{type:"pvp",val:4}],                                 condDesc:"Lv.10 + 배틀 4승"},
-  phanty:    {to:"spectron",     altTo:"phantom_king",name:"스펙트론",      altName:"팬텀킹(대성공!)",      stone:"stone2", conds:[{type:"lv",val:10},{type:"enhance",val:2},{type:"pvp",val:3}],          condDesc:"Lv.10 + +2강 + 배틀 3승"},
-  thornia:   {to:"thornwall",    altTo:null,          name:"쏜월",          altName:null,                   stone:"stone1", conds:[{type:"lv",val:8},{type:"dungeon",val:4}],                              condDesc:"Lv.8 + 던전 4회"},
+  blaze:     {to:"inferno",      altTo:"inferno_rex", name:"인페르노",      altName:"인페르노렉스(비밀진화!)",  stone:"stone1", conds:[{type:"lv",val:8},{type:"dungeon",val:3}],                              condDesc:"Lv.8 + 던전 3회"},
+  aqua:      {to:"abyssal",      altTo:"abyssal_king",name:"어비설",        altName:"어비설킹(비밀진화!)",  stone:"stone1", conds:[{type:"lv",val:8},{type:"dungeon",val:3}],                              condDesc:"Lv.8 + 던전 3회"},
+  bolt:      {to:"thunder_god",  altTo:"storm_zeus",  name:"뇌신볼트",      altName:"스톰제우스(비밀진화!)",      stone:"stone1", conds:[{type:"lv",val:8},{type:"hunt",val:3}],                                 condDesc:"Lv.8 + 사냥 3승"},
+  frostie:   {to:"glacier",      altTo:"blizzard_frost",name:"글레이셔",    altName:"블리자드프로스트(비밀진화!)",stone:"stone1", conds:[{type:"lv",val:8},{type:"feed",val:5}],                                 condDesc:"Lv.8 + 먹이 5회"},
+  venom:     {to:"toxicron",     altTo:"venom_lord",  name:"코브라드라",    altName:"베놈로드(비밀진화!)",    stone:"stone1", conds:[{type:"lv",val:8},{type:"pvp",val:2}],                                  condDesc:"Lv.8 + 배틀 2승"},
+  terro:     {to:"void_terro",   altTo:"void_sovereign",name:"보이드테로",  altName:"보이드소버린(비밀진화!)",  stone:"stone1", conds:[{type:"lv",val:8},{type:"pvp",val:2}],                                  condDesc:"Lv.8 + 배틀 2승"},
+  shiny:     {to:"celestia",     altTo:"sacred_shiny",name:"셀레스티아",    altName:"세이크리드샤이니(비밀진화!)",  stone:"stone2", conds:[{type:"lv",val:12},{type:"enhance",val:3},{type:"dungeon",val:5}],      condDesc:"Lv.12 + +3강 + 던전 5회"},
+  draco:     {to:"kaiser_draco", altTo:"kaiser_god",  name:"카이저드라코",  altName:"카이저갓(비밀진화!)",    stone:"stone2", conds:[{type:"lv",val:12},{type:"enhance",val:3},{type:"pvp",val:3}],          condDesc:"Lv.12 + +3강 + 배틀 3승"},
+  magmite:   {to:"pyrovant",     altTo:"magma_titan", name:"파이로반트",    altName:"마그마타이탄(비밀진화!)",                   stone:"stone1", conds:[{type:"lv",val:8},{type:"hunt",val:4}],                                 condDesc:"Lv.8 + 사냥 4승"},
+  guster:    {to:"cyclonix",     altTo:"hurricane",   name:"사이클로닉스",  altName:"허리케인(비밀진화!)",                   stone:"stone1", conds:[{type:"lv",val:8},{type:"pvp",val:3}],                                  condDesc:"Lv.8 + 배틀 3승"},
+  tigrex:    {to:"saber_tigrex", altTo:"saber_king",  name:"세이버티그렉스",altName:"세이버킹(비밀진화!)",                   stone:"stone2", conds:[{type:"lv",val:10},{type:"enhance",val:2},{type:"hunt",val:6}],          condDesc:"Lv.10 + +2강 + 사냥 6승"},
+  raptor:    {to:"velociking",   altTo:"veloci_rex",  name:"벨로시킹",      altName:"벨로시렉스(비밀진화!)",                   stone:"stone2", conds:[{type:"lv",val:10},{type:"pvp",val:4}],                                 condDesc:"Lv.10 + 배틀 4승"},
+  phanty:    {to:"spectron",     altTo:"specter_king",name:"스펙트론",      altName:"스펙터킹(비밀진화!)",      stone:"stone2", conds:[{type:"lv",val:10},{type:"enhance",val:2},{type:"pvp",val:3}],          condDesc:"Lv.10 + +2강 + 배틀 3승"},
+  thornia:   {to:"thornwall",    altTo:"thorn_queen", name:"쏜월",          altName:"쏜퀸(비밀진화!)",                   stone:"stone1", conds:[{type:"lv",val:8},{type:"dungeon",val:4}],                              condDesc:"Lv.8 + 던전 4회"},
   // ── UNCOMMON 2차 진화 ──
   inferno:      {to:"ragnaros",    altTo:null, name:"라그나로스",    altName:null, stone:"stone2", conds:[{type:"lv",val:14},{type:"enhance",val:4},{type:"boss",val:1}],          condDesc:"Lv.14 + +4강 + 보스 1회"},
   abyssal:      {to:"leviathan",   altTo:null, name:"리바이어던",    altName:null, stone:"stone2", conds:[{type:"lv",val:14},{type:"enhance",val:4},{type:"boss",val:1}],          condDesc:"Lv.14 + +4강 + 보스 1회"},
@@ -643,11 +656,17 @@ const MONS=[
   // 진화체 - COMMON→UNCOMMON (2차)
   // ══════════════════════════════════════════
   {id:"prime_tangy",  name:"프라임탱귤",  emoji:"🟠",color:"#bf360c",rarity:"RARE",lineage:"nature",  hp:90,atk:35,spd:32,desc:"네오탱귤 진화체. 오렌지 최강 형태."},
+  {id:"golden_tangy", name:"골든탱귤",    emoji:"🍯",color:"#f57f17",rarity:"RARE",lineage:"nature",  hp:80,atk:42,spd:28,desc:"탱귤이 비밀진화. 황금빛 에너지가 넘쳐흐른다."},
   {id:"luminos",      name:"루미노스",    emoji:"💎",color:"#ffe57f",rarity:"RARE",lineage:"mystic",  hp:75,atk:40,spd:38,desc:"래디언트 진화체. 순수한 빛의 결정."},
+  {id:"prisma",       name:"프리즈마",    emoji:"🔮",color:"#e040fb",rarity:"RARE",lineage:"mystic",  hp:70,atk:46,spd:36,desc:"글리머 비밀진화. 무지개 빛을 산란시키는 수정 정령."},
   {id:"ultra_pomelo", name:"울트라포멜로",emoji:"🌕",color:"#a07800",rarity:"RARE",lineage:"nature",  hp:80,atk:40,spd:36,desc:"메가포멜로 진화체."},
+  {id:"nova_pomelo",  name:"노바포멜로",  emoji:"🌞",color:"#f9a825",rarity:"RARE",lineage:"nature",  hp:72,atk:48,spd:32,desc:"포멜로 비밀진화. 폭발적인 산성 에너지를 방출한다."},
   {id:"ancient_sylvan",name:"고대실반",   emoji:"🌲",color:"#1b5e20",rarity:"RARE",lineage:"nature",  hp:95,atk:38,spd:28,desc:"실반 진화체. 원시 자연의 힘."},
-  {id:"titan_rocky",  name:"타이탄록키",  emoji:"⛰️",color:"#546e7a",rarity:"RARE",lineage:"nature",  hp:110,atk:22,spd:8,desc:"로키 진화체. 살아있는 산."},
-  {id:"tempest",      name:"템페스트",    emoji:"🌀",color:"#0d47a1",rarity:"RARE",lineage:"element",hp:68,atk:45,spd:48,desc:"폭풍브리지 진화체. 속도의 극한."},
+  {id:"verdant_leafy",name:"베르단트",    emoji:"🍀",color:"#2e7d32",rarity:"RARE",lineage:"nature",  hp:85,atk:44,spd:30,desc:"리피 비밀진화. 대지의 생명력을 한 몸에 담은 존재."},
+  {id:"titan_rocky",  name:"타이탄록키",  emoji:"⛰️",color:"#546e7a",rarity:"RARE",lineage:"nature",  hp:110,atk:22,spd:8, desc:"로키 진화체. 살아있는 산."},
+  {id:"crystal_pebby",name:"크리스탈페비",emoji:"💠",color:"#37474f",rarity:"RARE",lineage:"nature",  hp:100,atk:28,spd:10,desc:"페비 비밀진화. 다이아몬드보다 단단한 결정 갑옷."},
+  {id:"tempest",      name:"템페스트",    emoji:"🌀",color:"#0d47a1",rarity:"RARE",lineage:"element",hp:68,atk:45,spd:48, desc:"폭풍브리지 진화체. 속도의 극한."},
+  {id:"gale_breezy",  name:"게일브리지",  emoji:"🌬️",color:"#1976d2",rarity:"RARE",lineage:"element",hp:60,atk:52,spd:52, desc:"브리지 비밀진화. 폭풍을 가르는 초음속 바람 정령."},
   // ══════════════════════════════════════════
   // 진화체 - UNCOMMON 계열
   // ══════════════════════════════════════════
@@ -675,10 +694,37 @@ const MONS=[
   {id:"permafrost",   name:"퍼마프로스트",emoji:"🏔️",color:"#1a237e",rarity:"UNIQUE", lineage:"element",hp:145,atk:65,spd:24,desc:"글레이셔 각성체. 영원한 빙하."},
   {id:"omega_venom",  name:"나가로드",    emoji:"👑",color:"#4a0050",rarity:"UNIQUE", lineage:"beast",  hp:120,atk:78,spd:32,desc:"코브라드라 각성체. 뱀족의 왕."},
   {id:"abyss_lord",   name:"어비스로드",  emoji:"🌌",color:"#1a237e",rarity:"UNIQUE", lineage:"chaos",  hp:140,atk:70,spd:26,desc:"보이드테로 각성체. 어둠의 군주."},
-  {id:"phantom_king",name:"팬텀킹",      emoji:"💀",color:"#311b92",rarity:"UNIQUE", lineage:"chaos",  hp:130,atk:72,spd:30,desc:"스펙트론 각성체. 죽음을 지배하는 왕."},
+  {id:"phantom_king", name:"팬텀킹",      emoji:"💀",color:"#311b92",rarity:"UNIQUE", lineage:"chaos",  hp:130,atk:72,spd:30,desc:"스펙트론 각성체. 죽음을 지배하는 왕."},
   {id:"terra_titan",  name:"테라타이탄",  emoji:"🗿",color:"#37474f",rarity:"UNIQUE", lineage:"nature", hp:190,atk:50,spd:12,desc:"타이탄록키 각성체. 살아있는 돌산."},
+  // UNCOMMON 비밀진화체 (독립 UNIQUE)
+  {id:"inferno_rex",  name:"인페르노렉스", emoji:"🌋",color:"#b71c1c",rarity:"UNIQUE", lineage:"element",hp:132,atk:80,spd:20,desc:"블레이즈 비밀진화. 모든 것을 녹이는 화염의 왕."},
+  {id:"abyssal_king", name:"어비설킹",     emoji:"🌊",color:"#01579b",rarity:"UNIQUE", lineage:"element",hp:155,atk:68,spd:16,desc:"아쿠아 비밀진화. 심해를 지배하는 자."},
+  {id:"storm_zeus",   name:"스톰제우스",   emoji:"🌩️",color:"#e65100",rarity:"UNIQUE", lineage:"element",hp:125,atk:88,spd:36,desc:"볼트 비밀진화. 번개와 폭풍을 동시에 다룬다."},
+  {id:"blizzard_frost",name:"블리자드프로스트",emoji:"❄️",color:"#0d47a1",rarity:"UNIQUE", lineage:"element",hp:140,atk:72,spd:22,desc:"프로스티 비밀진화. 모든 것을 얼리는 절대영도."},
+  {id:"venom_lord",   name:"베놈로드",     emoji:"🐍",color:"#6a1b9a",rarity:"UNIQUE", lineage:"beast",  hp:115,atk:85,spd:30,desc:"베놈 비밀진화. 한 방울로 세계를 멸하는 독."},
+  {id:"void_sovereign",name:"보이드소버린", emoji:"🕳️",color:"#212121",rarity:"UNIQUE", lineage:"chaos",  hp:135,atk:75,spd:24,desc:"테로 비밀진화. 허공을 지배하는 군주."},
+  {id:"sacred_shiny", name:"세이크리드샤이니",emoji:"✨",color:"#7b1fa2",rarity:"UNIQUE", lineage:"mystic", hp:145,atk:78,spd:38,desc:"샤이니 비밀진화. 성스러운 빛으로 세상을 정화."},
+  {id:"kaiser_god",   name:"카이저갓",     emoji:"🐉",color:"#880e4f",rarity:"UNIQUE", lineage:"beast",  hp:165,atk:90,spd:28,desc:"드라코 비밀진화. 신의 경지에 도달한 용."},
+  {id:"specter_king", name:"스펙터킹",     emoji:"👻",color:"#4527a0",rarity:"UNIQUE", lineage:"chaos",  hp:125,atk:80,spd:28,desc:"판티 비밀진화. 모든 영혼을 지배하는 유령왕."},
+  // ══════════════════════════════════════════
+  // ══════════════════════════════════════════
+  // 비밀진화체 - 짧은 체인 분기
+  // ══════════════════════════════════════════
+  // COMMON 비밀진화체 (sprouty/bubby → RARE, floppy/whelpy/chirpy → UNCOMMON)
+  {id:"bloom_sprouty", name:"블룸새싹",    emoji:"🌸",color:"#c62828",rarity:"RARE",   lineage:"nature", hp:88,atk:42,spd:30,desc:"새싹이 비밀진화. 대지의 꽃이 만개한 생명 정령."},
+  {id:"aqua_bubby",    name:"아쿠아버블",  emoji:"🫧",color:"#006994",rarity:"RARE",   lineage:"element",hp:82,atk:38,spd:34,desc:"버블이 비밀진화. 무한히 팽창하는 수압 구체."},
+  {id:"swift_shadow",  name:"스위프트섀도",emoji:"🐇",color:"#4527a0",rarity:"UNCOMMON",lineage:"beast",  hp:58,atk:32,spd:48,desc:"플로피 비밀진화. 잔상만 남기고 사라지는 속도의 화신."},
+  {id:"dire_wolf",     name:"다이어울프",  emoji:"🐗",color:"#4e342e",rarity:"UNCOMMON",lineage:"beast",  hp:80,atk:40,spd:22,desc:"웰피 비밀진화. 고대 야생의 피를 이어받은 맹수."},
+  {id:"storm_eagle",   name:"스톰이글",    emoji:"🦅",color:"#1565c0",rarity:"UNCOMMON",lineage:"beast",  hp:65,atk:44,spd:42,desc:"처피 비밀진화. 폭풍을 타고 강하하는 맹금류."},
+  // UNCOMMON 비밀진화체 (magmite/guster/tigrex/raptor/thornia → RARE)
+  {id:"magma_titan",   name:"마그마타이탄",emoji:"🌋",color:"#bf360c",rarity:"RARE",   lineage:"element",hp:105,atk:52,spd:14,desc:"마그마이트 비밀진화. 살아있는 화산."},
+  {id:"hurricane",     name:"허리케인",    emoji:"🌪️",color:"#0277bd",rarity:"RARE",   lineage:"element",hp:78,atk:62,spd:55,desc:"거스터 비밀진화. 모든 것을 휩쓸어버리는 폭풍."},
+  {id:"saber_king",    name:"세이버킹",    emoji:"🐯",color:"#e65100",rarity:"RARE",   lineage:"beast",  hp:100,atk:68,spd:30,desc:"티그렉스 비밀진화. 맹호 중의 왕."},
+  {id:"veloci_rex",    name:"벨로시렉스",  emoji:"🦖",color:"#558b2f",rarity:"RARE",   lineage:"beast",  hp:90,atk:70,spd:42,desc:"랩터 비밀진화. 최상위 포식자."},
+  {id:"thorn_queen",   name:"쏜퀸",        emoji:"🌵",color:"#2e7d32",rarity:"RARE",   lineage:"nature", hp:108,atk:46,spd:18,desc:"소르니아 비밀진화. 독가시로 적을 압도하는 가시 여왕."},
   // ══════════════════════════════════════════
   // RARE - 합성체
+  // ══════════════════════════════════════════
   // ══════════════════════════════════════════
   {id:"rare_wolf",   name:"레어울프",    emoji:"🐺",color:"#1565c0",rarity:"RARE",   lineage:"beast",  hp:80,atk:35,spd:28,desc:"합성 야수. 날카로운 발톱의 늑대."},
   {id:"rare_phoenix",name:"레어피닉스",  emoji:"🦅",color:"#1976d2",rarity:"RARE",   lineage:"mystic", hp:75,atk:40,spd:32,desc:"합성 불사조. 화염 날개로 급습."},
