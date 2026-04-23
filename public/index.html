@@ -328,15 +328,19 @@ const BOSS_ITEMS=[
 
 // 보스 장비 아이템 5부위 (착용 시 소환수 ATK/DEF 보너스)
 // 레이드 세트 장비 - 5부위 (3보스에서 각각 파밍, 세트 완성 시 보너스)
+// 레이드 장비: 보스별 2부위씩 (이그나스2 + 보이드2 + 스톰1 = 5부위 풀셋)
 const BOSS_EQUIPS=[
-  {id:"eq_helm",   name:"탐험가의 투구",   emoji:"🪖",slot:"helm",   atk:3, def:4, desc:"ATK+3% DEF+4%"},
-  {id:"eq_armor",  name:"탐험가의 갑옷",   emoji:"🥋",slot:"armor",  atk:2, def:6, desc:"ATK+2% DEF+6%"},
-  {id:"eq_glove",  name:"탐험가의 건틀릿", emoji:"🧤",slot:"glove",  atk:5, def:2, desc:"ATK+5% DEF+2%"},
-  {id:"eq_boots",  name:"탐험가의 장화",   emoji:"👟",slot:"boots",  atk:3, def:3, desc:"ATK+3% DEF+3%"},
-  {id:"eq_weapon", name:"탐험가의 무기",   emoji:"🗡️",slot:"weapon", atk:7, def:1, desc:"ATK+7% DEF+1%"},
+  // 이그나스 드롭 (투구, 건틀릿)
+  {id:"eq_helm",   name:"용암의 투구",    emoji:"🪖",slot:"helm",  bossId:"raid_titan", atk:5, def:5, desc:"ATK+5% DEF+5% · 이그나스 드롭"},
+  {id:"eq_glove",  name:"용암의 건틀릿",  emoji:"🧤",slot:"glove", bossId:"raid_titan", atk:7, def:3, desc:"ATK+7% DEF+3% · 이그나스 드롭"},
+  // 보이드로드 드롭 (갑옷, 무기)
+  {id:"eq_armor",  name:"허공의 갑옷",    emoji:"🥋",slot:"armor",  bossId:"raid_void",  atk:3, def:9, desc:"ATK+3% DEF+9% · 보이드로드 드롭"},
+  {id:"eq_weapon", name:"허공의 무기",    emoji:"🗡️",slot:"weapon", bossId:"raid_void",  atk:10,def:2, desc:"ATK+10% DEF+2% · 보이드로드 드롭"},
+  // 스톰킹 드롭 (장화)
+  {id:"eq_boots",  name:"폭풍의 장화",    emoji:"👟",slot:"boots",  bossId:"raid_storm", atk:4, def:4, desc:"ATK+4% DEF+4% · 스톰킹 드롭"},
 ];
 // 5부위 완성 시 세트 보너스
-const FULL_SET_BONUS={atk:5,def:5,name:"탐험가 풀셋",desc:"5부위 완성 시 추가 ATK+5% DEF+5%"};
+const FULL_SET_BONUS={atk:5,def:5,name:"레이더 풀셋",desc:"5부위 완성 시 추가 ATK+5% DEF+5%"};
 
 // 배틀 전용 아이템
 const BATTLE_ITEMS=[
@@ -438,10 +442,14 @@ const ACHS=[
   {id:"fusion1",icon:"🔮",name:"첫 합성",desc:"합성 성공",reward:{enhance_stone:5},title:null,cond:s=>(s.totalFusions||0)>=1},
   {id:"legend1",icon:"🌈",name:"LEGEND 달성",desc:"레전드 등급 보유",reward:{stone3:1,enhance_stone:20},title:"레전드 테이머",cond:s=>(s.collection||[]).some(c=>c.rarity==="LEGEND")},
   {id:"mutant_c",icon:"🧬",name:"MUTANT 포획",desc:"뮤턴트 획득",reward:{enhance_stone:10},title:null,cond:s=>(s.dexSeen||[]).includes("mutant1")||(s.dexSeen||[]).includes("mutant2")},
-  {id:"boss_titan_k",icon:"🌋",name:"이그나스 토벌",desc:"보스 이그나스 격파",reward:{boss_crystal:1,enhance_stone:10},title:null,cond:s=>((s.bossKills||{}).boss_titan||0)>=1},
-  {id:"boss_void_k",icon:"🌑",name:"보이드로드 토벌",desc:"보스 보이드로드 격파",reward:{ancient_shard:1,enhance_stone:10},title:null,cond:s=>((s.bossKills||{}).boss_void||0)>=1},
-  {id:"boss_storm_k",icon:"🌪️",name:"스톰킹 토벌",desc:"보스 스톰킹 격파",reward:{boss_eye:1,enhance_stone:10},title:null,cond:s=>((s.bossKills||{}).boss_storm||0)>=1},
-  {id:"boss_all",icon:"👑",name:"보스 마스터",desc:"3마리 보스 모두 토벌",reward:{stone3:1,enhance_stone:30},title:"보스 마스터",cond:s=>Object.keys(s.bossKills||{}).length>=3},
+  {id:"boss_titan_k", icon:"🌋",name:"이그나스 토벌",    desc:"이그나스 첫 격파",          reward:{boss_crystal:1,enhance_stone:10}, title:null,         cond:s=>((s.bossKills||{}).boss_titan||0)>=1},
+  {id:"boss_titan_5", icon:"🌋",name:"이그나스 5회",     desc:"이그나스 5회 격파",         reward:{stone2:1,enhance_stone:20},      title:null,         cond:s=>((s.bossKills||{}).boss_titan||0)>=5},
+  {id:"boss_void_k",  icon:"👾",name:"보이드로드 토벌",  desc:"보이드로드 첫 격파",        reward:{ancient_shard:1,enhance_stone:10},title:null,         cond:s=>((s.bossKills||{}).boss_void||0)>=1},
+  {id:"boss_void_5",  icon:"👾",name:"보이드로드 5회",   desc:"보이드로드 5회 격파",       reward:{stone2:1,enhance_stone:20},      title:null,         cond:s=>((s.bossKills||{}).boss_void||0)>=5},
+  {id:"boss_storm_k", icon:"⛈️",name:"스톰킹 토벌",     desc:"스톰킹 첫 격파",            reward:{boss_eye:1,enhance_stone:10},    title:null,         cond:s=>((s.bossKills||{}).boss_storm||0)>=1},
+  {id:"boss_storm_5", icon:"⛈️",name:"스톰킹 5회",      desc:"스톰킹 5회 격파",           reward:{stone2:1,enhance_stone:20},      title:null,         cond:s=>((s.bossKills||{}).boss_storm||0)>=5},
+  {id:"boss_all",     icon:"👑",name:"보스 마스터",      desc:"3보스 모두 토벌",           reward:{stone3:1,enhance_stone:30},      title:"보스 마스터",cond:s=>Object.keys(s.bossKills||{}).length>=3},
+  {id:"boss_all_10",  icon:"👑",name:"레이드 챔피언",    desc:"모든 보스 각 10회 이상",    reward:{stone3:2,enhance_stone:50},      title:"레이드 챔피언",cond:s=>["boss_titan","boss_void","boss_storm"].every(id=>((s.bossKills||{})[id]||0)>=10)},
   {id:"revive1",icon:"💊",name:"기적의 부활",desc:"부활권 사용",reward:{food2:2},title:null,cond:s=>(s.totalRevives||0)>=1},
   {id:"release1",icon:"🕊️",name:"첫 방생",desc:"방생 완료",reward:{food1:5},title:null,cond:s=>(s.totalReleases||0)>=1},
   {id:"shop1",icon:"🛒",name:"첫 구매",desc:"교환 상점 이용",reward:{enhance_stone:2},title:null,cond:s=>(s.totalShops||0)>=1},
@@ -713,9 +721,9 @@ const MONS=[
   // ══════════════════════════════════════════
   // BOSS (레이드 전용)
   // ══════════════════════════════════════════
-  {id:"boss_titan",name:"이그나스",emoji:"🌋",color:"#e65100",rarity:"BOSS",lineage:"element",hp:180,atk:55,spd:15,desc:"용암의 보스."},
-  {id:"boss_void", name:"보이드로드",emoji:"🌑",color:"#4527a0",rarity:"BOSS",lineage:"chaos",  hp:160,atk:65,spd:20,desc:"허공의 보스."},
-  {id:"boss_storm",name:"스톰킹",  emoji:"🌪️",color:"#0277bd",rarity:"BOSS",lineage:"element",hp:150,atk:60,spd:38,desc:"폭풍의 보스."},
+  {id:"boss_titan",name:"이그나스", emoji:"🌋",color:"#e65100",rarity:"BOSS",lineage:"element",hp:180,atk:55,spd:15,desc:"용암의 보스."},
+  {id:"boss_void", name:"보이드로드",emoji:"👾",color:"#4527a0",rarity:"BOSS",lineage:"chaos",  hp:160,atk:65,spd:20,desc:"허공의 보스."},
+  {id:"boss_storm",name:"스톰킹",  emoji:"⛈️",color:"#0277bd",rarity:"BOSS",lineage:"element",hp:150,atk:60,spd:38,desc:"폭풍의 보스."},
   // ══════════════════════════════════════════
   // DIVINE (이스터에그)
   // ══════════════════════════════════════════
@@ -4846,27 +4854,6 @@ function SideTamer({myS,tLv,tExpNeed,col,maxStorage,acHex,setMy}){
         </div>
       ))}
     </div>
-    <div style={{fontSize:11,fontWeight:700,color:"var(--tx2)",marginBottom:6}}>🌋 레이드 토벌</div>
-    {MONS.filter(m=>m.rarity==="BOSS").map(bm=>{
-      const k=(myS.bossKills||{})[bm.id]||0;
-      return <div key={bm.id} style={{display:"flex",alignItems:"center",gap:8,padding:"7px 10px",borderRadius:10,background:k>0?"rgba(239,68,68,0.06)":"rgba(0,0,0,0.02)",border:`1px solid ${k>0?"rgba(239,68,68,0.2)":"rgba(0,0,0,0.06)"}`,marginBottom:5}}>
-        <span style={{fontSize:18}}>{bm.emoji}</span>
-        <span style={{fontSize:11,fontWeight:600,color:"var(--tx1)",flex:1}}>{bm.name}</span>
-        <span style={{fontSize:11,fontWeight:800,color:k>0?"var(--red)":"var(--tx3)"}}>{k}회</span>
-      </div>;
-    })}
-    {/* 레이드 세트 장비 표시 */}
-    {RAID_BOSSES.filter(b=>(myS.equips||{})[b.id+"_set"]).map(b=>(
-      <div key={b.id} style={{display:"flex",alignItems:"center",gap:8,padding:"7px 10px",borderRadius:10,
-        background:"rgba(245,158,11,0.06)",border:"1px solid rgba(245,158,11,0.25)",marginBottom:5}}>
-        <span style={{fontSize:18}}>{b.emoji}</span>
-        <div style={{flex:1}}>
-          <div style={{fontSize:11,fontWeight:700,color:"var(--gold)"}}>{b.setBonus.name}</div>
-          <div style={{fontSize:9,color:"var(--tx3)"}}>ATK+{b.setBonus.atk}% · DEF+{b.setBonus.def}%</div>
-        </div>
-        <span style={{fontSize:9,color:"var(--gold)"}}>✅</span>
-      </div>
-    ))}
     {myS.divineItem&&<div style={{marginTop:10,padding:"10px 12px",borderRadius:12,
       background:"linear-gradient(135deg,rgba(255,102,0,0.12),rgba(255,180,0,0.08))",
       border:"1.5px solid rgba(255,102,0,0.35)"}}>
@@ -4938,10 +4925,14 @@ function SideTamer({myS,tLv,tExpNeed,col,maxStorage,acHex,setMy}){
                 <div style={{fontSize:22}}>{have?eq.emoji:"❓"}</div>
                 <div style={{fontSize:8,fontWeight:700,color:on?"var(--gold)":have?"var(--tx2)":"var(--tx3)",
                   marginTop:2,lineHeight:1.2}}>
-                  {have?eq.name.replace("탐험가의",""):slotLabels[eq.slot]||eq.slot}
+                  {have?eq.name:slotLabels[eq.slot]||eq.slot}
                 </div>
+                {have&&!on&&(()=>{
+                  const boss=RAID_BOSSES.find(b=>b.id===eq.bossId);
+                  return <div style={{fontSize:6,color:"var(--tx3)",marginTop:1}}>{boss?.emoji}{boss?.name}</div>;
+                })()}
                 {have&&<div style={{fontSize:7,color:on?"var(--gold)":"var(--tx3)",marginTop:1}}>
-                  {on?"착용중":"클릭착용"}
+                  {on?"✓착용중":"클릭착용"}
                 </div>}
                 {!have&&<div style={{fontSize:7,color:"var(--tx3)",marginTop:1}}>미획득</div>}
               </div>;
@@ -5078,12 +5069,12 @@ function SideDungeon({myS,dgExploring,dgRes,setDgRes,runDungeon,DUNGEONS,unlocks
 // 레이드 보스 정의
 const RAID_BOSSES=[
   {
-    id:"raid_dragon",
+    id:"raid_titan",
     name:"이그나스",
     emoji:"🌋",
     color:"#bf360c",
     hp:800, atk:45,
-    types:["fire","ice"],           // 이중속성: 불꽃🔥 + 빙하❄️
+    types:["fire","ice"],
     typeDesc:"🔥불꽃 · ❄️빙하 이중속성",
     weakness:"💧물·⚡번개에 약함",
     phases:[
@@ -5091,27 +5082,24 @@ const RAID_BOSSES=[
       {hp:0.6, msg:"🔥 용암 폭발! ATK+30%", atkMult:1.3, defMult:1.0},
       {hp:0.3, msg:"❄️ 빙결 강화! ATK+60%", atkMult:1.6, defMult:1.2},
     ],
-    // 확정 보상
     rewards:{enhance_stone:25, stone2:1, food3:2},
-    // 랜덤 파밍 (클리어마다 각 항목 독립 확률)
     randomDrops:[
-      {id:"lava_core",    name:"용암 코어",    emoji:"🔴", amt:1, rate:0.40, desc:"이그나스의 심장 - 불꽃 속성 강화"},
-      {id:"frost_shard",  name:"빙결 파편",    emoji:"🔷", amt:2, rate:0.45, desc:"이그나스의 빙하 결정 - 얼음 속성"},
-      {id:"boss_crystal", name:"레이드 크리스탈",emoji:"💎",amt:1, rate:0.20, desc:"합성 등급UP +30%"},
-      {id:"awaken_stone", name:"각성석",       emoji:"💠", amt:1, rate:0.15, desc:"소환수 각성 전용"},
-      {id:"enhance_stone",name:"강화석",       emoji:"🔩", amt:10,rate:0.65, desc:"보너스 강화석"},
-      {id:"eq_helm",   name:"탐험가의 투구",   emoji:"🪖", amt:1, rate:0.04, desc:"세트 장비 - 투구"},
-      {id:"eq_glove",  name:"탐험가의 건틀릿", emoji:"🧤", amt:1, rate:0.04, desc:"세트 장비 - 건틀릿"},
+      {id:"lava_core",    name:"용암 코어",    emoji:"🔴", amt:1, rate:0.40},
+      {id:"frost_shard",  name:"빙결 파편",    emoji:"🔷", amt:2, rate:0.45},
+      {id:"boss_crystal", name:"레이드 크리스탈",emoji:"💎",amt:1, rate:0.20},
+      {id:"awaken_stone", name:"각성석",       emoji:"💠", amt:1, rate:0.15},
+      {id:"enhance_stone",name:"강화석",       emoji:"🔩", amt:10,rate:0.65},
+      {id:"eq_helm",  name:"용암의 투구",   emoji:"🪖", amt:1, rate:0.04},
+      {id:"eq_glove", name:"용암의 건틀릿", emoji:"🧤", amt:1, rate:0.04},
     ],
-    setBonus:{atk:14, def:12, name:"이그나스 세트", desc:"ATK+14% DEF+12% · 화염/빙하 저항"},
   },
   {
     id:"raid_void",
     name:"보이드로드",
-    emoji:"🌑",
+    emoji:"👾",
     color:"#311b92",
     hp:700, atk:60,
-    types:["dark","light"],         // 이중속성: 어둠🌑 + 빛✨
+    types:["dark","light"],
     typeDesc:"🌑어둠 · ✨빛 이중속성",
     weakness:"🌿풀·🪨땅에 약함",
     phases:[
@@ -5121,15 +5109,14 @@ const RAID_BOSSES=[
     ],
     rewards:{enhance_stone:20, stone2:1, food3:2},
     randomDrops:[
-      {id:"void_essence",  name:"허공의 정수",   emoji:"🌀", amt:1, rate:0.40, desc:"보이드로드의 핵심 - 어둠 속성"},
-      {id:"light_crystal", name:"광명 결정",     emoji:"✨", amt:2, rate:0.45, desc:"빛 속성 결정"},
-      {id:"ancient_shard", name:"고대의 파편",   emoji:"💎", amt:1, rate:0.18, desc:"진화 100% 보장 (1회용)"},
-      {id:"awaken_stone",  name:"각성석",        emoji:"💠", amt:1, rate:0.15, desc:"소환수 각성 전용"},
-      {id:"enhance_stone", name:"강화석",        emoji:"🔩", amt:8, rate:0.60, desc:"보너스 강화석"},
-      {id:"eq_armor",  name:"탐험가의 갑옷",   emoji:"🥋", amt:1, rate:0.04, desc:"세트 장비 - 갑옷"},
-      {id:"eq_weapon", name:"탐험가의 무기",   emoji:"🗡️", amt:1, rate:0.04, desc:"세트 장비 - 무기"},
+      {id:"void_essence",  name:"허공의 정수",   emoji:"🌀", amt:1, rate:0.40},
+      {id:"light_crystal", name:"광명 결정",     emoji:"✨", amt:2, rate:0.45},
+      {id:"ancient_shard", name:"고대의 파편",   emoji:"💎", amt:1, rate:0.18},
+      {id:"awaken_stone",  name:"각성석",        emoji:"💠", amt:1, rate:0.15},
+      {id:"enhance_stone", name:"강화석",        emoji:"🔩", amt:8, rate:0.60},
+      {id:"eq_armor",  name:"허공의 갑옷",  emoji:"🥋", amt:1, rate:0.04},
+      {id:"eq_weapon", name:"허공의 무기",  emoji:"🗡️", amt:1, rate:0.04},
     ],
-    setBonus:{atk:7, def:21, name:"보이드 세트", desc:"ATK+7% DEF+21% · 어둠/빛 저항"},
   },
   {
     id:"raid_storm",
@@ -5137,25 +5124,23 @@ const RAID_BOSSES=[
     emoji:"⛈️",
     color:"#01579b",
     hp:750, atk:55,
-    types:["thunder","ground"],     // 이중속성: 번개⚡ + 대지🪨
+    types:["thunder","ground"],
     typeDesc:"⚡번개 · 🪨대지 이중속성",
     weakness:"❄️얼음·🌿풀에 약함",
     phases:[
-      {hp:1.0, msg:"전투 시작!",                       atkMult:1.0, defMult:1.0},
-      {hp:0.55,msg:"⚡ 낙뢰 폭격! ATK+35%",           atkMult:1.35,defMult:1.0},
-      {hp:0.25,msg:"🪨 지진 발동! ATK+70% DEF+30%",   atkMult:1.7, defMult:1.3},
+      {hp:1.0, msg:"전투 시작!",                     atkMult:1.0, defMult:1.0},
+      {hp:0.55,msg:"⚡ 낙뢰 폭격! ATK+35%",         atkMult:1.35,defMult:1.0},
+      {hp:0.25,msg:"🪨 지진 발동! ATK+70% DEF+30%", atkMult:1.7, defMult:1.3},
     ],
     rewards:{enhance_stone:22, stone2:2, food3:3},
     randomDrops:[
-      {id:"thunder_gem",   name:"뇌격 보석",    emoji:"⚡", amt:1, rate:0.40, desc:"스톰킹의 번개 핵심"},
-      {id:"earth_crystal", name:"대지 결정",    emoji:"🪨", amt:2, rate:0.45, desc:"땅 속성 결정"},
-      {id:"boss_eye",      name:"보스의 눈",    emoji:"👁️", amt:1, rate:0.18, desc:"미포획 몬스터 포획률 2배"},
-      {id:"awaken_stone",  name:"각성석",       emoji:"💠", amt:1, rate:0.15, desc:"소환수 각성 전용"},
-      {id:"enhance_stone", name:"강화석",       emoji:"🔩", amt:12,rate:0.65, desc:"보너스 강화석"},
-      {id:"eq_boots",  name:"탐험가의 장화",   emoji:"👟", amt:1, rate:0.04, desc:"세트 장비 - 장화"},
-      {id:"eq_weapon", name:"탐험가의 무기",   emoji:"🗡️", amt:1, rate:0.04, desc:"세트 장비 - 무기"},
+      {id:"thunder_gem",   name:"뇌격 보석",    emoji:"⚡", amt:1, rate:0.40},
+      {id:"earth_crystal", name:"대지 결정",    emoji:"🪨", amt:2, rate:0.45},
+      {id:"boss_eye",      name:"보스의 눈",    emoji:"👁️", amt:1, rate:0.18},
+      {id:"awaken_stone",  name:"각성석",       emoji:"💠", amt:1, rate:0.15},
+      {id:"enhance_stone", name:"강화석",       emoji:"🔩", amt:12,rate:0.65},
+      {id:"eq_boots",  name:"폭풍의 장화", emoji:"👟", amt:1, rate:0.04},
     ],
-    setBonus:{atk:18, def:7, name:"스톰킹 세트", desc:"ATK+18% DEF+7% · 번개/대지 저항"},
   },
 ];
 
@@ -5887,7 +5872,7 @@ function SideRaid({myS,col,setMy,toast,aliveCols,acHex}){
         border:`1.5px solid ${isFullSet?"rgba(245,158,11,0.4)":"rgba(0,0,0,0.08)"}`}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:5}}>
           <div style={{fontSize:11,fontWeight:800,color:isFullSet?"var(--gold)":"var(--tx2)"}}>
-            ⚔️ 탐험가 세트 {ownedCount}/{BOSS_EQUIPS.length}부위
+            ⚔️ 레이더 세트 {ownedCount}/{BOSS_EQUIPS.length}부위
             {isFullSet&&<span style={{marginLeft:4}}>✨ 풀셋!</span>}
           </div>
         </div>
