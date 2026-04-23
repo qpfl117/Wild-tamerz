@@ -2390,6 +2390,7 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
   const [fb,setFb]=useState(null);
   const [fusAnim,setFusAnim]=useState(null);
   const [fusRes,setFusRes]=useState(null);
+  const [fuseTab,setFuseTab]=useState("fuse");
   const [dexF,setDexF]=useState("all");
   const [dgRes,setDgRes]=useState(null);
   const [dgExploring,setDgExploring]=useState(null);
@@ -3431,7 +3432,7 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
   const oppHas=(oppS?.collection||[]).filter(c=>c.alive!==false).length>0;
   const todayDay=new Date().getDate();
   const battleLeft=getBattleLeft();
-  const MAIN_TABS=[["field","🗺","필드"],["collection","📦","몬스터"],["bag","🎒","가방"],["shop","🛒","상점"],["explore","⛏️","탐험"],["hunt","⚔️","사냥터"],["fusion","🔮","합성"],["pvp","👥","대전"]];
+  const MAIN_TABS=[["field","🗺","필드"],["collection","📦","몬스터"],["bag","🎒","가방"],["shop","🛒","상점"],["explore","⛏️","탐험"],["hunt","⚔️","사냥터"],["fusion","⚗️","제련소"],["pvp","👥","대전"]];
   const MENU_TABS=[["monthly","📅","월간출석"],["tamer","🏅","테이머"],["dex","📖","도감"],["ach","🏆","업적"],["lab","🔬","연구소"],["help","❓","도움말"]];
 
   const SIDE_TABS_TOP=[["tamer","🏅","테이머"],["monthly","📅","출석"],["breed","🥚","교배"],["dex","📖","도감"],["ach","🏆","업적"],["lab","🔬","연구소"],["help","❓","도움말"]];
@@ -4370,68 +4371,171 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
           </>}
         </div>
       </div>}
-      <div style={{fontSize:16,fontWeight:800,color:"var(--tx1)",marginBottom:6}}>🔮 합성</div>
-      <div style={{fontSize:16,color:"var(--tx3)",marginBottom:10,padding:"7px 10px",
-        background:"rgba(0,0,0,0.02)",borderRadius:10,lineHeight:1.7,border:"1px solid rgba(0,0,0,0.06)"}}>
-        ⚠️ <b>두 소환수 모두 +10강 필요</b> · 같은 등급끼리 · MUTANT/BOSS/LEGEND 불가<br/>실패시 B만 소멸(A유지) · 🔴보스크리스탈 보유시 등급UP +30%
-      </div>
-      {col.length<2?<div style={{textAlign:"center",padding:"24px 0",color:"var(--tx3)"}}>몬스터 2마리 이상 필요!</div>:<>
-        <div style={{display:"flex",flexWrap:"wrap",gap:7,marginBottom:12}}>
-          {col.map((c,i)=>{
-            const bm=MONS.find(m=>m.id===c.id)||c;
-            const sa=fa===i,sb2=fb===i;
-            const isT=bm.rarity==="LEGEND";
-            const notMax=(c.enhance||0)<MAX_ENHANCE;
-            return <div key={i} onClick={()=>{if(isT)return;if(sa)setFa(null);else if(sb2)setFb(null);else if(fa===null)setFa(i);else if(fb===null)setFb(i);}}
-              style={{border:sa?`2px solid ${acHex}`:sb2?`2px solid var(--purple)`:"1px solid rgba(0,0,0,0.08)",
-                borderRadius:12,padding:"9px 10px",cursor:isT?"default":"pointer",textAlign:"center",minWidth:70,
-                background:sa?`${acHex}15`:sb2?"#8b5cf620":"white",opacity:isT?0.35:1,boxShadow:"var(--shadow)"}}>
-              <div style={{fontSize:22}}>{bm.emoji}</div>
-              <div style={{fontSize:16,fontWeight:600,color:"var(--tx1)"}}>{bm.name}</div>
-              <Badge text={bm.rarity} color={RCOL[bm.rarity]||"#888"}/>
-              <div style={{fontSize:17,color:(c.enhance||0)>=MAX_ENHANCE?"var(--green)":"var(--tx3)"}}>
-                Lv.{c.lv} +{c.enhance||0}강
-              </div>
-              {sa&&<div style={{fontSize:16,color:acHex,fontWeight:700}}>A</div>}
-              {sb2&&<div style={{fontSize:16,color:"var(--purple)",fontWeight:700}}>B</div>}
-              {isT&&<div style={{fontSize:16,color:"var(--red)"}}>합성불가</div>}
-              {!isT&&notMax&&<div style={{fontSize:17,color:"var(--red)"}}>강화필요</div>}
-            </div>;
-          })}
+      {/* ── 제련소 헤더 + 서브탭 ── */}
+      <div style={{background:`linear-gradient(135deg,#8b5cf622,#f97316ll)`,
+        borderBottom:"2px solid rgba(139,92,246,0.1)",padding:"10px 14px 0",flexShrink:0}}>
+        <div style={{fontSize:16,fontWeight:900,color:"var(--tx1)",marginBottom:8}}>⚗️ 제련소</div>
+        <div style={{display:"flex",gap:0,borderRadius:10,overflow:"hidden",border:"1.5px solid rgba(0,0,0,0.08)",marginBottom:0}}>
+          {[["fuse","🔮 합성"],["enhance","🔩 강화"]].map(([k,l])=>(
+            <button key={k} onClick={()=>setFuseTab(k)}
+              style={{flex:1,padding:"8px 0",border:"none",fontFamily:"inherit",
+                background:fuseTab===k?`linear-gradient(135deg,${k==="fuse"?"#8b5cf6":"#f97316"},${k==="fuse"?"#6d28d9":"#ea580c"})`:"white",
+                color:fuseTab===k?"white":"var(--tx2)",
+                fontSize:14,fontWeight:fuseTab===k?800:500,cursor:"pointer"}}>
+              {l}
+            </button>
+          ))}
         </div>
-        {fa!==null&&fb!==null&&<div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:12,marginBottom:10,padding:"10px",background:"rgba(139,92,246,0.06)",borderRadius:12,border:"1px dashed rgba(139,92,246,0.2)"}}>
-          <div style={{textAlign:"center"}}>
-            <div style={{fontSize:28}}>{(MONS.find(m=>m.id===col[fa]?.id)||col[fa])?.emoji}</div>
-            <div style={{fontSize:17,fontWeight:700,color:acHex}}>A</div>
+      </div>
+
+      {/* 합성 서브탭 */}
+      {fuseTab==="fuse"&&<div style={{padding:12,overflowY:"auto",flex:1}}>
+        <div style={{fontSize:13,color:"var(--tx3)",marginBottom:10,padding:"7px 10px",
+          background:"rgba(139,92,246,0.04)",borderRadius:10,lineHeight:1.6,border:"1px solid rgba(139,92,246,0.1)"}}>
+          ⚠️ <b>두 마리 모두 +10강 필요</b> · 같은 등급끼리<br/>
+          실패 시 A 소멸, B는 50% 생존 · 🔴크리스탈로 등급UP<br/>
+          💡 MUTANT+EPIC = 랜덤 레전드 확정!
+        </div>
+        {col.length<2?<div style={{textAlign:"center",padding:"24px 0",color:"var(--tx3)"}}>몬스터 2마리 이상 필요!</div>:<>
+          <div style={{display:"flex",flexWrap:"wrap",gap:7,marginBottom:12}}>
+            {col.map((c,i)=>{
+              const bm=MONS.find(m=>m.id===c.id)||c;
+              const sa=fa===i,sb2=fb===i;
+              const isT=bm.rarity==="LEGEND";
+              const notMax=(c.enhance||0)<MAX_ENHANCE;
+              const isMut=bm.rarity==="MUTANT";
+              return <div key={i} onClick={()=>{if(isT)return;if(sa)setFa(null);else if(sb2)setFb(null);else if(fa===null)setFa(i);else if(fb===null)setFb(i);}}
+                style={{border:sa?`2px solid ${acHex}`:sb2?`2px solid var(--purple)`:"1px solid rgba(0,0,0,0.08)",
+                  borderRadius:12,padding:"9px 10px",cursor:isT?"default":"pointer",textAlign:"center",minWidth:70,
+                  background:sa?`${acHex}15`:sb2?"#8b5cf620":isMut?"rgba(0,172,193,0.08)":"white",
+                  opacity:isT?0.35:1,boxShadow:"var(--shadow)"}}>
+                <div style={{fontSize:22}}>{bm.emoji}</div>
+                <div style={{fontSize:12,fontWeight:600,color:isMut?"#00acc1":"var(--tx1)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:64}}>{bm.name}</div>
+                <Badge text={bm.rarity} color={isMut?"#00acc1":RCOL[bm.rarity]||"#888"}/>
+                <div style={{fontSize:12,color:(c.enhance||0)>=MAX_ENHANCE?"var(--green)":"var(--tx3)"}}>
+                  Lv.{c.lv} +{c.enhance||0}강
+                </div>
+                {sa&&<div style={{fontSize:13,color:acHex,fontWeight:700}}>A</div>}
+                {sb2&&<div style={{fontSize:13,color:"var(--purple)",fontWeight:700}}>B</div>}
+                {isT&&<div style={{fontSize:11,color:"var(--red)"}}>합성불가</div>}
+                {!isT&&notMax&&!isMut&&<div style={{fontSize:11,color:"var(--orange)"}}>강화필요</div>}
+              </div>;
+            })}
           </div>
-          <div style={{fontSize:20,color:"var(--purple)"}}>🔮</div>
-          <div style={{textAlign:"center"}}>
-            <div style={{fontSize:28}}>{(MONS.find(m=>m.id===col[fb]?.id)||col[fb])?.emoji}</div>
-            <div style={{fontSize:17,fontWeight:700,color:"var(--purple)"}}>B</div>
-          </div>
-          <div style={{fontSize:16,color:"var(--tx3)"}}>→ ?</div>
+          {fa!==null&&fb!==null&&<div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:12,marginBottom:10,padding:"10px",background:"rgba(139,92,246,0.06)",borderRadius:12,border:"1px dashed rgba(139,92,246,0.2)"}}>
+            <div style={{textAlign:"center"}}>
+              <div style={{fontSize:28}}>{(MONS.find(m=>m.id===col[fa]?.id)||col[fa])?.emoji}</div>
+              <div style={{fontSize:14,fontWeight:700,color:acHex}}>A</div>
+            </div>
+            <div style={{fontSize:20,color:"var(--purple)"}}>🔮</div>
+            <div style={{textAlign:"center"}}>
+              <div style={{fontSize:28}}>{(MONS.find(m=>m.id===col[fb]?.id)||col[fb])?.emoji}</div>
+              <div style={{fontSize:14,fontWeight:700,color:"var(--purple)"}}>B</div>
+            </div>
+            <div style={{fontSize:16,color:"var(--tx3)"}}>→ ?</div>
+          </div>}
+          <button onClick={fuse} disabled={fa===null||fb===null}
+            style={{width:"100%",padding:"14px 0",borderRadius:12,border:"none",fontFamily:"inherit",
+              background:(fa!==null&&fb!==null)?"linear-gradient(135deg,#8b5cf6,#6d28d9)":"rgba(0,0,0,0.08)",
+              color:(fa!==null&&fb!==null)?"white":"rgba(0,0,0,0.3)",
+              fontSize:16,fontWeight:900,letterSpacing:1,
+              cursor:(fa!==null&&fb!==null)?"pointer":"default",
+              boxShadow:(fa!==null&&fb!==null)?"0 4px 16px rgba(139,92,246,0.4)":"none",marginTop:8}}>
+            {(fa!==null&&fb!==null)?"✨ 합성 시작!":"두 마리 선택 필요"}
+          </button>
+        </>}
+        {fusRes&&!fusAnim&&<div style={{border:`2px solid ${RCOL[fusRes.grade]||"#888"}60`,borderRadius:14,
+          padding:"16px",marginTop:12,background:`${RCOL[fusRes.grade]||"#888"}08`,textAlign:"center",
+          boxShadow:`0 4px 20px ${RCOL[fusRes.grade]||"#888"}25`,animation:"catchSuccess 0.5s ease-out"}}>
+          <div style={{fontSize:52,marginBottom:8,filter:`drop-shadow(0 0 12px ${RCOL[fusRes.grade]||"#888"})`}}>{fusRes.res.emoji}</div>
+          <div style={{fontWeight:900,fontSize:16,color:RCOL[fusRes.grade]}}>{fusRes.res.name}</div>
+          <Badge text={fusRes.grade} color={RCOL[fusRes.grade]}/>
+          {fusRes.bonus&&<div style={{display:"flex",gap:6,justifyContent:"center",marginTop:8}}>
+            <span style={{fontSize:12,fontWeight:700,color:"#f97316",background:"rgba(249,115,22,0.1)",padding:"2px 8px",borderRadius:8}}>⚔️+{fusRes.bonus.atk}</span>
+            <span style={{fontSize:12,fontWeight:700,color:"#ef4444",background:"rgba(239,68,68,0.1)",padding:"2px 8px",borderRadius:8}}>❤️+{fusRes.bonus.hp}</span>
+          </div>}
+          <div style={{fontSize:12,color:"var(--tx3)",marginTop:6}}>{fusRes.res.desc}</div>
         </div>}
-        <button onClick={fuse} disabled={fa===null||fb===null}
-          style={{width:"100%",padding:"14px 0",borderRadius:12,border:"none",fontFamily:"inherit",
-            background:(fa!==null&&fb!==null)?"linear-gradient(135deg,#8b5cf6,#6d28d9)":"rgba(0,0,0,0.08)",
-            color:(fa!==null&&fb!==null)?"white":"rgba(0,0,0,0.3)",
-            fontSize:16,fontWeight:900,letterSpacing:1,
-            cursor:(fa!==null&&fb!==null)?"pointer":"default",
-            boxShadow:(fa!==null&&fb!==null)?"0 4px 16px rgba(139,92,246,0.4)":"none",marginTop:8}}>
-          {(fa!==null&&fb!==null)?"✨ 합성 시작!":"두 마리 선택 필요"}
-        </button>
-      </>}
-      {fusRes&&!fusAnim&&<div style={{border:`2px solid ${RCOL[fusRes.grade]||"#888"}60`,borderRadius:14,
-        padding:"16px",marginTop:12,background:`${RCOL[fusRes.grade]||"#888"}08`,textAlign:"center",
-        boxShadow:`0 4px 20px ${RCOL[fusRes.grade]||"#888"}25`,animation:"catchSuccess 0.5s ease-out"}}>
-        <div style={{fontSize:52,marginBottom:8,filter:`drop-shadow(0 0 12px ${RCOL[fusRes.grade]||"#888"})`}}>{fusRes.res.emoji}</div>
-        <div style={{fontWeight:900,fontSize:16,color:RCOL[fusRes.grade]}}>{fusRes.res.name}</div>
-        <Badge text={fusRes.grade} color={RCOL[fusRes.grade]}/>
-        {fusRes.bonus&&<div style={{display:"flex",gap:6,justifyContent:"center",marginTop:8}}>
-          <span style={{fontSize:12,fontWeight:700,color:"#f97316",background:"rgba(249,115,22,0.1)",padding:"2px 8px",borderRadius:8}}>⚔️+{fusRes.bonus.atk} 합성보너스</span>
-          <span style={{fontSize:12,fontWeight:700,color:"#ef4444",background:"rgba(239,68,68,0.1)",padding:"2px 8px",borderRadius:8}}>❤️+{fusRes.bonus.hp} 합성보너스</span>
-        </div>}
-        <div style={{fontSize:13,color:"var(--tx3)",marginTop:6}}>{fusRes.res.desc}</div>
+      </div>}
+
+      {/* 강화 서브탭 */}
+      {fuseTab==="enhance"&&<div style={{padding:12,overflowY:"auto",flex:1}}>
+        <div style={{fontSize:13,color:"var(--tx3)",marginBottom:10,padding:"7px 10px",
+          background:"rgba(249,115,22,0.04)",borderRadius:10,lineHeight:1.6,border:"1px solid rgba(249,115,22,0.12)"}}>
+          🔩 <b>강화석 소모</b>로 몬스터 스탯 UP · 최대 +10강<br/>
+          COMMON~RARE: 실패해도 유지 ✅ · UNIQUE: 실패 시 -1 하락<br/>
+          EPIC+: 대실패 시 파괴 위험 💀 (부활권으로 복구 가능)
+        </div>
+        {col.length===0?<div style={{textAlign:"center",padding:"24px 0",color:"var(--tx3)"}}>몬스터가 없습니다!</div>:
+          <div style={{display:"flex",flexDirection:"column",gap:8}}>
+            {col.map((c,i)=>{
+              const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{rarity:"COMMON",name:"?",emoji:"❓"};
+              const enh=c.enhance||0;
+              const cost=getEnhanceCost(bm.rarity,enh);
+              const rate=ENHANCE_RATES[enh]||[0,0];
+              const succPct=Math.round(rate[0]*100);
+              const greatPct=Math.round(rate[1]*100);
+              const canEnh=enh<MAX_ENHANCE&&(myS.consumables?.enhance_stone||0)>=cost&&c.alive!==false;
+              const gradeIdx=GRADE_ORDER.indexOf(bm.rarity);
+              const isSafe=gradeIdx<=2;
+              const isDrop=bm.rarity==="UNIQUE";
+              const isDestroy=gradeIdx>=5;
+              if(c.alive===false)return null;
+              return <div key={i} style={{borderRadius:12,padding:"10px 12px",background:"white",
+                border:`1.5px solid ${enh>=10?"rgba(245,158,11,0.4)":enh>=7?"rgba(139,92,246,0.2)":enh>=4?"rgba(59,130,246,0.15)":"rgba(0,0,0,0.08)"}`,
+                boxShadow:"0 1px 6px rgba(0,0,0,0.04)"}}>
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+                  <span style={{fontSize:22}}>{bm.emoji}</span>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:13,fontWeight:700}}>{c.name||bm.name}</div>
+                    <div style={{display:"flex",gap:4,alignItems:"center",flexWrap:"wrap"}}>
+                      <Badge text={bm.rarity} color={RCOL[bm.rarity]||"#888"}/>
+                      <span style={{fontSize:11,color:"var(--tx3)"}}>Lv.{c.lv} {c.gender||""}</span>
+                    </div>
+                  </div>
+                  <div style={{textAlign:"right"}}>
+                    <div style={{fontSize:16,fontWeight:900,
+                      color:enh>=10?"var(--gold)":enh>=7?"var(--purple)":enh>=4?"var(--blue)":"var(--tx2)"}}>
+                      {enh>=10?"✨ MAX":enh>0?`+${enh}강`:"미강화"}
+                    </div>
+                    <div style={{fontSize:10,color:"var(--tx3)"}}>🔩 필요:{cost}개</div>
+                  </div>
+                </div>
+                {/* 강화 단계 바 */}
+                <div style={{display:"flex",gap:2,marginBottom:6}}>
+                  {[...Array(MAX_ENHANCE)].map((_,j)=>(
+                    <div key={j} style={{flex:1,height:5,borderRadius:2,
+                      background:j<enh?(j>=9?"#f59e0b":j>=6?"#8b5cf6":j>=3?"#3b82f6":"#10b981"):"rgba(0,0,0,0.08)"}}/>
+                  ))}
+                </div>
+                {/* 확률 정보 */}
+                <div style={{display:"flex",gap:4,marginBottom:6,flexWrap:"wrap"}}>
+                  <span style={{fontSize:10,padding:"2px 6px",borderRadius:6,
+                    background:"rgba(16,185,129,0.1)",color:"var(--green)",fontWeight:700}}>
+                    ✅ {succPct}%
+                  </span>
+                  {greatPct>0&&<span style={{fontSize:10,padding:"2px 6px",borderRadius:6,
+                    background:"rgba(245,158,11,0.1)",color:"var(--gold)",fontWeight:700}}>
+                    🌟+2 {greatPct}%
+                  </span>}
+                  {isSafe&&<span style={{fontSize:10,padding:"2px 6px",borderRadius:6,
+                    background:"rgba(16,185,129,0.1)",color:"var(--green)",fontWeight:700}}>✓안전</span>}
+                  {isDrop&&<span style={{fontSize:10,padding:"2px 6px",borderRadius:6,
+                    background:"rgba(245,158,11,0.1)",color:"var(--gold)",fontWeight:700}}>⚠하락</span>}
+                  {isDestroy&&<span style={{fontSize:10,padding:"2px 6px",borderRadius:6,
+                    background:"rgba(239,68,68,0.1)",color:"var(--red)",fontWeight:700}}>💀파괴위험</span>}
+                </div>
+                <button onClick={()=>enhanceMon(i)} disabled={!canEnh}
+                  style={{width:"100%",padding:"9px 0",borderRadius:10,border:"none",fontFamily:"inherit",
+                    background:canEnh?"linear-gradient(135deg,#f97316,#ea580c)":"rgba(0,0,0,0.06)",
+                    color:canEnh?"white":"rgba(0,0,0,0.25)",
+                    fontSize:14,fontWeight:800,cursor:canEnh?"pointer":"default",
+                    boxShadow:canEnh?"0 3px 12px rgba(249,115,22,0.35)":"none"}}>
+                  {enh>=MAX_ENHANCE?"✅ 최대 강화!":!canEnh&&(myS.consumables?.enhance_stone||0)<cost?`🔩 강화석 ${cost}개 필요`:`🔩 강화 (${cost}개) ${succPct}%`}
+                </button>
+              </div>;
+            })}
+          </div>}
       </div>}
     </div>}
 
@@ -6667,36 +6771,182 @@ function SideLab({myS,col,setMy,toast,acHex,aliveCols}){
 // ── 도움말 ──
 function SideHelp({acHex}){
   const [helpTab,setHelpTab]=React.useState("basic");
+  const [selectedChain,setSelectedChain]=React.useState(null);
+
   const helps={
     basic:[
-      {q:"🗺 필드",a:"야생 소환수가 등장합니다. 볼을 던져 테이밍! 포획 시 기본 속성이 자동 부여됩니다."},
-      {q:"📦 소환수",a:"보관 중인 몬스터 목록. 먹이로 EXP를 주고, 강화·진화·속성변환이 가능합니다."},
+      {q:"🗺 필드",a:"야생 몬스터가 등장합니다. 볼을 던져 테이밍! 테이머 레벨이 높을수록 더 강한 몬스터가 출현."},
+      {q:"📦 몬스터",a:"보관 중인 몬스터 목록. 먹이로 EXP를 주고 레벨업, 연구소에서 강화·진화·각성 가능."},
       {q:"🎒 가방",a:"보유 아이템 전체 목록. 볼/먹이/진화석/강화석/특수아이템 확인."},
-      {q:"🛒 상점",a:"일반볼로 다양한 아이템 교환. 일부 아이템은 일일 구매 제한 있음."},
+      {q:"🛒 상점",a:"일반볼로 다양한 아이템 교환. 먹이 교환: 🌾×5→🍖, 🍖×8→✨. 일부 아이템 일일 구매 제한."},
       {q:"⚔️ 사냥터",a:"몬스터로 야생 몬스터와 전투. 승리 시 강화석·볼 획득. 패배 시 몬스터 전사."},
-      {q:"🔮 합성",a:"+10강 몬스터 2마리를 합성해 더 강한 등급 생성. MUTANT 포함 시 등급 변동."},
-      {q:"👥 대전",a:"상대방 소환수와 PVP. 일일 15회 제한, 배틀권으로 추가 가능."},
+      {q:"⚗️ 제련소",a:"합성: +10강 몬스터 2마리로 상위 등급 생성. 강화: 강화석으로 스탯 UP."},
+      {q:"👥 대전",a:"배틀: 유저와 PVP (일일 15회). 레이드: 협력으로 보스 도전, 장비 파밍."},
     ],
     system:[
       {q:"⚡ 스태미나",a:"던전 입장에 소모. 1시간마다 1 자동 충전. 스태미나 포션으로 즉시 회복."},
-      {q:"🔩 강화",a:"강화석 소모로 몬스터 스탯 UP. COMMON~RARE는 안전(실패=유지), UNIQUE는 하락, EPIC+는 파괴 위험."},
-      {q:"✨ 진화",a:"조건 충족 + 진화석 소모. 4단계: 🌟대성공(다른진화체)/✨성공/💔실패(🔩×3)/💀대실패(사망)."},
-      {q:"🥚 교배",a:"몬스터 2마리(♂♀)로 알 생성 → 먹이로 부화. 부모의 좋은 스탯을 물려받은 새 몬스터 탄생! (등급은 부모 중 낮은 쪽 기준)"},
-      {q:"💎 진화석 활용",a:"연구소에서 부스터(EXP)/각인(스탯영구UP)/리롤(속성변경)로 활용 가능."},
-      {q:"⚔️ 레이드",a:"강력한 레이드 보스 도전. 페이즈별 패턴 변화. 클리어 시 세트 장비 획득."},
+      {q:"🔩 강화",a:"강화석 소모로 몬스터 스탯 UP. COMMON~RARE는 실패 시 유지 ✅, UNIQUE는 -1 하락 ⚠️, EPIC+는 파괴 위험 💀."},
+      {q:"✨ 진화",a:"조건 충족 + 진화석 소모. 결과: 🌟대성공/✨성공/💔실패(🔩×3)/💀대실패(사망). 레전드 진화는 🏆진화증표 필요."},
+      {q:"💠 각성",a:"각성석 1개로 2번째 속성 랜덤 부여. 최대 2회 (2회차=재랜덤). 합성/진화 시 각성 리셋."},
+      {q:"🥚 교배",a:"UNCOMMON+ 몬스터 ♂♀ 한 쌍. 알 등급=부모 평균(올림/내림 50:50). 스탯 우성유전 70:30."},
+      {q:"🏆 진화증표",a:"뮤턴트)XXX 방생 시 획득. 에픽→레전드 공식 진화에 사용 (갓슬레이어→오메가 등)."},
+      {q:"⚔️ 레이드",a:"보스당 1방만 개설 가능. 클리어 후 30분 쿨타임. 장비 드롭률 4~5% (희귀)."},
     ],
     grade:[
-      {q:"등급 순서",a:"COMMON → UNCOMMON → RARE → UNIQUE → SUPER → EPIC → LEGEND (합성으로 성장)"},
-      {q:"MUTANT",a:"야생에서 드물게 등장. 다른 등급과 합성 시 결과 등급 ±1단계 변동 효과."},
-      {q:"BOSS",a:"사냥터 특정 조건 달성 시 등장. 포획 불가, 소환수로 토벌. 특수 장비 드롭."},
-      {q:"🥚 교배 결과",a:"부모 중 낮은 등급 기준으로 탄생. 스탯은 부모 우성(70%) + 열성(30%)로 계산. 진화트리를 따라 진화 가능."},
-      {q:"DIVINE 🍊",a:"매우 낮은 확률의 이스터에그. 조건 4가지 동시 충족 시 0.3% 확률로 출현."},
+      {q:"등급 순서",a:"COMMON → UNCOMMON → RARE → UNIQUE → EPIC → LEGEND (합성으로 성장)"},
+      {q:"💠 뮤턴트",a:"EPIC+ 합성 시 3% 확률 등장. 이름 형식: 뮤턴트)갓슬레이어 등. 에픽 대비 +15% 스탯. 방생 시 🏆진화증표 획득."},
+      {q:"🌈 레전드 루트 ①",a:"갓슬레이어→오메가 / 솔라리스→오로라 / 드래곤로드→원시신 (진화증표+조건 필요)"},
+      {q:"🎲 레전드 루트 ②",a:"뮤턴트+에픽 합성 → 랜덤 레전드 확정 (보이드킹/어비설/메카조드)"},
+      {q:"BOSS",a:"사냥터에서 조건 달성 시 등장. 포획 불가. 토벌 시 특수 아이템 드롭."},
+      {q:"🍊 DIVINE",a:"이스터에그. 조건 4가지 동시 충족 + 0.3% 확률 출현. 매우 드묾."},
     ],
+    evotree:null,
   };
+
+  // 진화트리 데이터 구성 - 루트 몬스터 찾기
+  const buildEvoTree=(rootId)=>{
+    const chain=[];
+    let cur=rootId;
+    let visited=new Set();
+    while(cur&&!visited.has(cur)){
+      visited.add(cur);
+      const mon=MONS.find(m=>m.id===cur);
+      if(!mon)break;
+      const evo=EVO_CHAIN[cur];
+      chain.push({mon,evo});
+      cur=evo?.to;
+    }
+    return chain;
+  };
+
+  // 루트(진화 시작점) 몬스터들 - EVO_CHAIN에 from으로 있는 것 중 아무것도 가리키지 않는 것
+  const allToIds=new Set(Object.values(EVO_CHAIN).flatMap(c=>[c.to,c.altTo].filter(Boolean)));
+  const rootMons=Object.keys(EVO_CHAIN)
+    .filter(id=>!allToIds.has(id))
+    .map(id=>MONS.find(m=>m.id===id))
+    .filter(Boolean);
+
+  const gradeRoots={};
+  rootMons.forEach(m=>{
+    if(!gradeRoots[m.rarity])gradeRoots[m.rarity]=[];
+    gradeRoots[m.rarity].push(m);
+  });
+
+  const renderEvoTree=()=>(
+    <div>
+      <div style={{fontSize:11,color:"var(--tx3)",marginBottom:10,padding:"6px 9px",
+        background:"rgba(0,0,0,0.03)",borderRadius:8}}>
+        🌿 몬스터를 눌러 진화 경로를 확인하세요!
+      </div>
+
+      {/* 모달 */}
+      {selectedChain&&(()=>{
+        const chain=buildEvoTree(selectedChain);
+        return <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",zIndex:600,
+          display:"flex",alignItems:"center",justifyContent:"center",padding:12}}
+          onClick={()=>setSelectedChain(null)}>
+          <div style={{background:"white",borderRadius:20,padding:18,width:"100%",maxWidth:340,
+            maxHeight:"85vh",overflowY:"auto",boxShadow:"0 8px 32px rgba(0,0,0,0.25)"}}
+            onClick={e=>e.stopPropagation()}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+              <div style={{fontSize:14,fontWeight:800}}>🔗 진화 트리</div>
+              <button onClick={()=>setSelectedChain(null)}
+                style={{background:"none",border:"none",fontSize:18,cursor:"pointer",color:"var(--tx3)"}}>✕</button>
+            </div>
+            {chain.map(({mon,evo},idx)=>{
+              const lineageInfo=LINEAGES[mon.lineage];
+              return <div key={mon.id}>
+                <div style={{borderRadius:14,padding:"12px",border:`2px solid ${mon.color||"#888"}40`,
+                  background:`${mon.color||"#888"}06`,marginBottom:idx<chain.length-1?0:0}}>
+                  <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:6}}>
+                    <span style={{fontSize:32}}>{mon.emoji}</span>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:14,fontWeight:900,color:mon.color||"var(--tx1)"}}>{mon.name}</div>
+                      <div style={{display:"flex",gap:4,marginTop:3,flexWrap:"wrap"}}>
+                        <span style={{fontSize:9,fontWeight:800,padding:"2px 6px",borderRadius:6,
+                          background:`${RCOL[mon.rarity]||"#888"}18`,color:RCOL[mon.rarity]||"#888"}}>
+                          {mon.rarity}
+                        </span>
+                        {lineageInfo&&<span style={{fontSize:9,fontWeight:700,padding:"2px 6px",borderRadius:6,
+                          background:lineageInfo.color+"15",color:lineageInfo.color}}>
+                          {lineageInfo.emoji}{lineageInfo.name}
+                        </span>}
+                      </div>
+                    </div>
+                    <div style={{textAlign:"right",fontSize:10,color:"var(--tx3)"}}>
+                      <div>❤️ {mon.hp}</div>
+                      <div>⚔️ {mon.atk}</div>
+                      <div>💨 {mon.spd}</div>
+                    </div>
+                  </div>
+                  <div style={{fontSize:10,color:"var(--tx2)",lineHeight:1.5,marginBottom:4}}>{mon.desc}</div>
+                  {evo&&<div style={{fontSize:9,color:"var(--tx3)",padding:"4px 7px",
+                    background:"rgba(0,0,0,0.04)",borderRadius:6}}>
+                    📋 진화조건: {evo.condDesc}
+                  </div>}
+                </div>
+                {idx<chain.length-1&&<div style={{display:"flex",justifyContent:"center",
+                  padding:"4px 0",color:"var(--purple)",fontSize:18}}>↓</div>}
+              </div>;
+            })}
+            {chain.length===0&&<div style={{textAlign:"center",color:"var(--tx3)",padding:"20px 0"}}>진화 정보 없음</div>}
+          </div>
+        </div>;
+      })()}
+
+      {/* 등급별 루트 몬스터 목록 */}
+      {["COMMON","UNCOMMON","RARE","UNIQUE","EPIC"].map(grade=>{
+        const mons=gradeRoots[grade]||[];
+        if(mons.length===0)return null;
+        return <div key={grade} style={{marginBottom:10}}>
+          <div style={{fontSize:10,fontWeight:800,color:RCOL[grade]||"#888",marginBottom:5,
+            padding:"3px 8px",background:`${RCOL[grade]||"#888"}12`,borderRadius:6,display:"inline-block"}}>
+            {grade}
+          </div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
+            {mons.map(m=>{
+              // 최종 진화 찾기
+              let finalMon=m;
+              let cur=m.id;
+              let visited=new Set();
+              while(EVO_CHAIN[cur]&&!visited.has(cur)){
+                visited.add(cur);
+                const nextId=EVO_CHAIN[cur].to;
+                const next=MONS.find(x=>x.id===nextId);
+                if(next){finalMon=next;cur=nextId;}
+                else break;
+              }
+              const chainLen=visited.size+1;
+              return <button key={m.id} onClick={()=>setSelectedChain(m.id)}
+                style={{padding:"7px 8px",borderRadius:10,border:`1.5px solid ${m.color||"#888"}40`,
+                  background:`${m.color||"#888"}08`,cursor:"pointer",fontFamily:"inherit",
+                  textAlign:"center",minWidth:70,transition:"all 0.1s"}}
+                onMouseOver={e=>e.currentTarget.style.transform="scale(1.05)"}
+                onMouseOut={e=>e.currentTarget.style.transform="scale(1)"}>
+                <div style={{display:"flex",alignItems:"center",gap:4,justifyContent:"center"}}>
+                  <span style={{fontSize:16}}>{m.emoji}</span>
+                  <span style={{fontSize:9,color:"var(--tx3)"}}>→</span>
+                  <span style={{fontSize:16}}>{finalMon.emoji}</span>
+                </div>
+                <div style={{fontSize:9,fontWeight:700,color:"var(--tx1)",marginTop:2,
+                  whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:80}}>
+                  {m.name}
+                </div>
+                <div style={{fontSize:8,color:"var(--tx3)"}}>
+                  {chainLen}단계 진화
+                </div>
+              </button>;
+            })}
+          </div>
+        </div>;
+      })}
+    </div>
+  );
+
   return <div>
     <div style={{fontSize:11,fontWeight:800,color:"var(--tx1)",marginBottom:6}}>❓ 도움말</div>
-    <div style={{display:"flex",gap:4,marginBottom:8}}>
-      {[["basic","📖기본"],["system","⚙️시스템"],["grade","⭐등급"]].map(([k,l])=>(
+    <div style={{display:"flex",gap:3,marginBottom:8,flexWrap:"wrap"}}>
+      {[["basic","📖기본"],["system","⚙️시스템"],["grade","⭐등급"],["evotree","🔗진화트리"]].map(([k,l])=>(
         <button key={k} onClick={()=>setHelpTab(k)}
           style={{flex:1,padding:"5px 2px",borderRadius:8,border:`1.5px solid ${helpTab===k?acHex:"rgba(0,0,0,0.08)"}`,
             background:helpTab===k?`${acHex}15`:"white",cursor:"pointer",fontFamily:"inherit",
@@ -6705,7 +6955,7 @@ function SideHelp({acHex}){
         </button>
       ))}
     </div>
-    {helps[helpTab].map((h,i)=>(
+    {helpTab==="evotree"?renderEvoTree():helps[helpTab].map((h,i)=>(
       <div key={i} style={{padding:"8px 10px",borderRadius:10,border:"1px solid rgba(139,92,246,0.1)",
         marginBottom:5,background:"rgba(139,92,246,0.02)"}}>
         <div style={{fontSize:10,fontWeight:800,color:acHex,marginBottom:3}}>{h.q}</div>
