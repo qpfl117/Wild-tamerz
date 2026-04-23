@@ -317,6 +317,7 @@ const CONSUMABLES=[
   {id:"enhance_stone",name:"강화석",emoji:"🔩",desc:"몬스터 강화에 사용"},
   {id:"awaken_stone",name:"각성석",emoji:"💠",desc:"몬스터 각성 - 2번째 속성 랜덤 부여/재랜덤 (최대 2회)"},
   {id:"gender_swap",name:"성별교환권",emoji:"🔄",desc:"몬스터 성별 ♂↔♀ 교환"},
+  {id:"legend_proof",name:"진화증표",emoji:"🏆",desc:"뮤턴트 방생 시 획득 · 에픽→레전드 공식 진화에 사용"},
 ];
 const BOSS_ITEMS=[
   {id:"boss_crystal",name:"레이드 크리스탈",emoji:"🔴",desc:"합성 시 등급UP +30%"},
@@ -346,8 +347,22 @@ const SHOP_ITEMS=[
   {id:"s1",name:"슈퍼볼",emoji:"🔵",cat:"볼",cost:{ball1:10},give:{ball2:1},desc:"🟠×10 → 🔵×1"},
   {id:"s2",name:"마스터볼",emoji:"🟣",cat:"볼",cost:{ball1:50},give:{ball3:1},desc:"🟠×50 → 🟣×1",dailyLimit:2},
   {id:"s0",name:"일반 먹이",emoji:"🌾",cat:"먹이",cost:{ball1:3},give:{food1:1},desc:"🟠×3 → 🌾×1"},
-  {id:"s3",name:"고급 먹이",emoji:"🍖",cat:"먹이",cost:{ball1:8},give:{food2:1},desc:"🟠×8 → 🍖×1"},
-  {id:"s4",name:"전설 먹이",emoji:"✨",cat:"먹이",cost:{ball1:30},give:{food3:1},desc:"🟠×30 → ✨×1",dailyLimit:5},
+  {id:"s3",name:"고급 먹이",emoji:"🍖",cat:"먹이",cost:{food1:5},give:{food2:1},desc:"🌾×5 → 🍖×1"},
+  {id:"s4",name:"전설 먹이",emoji:"✨",cat:"먹이",cost:{food2:8},give:{food3:1},desc:"🍖×8 → ✨×1",dailyLimit:5},
+  {id:"s5",name:"진화석",emoji:"💠",cat:"진화석",cost:{ball1:15},give:{stone1:1},desc:"🟠×15 → 💠×1"},
+  {id:"s6",name:"희귀진화석",emoji:"🔷",cat:"진화석",cost:{ball1:60},give:{stone2:1},desc:"🟠×60 → 🔷×1",dailyLimit:3},
+  {id:"s7",name:"초월석",emoji:"🌀",cat:"진화석",cost:{ball1:150},give:{stone3:1},desc:"🟠×150 → 🌀×1",dailyLimit:1},
+  {id:"s8",name:"부활권",emoji:"💊",cat:"특수",cost:{ball1:50},give:{revive:1},desc:"🟠×50 → 💊×1",dailyLimit:2},
+  {id:"s9",name:"배틀권",emoji:"⚔️",cat:"특수",cost:{ball1:30},give:{battle_ticket:1},desc:"🟠×30 → ⚔️×1",dailyLimit:3},
+  {id:"s10",name:"스태미나포션",emoji:"⚡",cat:"특수",cost:{ball1:25},give:{stamina_pot:1},desc:"🟠×25 → ⚡×1",dailyLimit:3},
+  {id:"s17",name:"성별교환권",emoji:"🔄",cat:"특수",cost:{ball1:80},give:{gender_swap:1},desc:"🟠×80 → 🔄×1",dailyLimit:1},
+  {id:"s14",name:"강화석 ×3",emoji:"🔩",cat:"강화석",cost:{ball1:20},give:{enhance_stone:3},desc:"🟠×20 → 🔩×3"},
+  {id:"s15",name:"강화석 ×10",emoji:"🔩",cat:"강화석",cost:{ball1:60},give:{enhance_stone:10},desc:"🟠×60 → 🔩×10",dailyLimit:3},
+  {id:"s16",name:"강화석 ×5 (토큰)",emoji:"🪙",cat:"토큰",cost:{battle_token:8},give:{enhance_stone:5},desc:"🪙×8 → 🔩×5",dailyLimit:5},
+  {id:"s11",name:"배틀토큰→먹이",emoji:"🪙",cat:"토큰",cost:{battle_token:10},give:{food3:1},desc:"🪙×10 → ✨×1",dailyLimit:3},
+  {id:"s12",name:"배틀토큰→희귀진화석",emoji:"🪙",cat:"토큰",cost:{battle_token:20},give:{stone2:1},desc:"🪙×20 → 🔷×1",dailyLimit:2},
+  {id:"s13",name:"배틀토큰→초월석",emoji:"🪙",cat:"토큰",cost:{battle_token:50},give:{stone3:1},desc:"🪙×50 → 🌀×1",dailyLimit:1},
+];
   {id:"s5",name:"진화석",emoji:"💠",cat:"진화석",cost:{ball1:15},give:{stone1:1},desc:"🟠×15 → 💠×1"},
   {id:"s6",name:"희귀진화석",emoji:"🔷",cat:"진화석",cost:{ball1:60},give:{stone2:1},desc:"🟠×60 → 🔷×1",dailyLimit:3},
   {id:"s7",name:"초월석",emoji:"🌀",cat:"진화석",cost:{ball1:150},give:{stone3:1},desc:"🟠×150 → 🌀×1",dailyLimit:1},
@@ -523,6 +538,10 @@ const EVO_CHAIN={
   uniq_kraken:  {to:"epic_voidking",    altTo:null, name:"에픽보이드킹",     altName:null, stone:"stone3", conds:[{type:"lv",val:20},{type:"enhance",val:8},{type:"hunt",val:20},{type:"boss",val:3},{type:"tamerLv",val:25}], condDesc:"Lv.20 + +8강 + 사냥 20승 + 보스 3회 + 테이머 Lv.25"},
   uniq_sphinx:  {to:"epic_solaris",     altTo:null, name:"에픽솔라리스",     altName:null, stone:"stone3", conds:[{type:"lv",val:20},{type:"enhance",val:8},{type:"dungeon",val:25},{type:"boss",val:3},{type:"tamerLv",val:25}],condDesc:"Lv.20 + +8강 + 던전 25회 + 보스 3회 + 테이머 Lv.25"},
   uniq_wyvern:  {to:"epic_abyssal",     altTo:null, name:"에픽어비설",       altName:null, stone:"stone3", conds:[{type:"lv",val:20},{type:"enhance",val:8},{type:"pvp",val:12},{type:"boss",val:3},{type:"tamerLv",val:25}], condDesc:"Lv.20 + +8강 + 배틀 12승 + 보스 3회 + 테이머 Lv.25"},
+  // ── 레전드 공식 진화 루트 (진화증표 필요) ──
+  epic_godslayer:  {to:"transcend_omega", altTo:null, name:"레전드 오메가",    altName:null, stone:"legend_proof", conds:[{type:"lv",val:30},{type:"enhance",val:10},{type:"boss",val:10},{type:"tamerLv",val:35}], condDesc:"Lv.30 + +10강 + 보스 10회 + 테이머 Lv.35 + 🏆진화증표"},
+  epic_solaris:    {to:"legend_aurora",   altTo:null, name:"레전드 오로라",    altName:null, stone:"legend_proof", conds:[{type:"lv",val:30},{type:"enhance",val:10},{type:"dungeon",val:50},{type:"tamerLv",val:35}], condDesc:"Lv.30 + +10강 + 던전 50회 + 테이머 Lv.35 + 🏆진화증표"},
+  epic_dragonlord: {to:"legend_primordial",altTo:null,name:"레전드 원시신",   altName:null, stone:"legend_proof", conds:[{type:"lv",val:30},{type:"enhance",val:10},{type:"pvp",val:30},{type:"tamerLv",val:35}], condDesc:"Lv.30 + +10강 + 배틀 30승 + 테이머 Lv.35 + 🏆진화증표"},
 };
 
 // 진화 조건 충족 여부 체크 함수
@@ -700,11 +719,11 @@ const MONS=[
   // 각성체
   // MUTANT
   // ══════════════════════════════════════════
-  {id:"mutant_godslayer",name:"뮤턴트 갓슬레이어",emoji:"💠",color:"#00acc1",rarity:"MUTANT",lineage:"chaos",  hp:260,atk:120,spd:45,desc:"에픽갓슬레이어의 돌연변이. 이로치 형태."},
-  {id:"mutant_voidking", name:"뮤턴트 보이드킹",  emoji:"💠",color:"#00acc1",rarity:"MUTANT",lineage:"chaos",  hp:285,atk:105,spd:38,desc:"에픽보이드킹의 돌연변이. 이로치 형태."},
-  {id:"mutant_solaris",  name:"뮤턴트 솔라리스",  emoji:"💠",color:"#00acc1",rarity:"MUTANT",lineage:"mystic", hp:275,atk:115,spd:42,desc:"에픽솔라리스의 돌연변이. 이로치 형태."},
-  {id:"mutant_abyssal",  name:"뮤턴트 어비설",    emoji:"💠",color:"#00acc1",rarity:"MUTANT",lineage:"element",hp:280,atk:110,spd:36,desc:"에픽어비설의 돌연변이. 이로치 형태."},
-  {id:"mutant_dragonlord",name:"뮤턴트 드래곤로드",emoji:"💠",color:"#00acc1",rarity:"MUTANT",lineage:"beast", hp:295,atk:118,spd:34,desc:"에픽드래곤로드의 돌연변이. 이로치 형태."},
+  {id:"mutant_godslayer",name:"뮤턴트)갓슬레이어",emoji:"💠",color:"#00acc1",rarity:"MUTANT",lineage:"chaos",  hp:260,atk:120,spd:45,desc:"에픽갓슬레이어의 돌연변이. 이로치 형태."},
+  {id:"mutant_voidking", name:"뮤턴트)보이드킹",  emoji:"💠",color:"#00acc1",rarity:"MUTANT",lineage:"chaos",  hp:285,atk:105,spd:38,desc:"에픽보이드킹의 돌연변이. 이로치 형태."},
+  {id:"mutant_solaris",  name:"뮤턴트)솔라리스",  emoji:"💠",color:"#00acc1",rarity:"MUTANT",lineage:"mystic", hp:275,atk:115,spd:42,desc:"에픽솔라리스의 돌연변이. 이로치 형태."},
+  {id:"mutant_abyssal",  name:"뮤턴트)어비설",    emoji:"💠",color:"#00acc1",rarity:"MUTANT",lineage:"element",hp:280,atk:110,spd:36,desc:"에픽어비설의 돌연변이. 이로치 형태."},
+  {id:"mutant_dragonlord",name:"뮤턴트)드래곤로드",emoji:"💠",color:"#00acc1",rarity:"MUTANT",lineage:"beast", hp:295,atk:118,spd:34,desc:"에픽드래곤로드의 돌연변이. 이로치 형태."},
   // ══════════════════════════════════════════
   // BOSS (레이드 전용)
   // ══════════════════════════════════════════
@@ -749,7 +768,14 @@ function _checkDivineConditions(myS){
   }catch(e){return false;}
 }
 
-const WILD_IDS=["tangy","pomelo","leafy","rocky","breezy","blaze","aqua","bolt","frostie","venom","terro","shiny","draco","mutant1","mutant2"];
+// 야생 출현 풀 (피라미드: COMMON 가중치 높음, MUTANT/뮤턴트는 제외 - 합성 전용)
+// 가중치: COMMON 60 / UNCOMMON 20~50(테이머Lv 따라) / RARE 낮음
+const WILD_IDS=[
+  // COMMON (11종 - 가중치 60)
+  "tangy","pomelo","leafy","glimmer","pebby","breezy","sprouty","bubby","floppy","whelpy","chirpy",
+  // UNCOMMON (14종 - 가중치 변동)
+  "blaze","aqua","bolt","frostie","magmite","guster","venom","draco","tigrex","raptor","shiny","terro","thornia","phanty",
+];
 const BOSS_IDS=["boss_titan","boss_void","boss_storm"];
 
 
@@ -2483,8 +2509,9 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
       return;
     }
     const pool=WILD_IDS.map(id=>MONS.find(m=>m.id===id)).filter(Boolean);
-    const uncommonW=Math.min(50,20+tLv);
-    const w=pool.map(m=>m.rarity==="MUTANT"?3:m.rarity==="UNCOMMON"?uncommonW:60);
+    // 가중치: COMMON=60 / UNCOMMON=테이머Lv 따라 20~50 (낮은 레벨은 UNCOMMON 적음)
+    const uncommonW=Math.min(50,15+tLv*2);
+    const w=pool.map(m=>m.rarity==="UNCOMMON"?uncommonW:60);
     const t=w.reduce((a,b)=>a+b,0);let r=Math.random()*t;
     for(let i=0;i<pool.length;i++){r-=w[i];if(r<=0){setWild(pool[i]);break;}}
     setCr(null);
@@ -2638,13 +2665,23 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
     if(!checkEvoConds(chain,c,myS)){
       toast(`조건 미충족! ${chain.condDesc}`,"var(--orange)");return;
     }
-    if(!unlocks.stones.includes(chain.stone)){toast("테이머 레벨업 필요!","var(--red)");return;}
-    if((myS.stones[chain.stone]||0)<=0){toast(`${EVO_STONES.find(s=>s.id===chain.stone)?.name} 필요!`,"var(--red)");return;}
+    // 진화증표 진화 (에픽→레전드)
+    const isLegendProof=chain.stone==="legend_proof";
+    if(isLegendProof){
+      if((myS.consumables?.legend_proof||0)<=0){
+        toast("🏆 진화증표가 필요합니다! (뮤턴트 방생 시 획득)","var(--red)");return;
+      }
+    }else{
+      if(!unlocks.stones.includes(chain.stone)){toast("테이머 레벨업 필요!","var(--red)");return;}
+      if((myS.stones[chain.stone]||0)<=0){toast(`${EVO_STONES.find(s=>s.id===chain.stone)?.name} 필요!`,"var(--red)");return;}
+    }
     const bm=MONS.find(m=>m.id===lookupId)||{rarity:"COMMON"};
     const useShardOverride=(myS.bossItems?.ancient_shard||0)>0;
-    // 진화 결과 4단계 롤
+    // 진화 결과 4단계 롤 (진화증표 진화는 100% 성공)
     let evoResult; // "great"|"success"|"fail"|"fatal"
-    if(useShardOverride){
+    if(isLegendProof){
+      evoResult="success"; // 레전드 진화는 무조건 성공
+    }else if(useShardOverride){
       evoResult="success"; // 고대파편: 무조건 성공
     }else{
       const rates=EVO_RATES[bm.rarity]||EVO_RATES["COMMON"];
@@ -2655,8 +2692,13 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
       else evoResult="fatal";
     }
     setMy(s=>{
-      let ns={...s,stones:{...s.stones,[chain.stone]:(s.stones[chain.stone]||1)-1}};
-      if(useShardOverride)ns={...ns,bossItems:{...ns.bossItems,ancient_shard:Math.max(0,(ns.bossItems.ancient_shard||1)-1)}};
+      let ns;
+      if(isLegendProof){
+        ns={...s,consumables:{...s.consumables,legend_proof:Math.max(0,(s.consumables?.legend_proof||0)-1)}};
+      }else{
+        ns={...s,stones:{...s.stones,[chain.stone]:(s.stones[chain.stone]||1)-1}};
+      }
+      if(useShardOverride&&!isLegendProof)ns={...ns,bossItems:{...ns.bossItems,ancient_shard:Math.max(0,(ns.bossItems.ancient_shard||1)-1)}};
       if(evoResult==="fail"){
         ns=addItem(ns,"enhance_stone",3);
         return checkAch({...ns,evoFails:(ns.evoFails||0)+1});
@@ -2723,20 +2765,27 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
   const releaseMon=(idx)=>{
     const c=(myS.collection||[])[idx];
     if(!c)return;
-    if(c.locked){toast("🔒 잠금된 소환수는 방생할 수 없어요!","var(--red)");return;}
+    if(c.locked){toast("🔒 잠금된 몬스터는 방생할 수 없어요!","var(--red)");return;}
     const bm=MONS.find(m=>m.id===(c.baseId||c.id))||MONS.find(m=>m.id===c.id)||{rarity:"COMMON"};
     const rwdList=RELEASE_REWARD[bm.rarity]||[{id:"food1",amt:1}];
     const lvBonus=Math.min(2.0, 1.0 + (c.lv||1)*0.05);
+    const isMutant=bm.rarity==="MUTANT";
     setMy(s=>{
       let ns={...s,collection:(s.collection||[]).filter((_,i)=>i!==idx),totalReleases:(s.totalReleases||0)+1};
       rwdList.forEach(({id,amt})=>{ns=addItem(ns,id,Math.max(1,Math.round(amt*lvBonus)));});
+      // 뮤턴트 방생 시 진화증표 1개 지급
+      if(isMutant){ns=addItem(ns,"legend_proof",1);}
       return addTamerExp(ns,10);
     });
     const desc=rwdList.map(({id,amt})=>{
       const it=[...BALLS,...FOODS,...EVO_STONES,...CONSUMABLES].find(x=>x.id===id)||{emoji:"📦"};
       return `${it.emoji}×${Math.max(1,Math.round(amt*lvBonus))}`;
     }).join(" ");
-    toast(`🕊️ ${bm.name} 방생! ${desc}`,"var(--gold)");
+    if(isMutant){
+      toast(`🏆 ${bm.name} 방생! ${desc} 🏆진화증표×1`,"#00acc1");
+    }else{
+      toast(`🕊️ ${bm.name} 방생! ${desc}`,"var(--gold)");
+    }
     setReleaseIdx(null);
   };
 
@@ -2826,7 +2875,12 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
       return;
     }
     const pool=WILD_IDS.map(id=>MONS.find(m=>m.id===id)).filter(Boolean);
-    const eb=pool[Math.floor(Math.random()*pool.length)];
+    // 사냥터도 가중치 적용 (COMMON 60, UNCOMMON 테이머Lv 따라)
+    const uncWhunt=Math.min(50,15+tLv*2);
+    const wHunt=pool.map(m=>m.rarity==="UNCOMMON"?uncWhunt:60);
+    const totW=wHunt.reduce((a,b)=>a+b,0);let rHunt=Math.random()*totW;
+    let eb=pool[0];
+    for(let i=0;i<pool.length;i++){rHunt-=wHunt[i];if(rHunt<=0){eb=pool[i];break;}}
     const lv=Math.max(1,Math.floor(tLv*(0.5+Math.random()*0.5)));
     const m2={...eb,lv,maxHp:eb.hp+(lv-1)*5,curHp:eb.hp+(lv-1)*5,atk:eb.atk+(lv-1)*2};
     setBs({m1,m2,m1idx:myPick,turn:"m1",over:false,winner:null,mode:"hunt"});
@@ -3101,11 +3155,39 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
     const bmA=MONS.find(m=>m.id===a.id)||{rarity:"COMMON"};
     const bmB=MONS.find(m=>m.id===b.id)||{rarity:"COMMON"};
     const isMutA=bmA.rarity==="MUTANT",isMutB=bmB.rarity==="MUTANT";
-    if(!isMutA&&!isMutB&&bmA.rarity!==bmB.rarity){toast("같은 등급끼리만! (또는 MUTANT 포함)","var(--red)");return;}
+    // 뮤턴트 + 에픽 조합 체크 (레전드 랜덤 진화 루트)
+    const isMutantEpicCombo=(isMutA&&bmB.rarity==="EPIC")||(isMutB&&bmA.rarity==="EPIC");
+    if(!isMutA&&!isMutB&&bmA.rarity!==bmB.rarity){toast("같은 등급끼리만! (또는 MUTANT+EPIC)","var(--red)");return;}
     if(isMutA&&isMutB){toast("MUTANT끼리는 합성 불가!","var(--red)");return;}
+    if((isMutA||isMutB)&&!isMutantEpicCombo){
+      toast("MUTANT는 EPIC과만 합성 가능 (→랜덤 레전드)","var(--red)");return;
+    }
     if(bmA.rarity==="LEGEND"||bmB.rarity==="LEGEND"){toast("LEGEND는 합성 불가!","var(--red)");return;}
     if(bmA.rarity==="BOSS"||bmB.rarity==="BOSS"){toast("BOSS는 합성 불가!","var(--red)");return;}
-    if((a.enhance||0)<MAX_ENHANCE||(b.enhance||0)<MAX_ENHANCE){toast("두 소환수 모두 +10강 필요!","var(--red)");return;}
+    if((a.enhance||0)<MAX_ENHANCE||(b.enhance||0)<MAX_ENHANCE){toast("두 몬스터 모두 +10강 필요!","var(--red)");return;}
+
+    // 🏆 뮤턴트+에픽 합성: 무조건 랜덤 레전드 (확률표 건너뛰기)
+    if(isMutantEpicCombo){
+      const legendPool=FUSION_POOL["LEGEND"]||[];
+      if(legendPool.length===0){toast("레전드 풀 없음","var(--red)");return;}
+      const resultId=legendPool[Math.floor(Math.random()*legendPool.length)];
+      const res=MONS.find(m=>m.id===resultId);if(!res)return;
+      setFusAnim("great");
+      setTimeout(()=>setFusAnim(null),2200);
+      setMy(s=>{
+        const sortedRemove=[fa,fb].sort((a,b)=>b-a);
+        let nc=[...(s.collection||[])];
+        sortedRemove.forEach(ri=>nc.splice(ri,1));
+        const baseHp=res.hp+5;
+        nc.push({id:res.id,lv:1,exp:0,maxHp:baseHp,hp:baseHp,curHp:baseHp,alive:true,enhance:0,fusionBonus:{atk:3,hp:5},gender:Math.random()<0.5?"♂":"♀"});
+        return addTamerExp({...s,collection:nc,totalFusions:(s.totalFusions||0)+1},100);
+      });
+      setFusRes({res,grade:"LEGEND",bonus:{atk:3,hp:5}});
+      setFa(null);setFb(null);
+      toast(`🏆 ${res.name} [LEGEND] 탄생! (뮤턴트+에픽 → 랜덤 레전드)`,"var(--gold)");
+      return;
+    }
+
     const useCrystal=(myS.bossItems?.boss_crystal||0)>0;
     const resultGrade=rollFusion(bmA.rarity,bmB.rarity,useCrystal);
     setFusRes(null);setFusAnim(null);
@@ -3117,15 +3199,13 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
       setMy(s=>{
         let nc=[...(s.collection||[])];
         if(bSurvives){
-          // B 생존: A만 제거 (인덱스 큰 것부터 제거)
           const removeIdx=fa;
           nc=nc.filter((_,i)=>i!==removeIdx);
-          toast(`💥 합성 실패! A 소환수 소멸 · B 소환수는 살아남았습니다!`,"var(--orange)");
+          toast(`💥 합성 실패! A 몬스터 소멸 · B는 살아남았습니다!`,"var(--orange)");
         }else{
-          // 양쪽 모두 소멸 (인덱스 큰 것부터 제거)
           const sortedRemove=[fa,fb].sort((a,b)=>b-a);
           sortedRemove.forEach(ri=>{nc.splice(ri,1);});
-          toast(`💥 합성 실패! 두 소환수 모두 소멸...`,"var(--red)");
+          toast(`💥 합성 실패! 두 몬스터 모두 소멸...`,"var(--red)");
         }
         return addTamerExp({...s,collection:nc},5);
       });
@@ -3295,7 +3375,7 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
       // 장비 드롭: 해당 보스 전용 장비 중 랜덤 1개, 30% 확률
       let gotEquip=null;
       const equipPool=drops.equip||[];
-      if(equipPool.length>0&&Math.random()<0.30){
+      if(equipPool.length>0&&Math.random()<0.05){
         gotEquip=equipPool[Math.floor(Math.random()*equipPool.length)];
       }
       setBossFight(bf=>({...bf,boss:{...bf.boss,curHp:0},over:true,winner:"player"}));
@@ -3444,6 +3524,17 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
             background:"rgba(16,185,129,0.1)",padding:"1px 6px",borderRadius:6}}>🟢 상대접속</span>}
         </div>
         <div style={{display:"flex",gap:5,alignItems:"center"}}>
+          {/* 자원 표시: 스태미나 / 배틀권 / 강화석 */}
+          <span style={{fontSize:11,fontWeight:700,color:"var(--cyan)",
+            background:"rgba(6,182,212,0.1)",padding:"2px 7px",borderRadius:7,
+            border:"1px solid rgba(6,182,212,0.2)"}}>⚡{myS.stamina||0}</span>
+          <span style={{fontSize:11,fontWeight:700,color:battleLeft>0?"var(--green)":"var(--red)",
+            background:battleLeft>0?"rgba(16,185,129,0.1)":"rgba(239,68,68,0.1)",
+            padding:"2px 7px",borderRadius:7,
+            border:`1px solid ${battleLeft>0?"rgba(16,185,129,0.2)":"rgba(239,68,68,0.2)"}`}}>⚔{battleLeft}</span>
+          <span style={{fontSize:11,fontWeight:700,color:"var(--purple)",
+            background:"rgba(139,92,246,0.1)",padding:"2px 7px",borderRadius:7,
+            border:"1px solid rgba(139,92,246,0.2)"}}>🔩{myS.consumables?.enhance_stone||0}</span>
           <button onClick={()=>setMenuOpen(true)} className="menu-btn-hide" style={{background:"rgba(139,92,246,0.1)",border:"none",
             borderRadius:8,color:"var(--purple)",fontSize:16,padding:"2px 8px",cursor:"pointer",fontFamily:"inherit"}}>☰</button>
         </div>
@@ -4302,7 +4393,15 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
           </div>
           <div style={{fontSize:16,color:"var(--tx3)"}}>→ ?</div>
         </div>}
-        <Btn onClick={fuse} disabled={fa===null||fb===null} color="var(--purple)">✨ 합성 시작!</Btn>
+        <button onClick={fuse} disabled={fa===null||fb===null}
+          style={{width:"100%",padding:"14px 0",borderRadius:12,border:"none",fontFamily:"inherit",
+            background:(fa!==null&&fb!==null)?"linear-gradient(135deg,#8b5cf6,#6d28d9)":"rgba(0,0,0,0.08)",
+            color:(fa!==null&&fb!==null)?"white":"rgba(0,0,0,0.3)",
+            fontSize:16,fontWeight:900,letterSpacing:1,
+            cursor:(fa!==null&&fb!==null)?"pointer":"default",
+            boxShadow:(fa!==null&&fb!==null)?"0 4px 16px rgba(139,92,246,0.4)":"none",marginTop:8}}>
+          {(fa!==null&&fb!==null)?"✨ 합성 시작!":"두 마리 선택 필요"}
+        </button>
       </>}
       {fusRes&&!fusAnim&&<div style={{border:`2px solid ${RCOL[fusRes.grade]||"#888"}60`,borderRadius:14,
         padding:"16px",marginTop:12,background:`${RCOL[fusRes.grade]||"#888"}08`,textAlign:"center",
@@ -4988,8 +5087,8 @@ const RAID_BOSSES=[
       {id:"boss_crystal", name:"레이드 크리스탈",emoji:"💎",amt:1, rate:0.20, desc:"합성 등급UP +30%"},
       {id:"awaken_stone", name:"각성석",       emoji:"💠", amt:1, rate:0.15, desc:"소환수 각성 전용"},
       {id:"enhance_stone",name:"강화석",       emoji:"🔩", amt:10,rate:0.65, desc:"보너스 강화석"},
-      {id:"eq_helm",   name:"탐험가의 투구",   emoji:"🪖", amt:1, rate:0.20, desc:"세트 장비 - 투구"},
-      {id:"eq_glove",  name:"탐험가의 건틀릿", emoji:"🧤", amt:1, rate:0.20, desc:"세트 장비 - 건틀릿"},
+      {id:"eq_helm",   name:"탐험가의 투구",   emoji:"🪖", amt:1, rate:0.04, desc:"세트 장비 - 투구"},
+      {id:"eq_glove",  name:"탐험가의 건틀릿", emoji:"🧤", amt:1, rate:0.04, desc:"세트 장비 - 건틀릿"},
     ],
     setBonus:{atk:14, def:12, name:"이그나스 세트", desc:"ATK+14% DEF+12% · 화염/빙하 저항"},
   },
@@ -5014,8 +5113,8 @@ const RAID_BOSSES=[
       {id:"ancient_shard", name:"고대의 파편",   emoji:"💎", amt:1, rate:0.18, desc:"진화 100% 보장 (1회용)"},
       {id:"awaken_stone",  name:"각성석",        emoji:"💠", amt:1, rate:0.15, desc:"소환수 각성 전용"},
       {id:"enhance_stone", name:"강화석",        emoji:"🔩", amt:8, rate:0.60, desc:"보너스 강화석"},
-      {id:"eq_armor",  name:"탐험가의 갑옷",   emoji:"🥋", amt:1, rate:0.20, desc:"세트 장비 - 갑옷"},
-      {id:"eq_weapon", name:"탐험가의 무기",   emoji:"🗡️", amt:1, rate:0.20, desc:"세트 장비 - 무기"},
+      {id:"eq_armor",  name:"탐험가의 갑옷",   emoji:"🥋", amt:1, rate:0.04, desc:"세트 장비 - 갑옷"},
+      {id:"eq_weapon", name:"탐험가의 무기",   emoji:"🗡️", amt:1, rate:0.04, desc:"세트 장비 - 무기"},
     ],
     setBonus:{atk:7, def:21, name:"보이드 세트", desc:"ATK+7% DEF+21% · 어둠/빛 저항"},
   },
@@ -5040,8 +5139,8 @@ const RAID_BOSSES=[
       {id:"boss_eye",      name:"보스의 눈",    emoji:"👁️", amt:1, rate:0.18, desc:"미포획 몬스터 포획률 2배"},
       {id:"awaken_stone",  name:"각성석",       emoji:"💠", amt:1, rate:0.15, desc:"소환수 각성 전용"},
       {id:"enhance_stone", name:"강화석",       emoji:"🔩", amt:12,rate:0.65, desc:"보너스 강화석"},
-      {id:"eq_boots",  name:"탐험가의 장화",   emoji:"👟", amt:1, rate:0.20, desc:"세트 장비 - 장화"},
-      {id:"eq_weapon", name:"탐험가의 무기",   emoji:"🗡️", amt:1, rate:0.20, desc:"세트 장비 - 무기"},
+      {id:"eq_boots",  name:"탐험가의 장화",   emoji:"👟", amt:1, rate:0.04, desc:"세트 장비 - 장화"},
+      {id:"eq_weapon", name:"탐험가의 무기",   emoji:"🗡️", amt:1, rate:0.04, desc:"세트 장비 - 무기"},
     ],
     setBonus:{atk:18, def:7, name:"스톰킹 세트", desc:"ATK+18% DEF+7% · 번개/대지 저항"},
   },
@@ -5346,7 +5445,7 @@ function SideRaid({myS,col,setMy,toast,aliveCols,acHex}){
           };
           Object.entries(boss.rewards).forEach(([id,amt])=>{ns=addItem(ns,id,amt);});
           (boss.randomDrops||[]).forEach(drop=>{
-            if(Math.random()<drop.rate*0.5){
+            if(Math.random()<drop.rate){
               const isEquip=BOSS_EQUIPS.find(e=>e.id===drop.id);
               if(isEquip) ns={...ns,equips:{...(ns.equips||{}),[drop.id]:true}};
               else ns=addItem(ns,drop.id,drop.amt);
@@ -5895,35 +5994,41 @@ function SideBreed({myS,col,setMy,toast,aliveCols,acHex}){
     if(!egg||egg.hatch<egg.need)return;
     const bmA=MONS.find(m=>m.id===egg.fatherMon)||{rarity:"UNCOMMON",hp:40,atk:15,name:"아빠"};
     const bmB=MONS.find(m=>m.id===egg.motherMon)||{rarity:"UNCOMMON",hp:40,atk:15,name:"엄마"};
-    // 낮은 등급 쪽을 베이스로 (부모 중 낮은 등급 기준)
+    // 알 등급 = 부모 평균 등급 (올림/내림 50:50 랜덤)
     const gA=GRADE_ORDER.indexOf(bmA.rarity);
     const gB=GRADE_ORDER.indexOf(bmB.rarity);
-    const baseMon = gA<=gB?bmA:bmB;
-    // 스탯 우성유전: 좋은 쪽 70%, 나쁜 쪽 30% (스탯 뽑기 보너스)
+    const avgRaw=(gA+gB)/2;
+    // 올림/내림 랜덤, 단 평균이 정수면 그대로
+    const avgGradeIdx=Number.isInteger(avgRaw)?avgRaw:(Math.random()<0.5?Math.floor(avgRaw):Math.ceil(avgRaw));
+    const targetGrade=GRADE_ORDER[avgGradeIdx]||"COMMON";
+    // 평균 등급에 해당하는 몬스터 중 랜덤 선택
+    const candidates=MONS.filter(m=>m.rarity===targetGrade&&m.id!=="_god_orange"&&!m.id.startsWith("mutant_")&&!m.id.startsWith("boss_"));
+    const baseMon=candidates.length>0
+      ? candidates[Math.floor(Math.random()*candidates.length)]
+      : (gA<=gB?bmA:bmB);
+    // 스탯 우성유전: 좋은 쪽 70%, 나쁜 쪽 30%
     const domHp=Math.max(bmA.hp,bmB.hp),recHp=Math.min(bmA.hp,bmB.hp);
     const domAtk=Math.max(bmA.atk,bmB.atk),recAtk=Math.min(bmA.atk,bmB.atk);
-    const bonusHp=Math.floor((domHp*0.7+recHp*0.3)-baseMon.hp);
-    const bonusAtk=Math.floor((domAtk*0.7+recAtk*0.3)-baseMon.atk);
-    const hpBonus=Math.max(0,bonusHp);
-    const atkBonus=Math.max(0,bonusAtk);
+    const bonusHp=Math.max(0,Math.floor((domHp*0.7+recHp*0.3)-baseMon.hp));
+    const bonusAtk=Math.max(0,Math.floor((domAtk*0.7+recAtk*0.3)-baseMon.atk));
     const baseType=MON_BASE_TYPE[baseMon.id]||null;
     const tBonus=baseType?TYPES[baseType]?.bonus||{}:{};
     const gender=Math.random()<0.5?"♂":"♀";
-    const maxHp=Math.floor((baseMon.hp+hpBonus)*(1+(tBonus.hp||0)));
+    const maxHp=Math.floor((baseMon.hp+bonusHp)*(1+(tBonus.hp||0)));
     const newMon={
       id:baseMon.id,lv:1,exp:0,
       maxHp,hp:maxHp,curHp:maxHp,
       alive:true,enhance:0,
       monType:baseType,atkBonus:(tBonus.atk||0),
       gender,
-      breedBonus:{atk:atkBonus,hp:hpBonus}, // 교배 보너스 표시용
+      breedBonus:{atk:bonusAtk,hp:bonusHp}, // 교배 보너스 (스탯뽑기)
       fromBreed:true,
     };
     setMy(s=>{
       const nc=[...(s.collection||[]),newMon];
       return addTamerExp({...s,collection:nc,breedEgg:null},60);
     });
-    toast(`🥚 ${gender} ${baseMon.name} 탄생! (교배 보너스 ATK+${atkBonus} HP+${hpBonus})`,"var(--purple)");
+    toast(`🥚 ${gender} ${baseMon.name} [${targetGrade}] 탄생! (ATK+${bonusAtk} HP+${bonusHp} 보너스)`,"var(--purple)");
     setEgg(null);setParentMale(null);setParentFemale(null);setBreedTab("select");
   };
 
