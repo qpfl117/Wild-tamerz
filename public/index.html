@@ -5385,8 +5385,8 @@ function MineTab({myS,col,aliveCols,dispatchMine,recallMine,acHex,unlocks}){
     const mine=MINE_CONFIGS.find(m=>m.id===selectedMine);
     if(!mine)return;
     setSelectedMonIdxs(prev=>{
-      if(prev.includes(idx))return prev.filter(i=>i!==idx);
-      if(prev.length>=mine.slots){toast&&toast(`최대 ${mine.slots}마리!`,"var(--red)");return prev;}
+      if(prev.includes(idx))return prev.filter(i=>i!==idx); // 선택 해제
+      if(prev.length>=mine.slots)return prev; // 슬롯 초과 시 무시
       return [...prev,idx];
     });
   };
@@ -5447,7 +5447,11 @@ function MineTab({myS,col,aliveCols,dispatchMine,recallMine,acHex,unlocks}){
         border:`1.5px solid ${isSelected?acHex:locked?"rgba(0,0,0,0.05)":"rgba(0,0,0,0.1)"}`,
         background:isSelected?`${acHex}08`:"white",opacity:locked?0.4:1}}>
         <div style={{padding:"9px 11px",cursor:locked||busy?"default":"pointer"}}
-          onClick={()=>!locked&&!busy&&setSelectedMine(isSelected?null:mine.id)}>
+      onClick={()=>{
+        if(locked||busy)return;
+        if(isSelected){setSelectedMine(null);setSelectedMonIdxs([]);}
+        else{setSelectedMine(mine.id);setSelectedMonIdxs([]);}
+      }}>
           <div style={{display:"flex",alignItems:"center",gap:8}}>
             <span style={{fontSize:20}}>{locked?"🔒":mine.emoji}</span>
             <div style={{flex:1}}>
@@ -5477,12 +5481,15 @@ function MineTab({myS,col,aliveCols,dispatchMine,recallMine,acHex,unlocks}){
               const bm=MONS.find(m=>m.id===(c.baseId||c.id))||{emoji:"❓",rarity:"COMMON"};
               const isMining=c.mining;
               const isChosen=selectedMonIdxs.includes(origIdx);
-              return <button key={i} onClick={()=>!isMining&&toggleMon(origIdx)}
-                disabled={!!isMining}
+              const isFull=selectedMonIdxs.length>=mine.slots&&!isChosen;
+              const isDisabled=!!isMining||isFull;
+              return <button key={i} onClick={()=>!isDisabled&&toggleMon(origIdx)}
+                disabled={isDisabled}
                 style={{padding:"5px 3px",borderRadius:8,textAlign:"center",fontFamily:"inherit",
                   border:`1.5px solid ${isChosen?acHex:"rgba(0,0,0,0.08)"}`,
-                  background:isChosen?`${acHex}15`:isMining?"rgba(0,0,0,0.03)":"white",
-                  cursor:isMining?"default":"pointer",opacity:isMining?0.4:1}}>
+                  background:isChosen?`${acHex}15`:(isMining||isFull)?"rgba(0,0,0,0.03)":"white",
+                  cursor:isDisabled?"default":"pointer",
+                  opacity:isMining?0.3:isFull?0.4:1}}>
                 <div style={{fontSize:14}}>{bm.emoji}</div>
                 <div style={{fontSize:6,color:"var(--tx3)"}}>Lv{c.lv}</div>
                 <div style={{fontSize:6,color:RCOL[bm.rarity]||"#888"}}>{bm.rarity?.slice(0,3)}</div>
@@ -5496,7 +5503,7 @@ function MineTab({myS,col,aliveCols,dispatchMine,recallMine,acHex,unlocks}){
               background:selectedMonIdxs.length>0?"linear-gradient(135deg,#8b5cf6,#6d28d9)":"rgba(0,0,0,0.06)",
               color:selectedMonIdxs.length>0?"white":"rgba(0,0,0,0.2)",
               fontSize:11,fontWeight:800,cursor:selectedMonIdxs.length>0?"pointer":"default",fontFamily:"inherit"}}>
-            ⛏️ {mine.name} 파견!
+            ⛏️ {mine.name} 파견! ({selectedMonIdxs.length}/{mine.slots}마리)
           </button>
         </div>}
       </div>;
@@ -6116,18 +6123,21 @@ function SideBreed({myS,col,setMy,toast,aliveCols,acHex}){
     if(!egg||egg.hatch<egg.need)return;
     const bmA=MONS.find(m=>m.id===egg.fatherMon)||{rarity:"UNCOMMON",hp:40,atk:15,name:"아빠"};
     const bmB=MONS.find(m=>m.id===egg.motherMon)||{rarity:"UNCOMMON",hp:40,atk:15,name:"엄마"};
-    // 알 등급 = 부모 평균 등급 (올림/내림 50:50 랜덤)
     const gA=GRADE_ORDER.indexOf(bmA.rarity);
     const gB=GRADE_ORDER.indexOf(bmB.rarity);
-    const avgRaw=(gA+gB)/2;
-    // 올림/내림 랜덤, 단 평균이 정수면 그대로
-    const avgGradeIdx=Number.isInteger(avgRaw)?avgRaw:(Math.random()<0.5?Math.floor(avgRaw):Math.ceil(avgRaw));
-    const targetGrade=GRADE_ORDER[avgGradeIdx]||"COMMON";
-    // 평균 등급에 해당하는 몬스터 중 랜덤 선택
+    // 알 등급 = 부모 중 높은 등급에서 1단계(70%) 또는 2단계(30%) 아래
+    // 단, 내려갈 등급이 없으면 같은 등급 or 1단계 아래
+    const highGradeIdx=Math.max(gA,gB);
+    const drop=Math.random()<0.70?1:2; // 70%=1단계 아래, 30%=2단계 아래
+    let targetIdx=highGradeIdx-drop;
+    if(targetIdx<0)targetIdx=Math.max(0,highGradeIdx-1); // 최소 1단계라도 내리기
+    if(targetIdx<0)targetIdx=0; // COMMON이 최저
+    const targetGrade=GRADE_ORDER[targetIdx]||"COMMON";
+    // 해당 등급 몬스터 중 랜덤 선택
     const candidates=MONS.filter(m=>m.rarity===targetGrade&&m.id!=="_god_orange"&&!m.id.startsWith("mutant_")&&!m.id.startsWith("boss_"));
     const baseMon=candidates.length>0
       ? candidates[Math.floor(Math.random()*candidates.length)]
-      : (gA<=gB?bmA:bmB);
+      : MONS.find(m=>m.rarity==="COMMON");
     // 스탯 우성유전: 좋은 쪽 70%, 나쁜 쪽 30%
     const domHp=Math.max(bmA.hp,bmB.hp),recHp=Math.min(bmA.hp,bmB.hp);
     const domAtk=Math.max(bmA.atk,bmB.atk),recAtk=Math.min(bmA.atk,bmB.atk);
@@ -6150,7 +6160,7 @@ function SideBreed({myS,col,setMy,toast,aliveCols,acHex}){
       const nc=[...(s.collection||[]),newMon];
       return addTamerExp({...s,collection:nc,breedEgg:null},60);
     });
-    toast(`🥚 ${gender} ${baseMon.name} [${targetGrade}] 탄생! (ATK+${bonusAtk} HP+${bonusHp} 보너스)`,"var(--purple)");
+    toast(`🥚 ${gender} ${baseMon.name} [${targetGrade}] 탄생! (부모최고:${GRADE_ORDER[highGradeIdx]}에서 ${drop}단계↓)`,"var(--purple)");
     setEgg(null);setParentMale(null);setParentFemale(null);setBreedTab("select");
   };
 
@@ -6888,54 +6898,57 @@ function SideHelp({acHex}){
         🌿 몬스터를 눌러 진화 경로를 확인하세요!
       </div>
 
-      {/* 모달 */}
+      {/* 모달 - 전체 진화트리 */}
       {selectedChain&&(()=>{
         const chain=buildEvoTree(selectedChain);
-        return <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",zIndex:600,
+        return <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.65)",zIndex:600,
           display:"flex",alignItems:"center",justifyContent:"center",padding:12}}
           onClick={()=>setSelectedChain(null)}>
           <div style={{background:"white",borderRadius:20,padding:18,width:"100%",maxWidth:340,
-            maxHeight:"85vh",overflowY:"auto",boxShadow:"0 8px 32px rgba(0,0,0,0.25)"}}
+            maxHeight:"88vh",overflowY:"auto",boxShadow:"0 8px 40px rgba(0,0,0,0.25)"}}
             onClick={e=>e.stopPropagation()}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-              <div style={{fontSize:14,fontWeight:800}}>🔗 진화 트리</div>
+              <div style={{fontSize:14,fontWeight:800}}>🔗 전체 진화 트리</div>
               <button onClick={()=>setSelectedChain(null)}
                 style={{background:"none",border:"none",fontSize:18,cursor:"pointer",color:"var(--tx3)"}}>✕</button>
             </div>
             {chain.map(({mon,evo},idx)=>{
+              if(!mon)return null;
               const lineageInfo=LINEAGES[mon.lineage];
               return <div key={mon.id}>
-                <div style={{borderRadius:14,padding:"12px",border:`2px solid ${mon.color||"#888"}40`,
-                  background:`${mon.color||"#888"}06`,marginBottom:idx<chain.length-1?0:0}}>
-                  <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:6}}>
-                    <span style={{fontSize:32}}>{mon.emoji}</span>
+                <div style={{borderRadius:12,padding:"11px 12px",
+                  border:`2px solid ${mon.color||"#888"}40`,
+                  background:`${mon.color||"#888"}06`}}>
+                  <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:5}}>
+                    <span style={{fontSize:30}}>{mon.emoji}</span>
                     <div style={{flex:1}}>
-                      <div style={{fontSize:14,fontWeight:900,color:mon.color||"var(--tx1)"}}>{mon.name}</div>
-                      <div style={{display:"flex",gap:4,marginTop:3,flexWrap:"wrap"}}>
-                        <span style={{fontSize:9,fontWeight:800,padding:"2px 6px",borderRadius:6,
+                      <div style={{fontSize:13,fontWeight:900,color:mon.color||"var(--tx1)"}}>{mon.name}</div>
+                      <div style={{display:"flex",gap:3,marginTop:2,flexWrap:"wrap"}}>
+                        <span style={{fontSize:8,fontWeight:800,padding:"1px 5px",borderRadius:5,
                           background:`${RCOL[mon.rarity]||"#888"}18`,color:RCOL[mon.rarity]||"#888"}}>
                           {mon.rarity}
                         </span>
-                        {lineageInfo&&<span style={{fontSize:9,fontWeight:700,padding:"2px 6px",borderRadius:6,
+                        {lineageInfo&&<span style={{fontSize:8,fontWeight:700,padding:"1px 5px",borderRadius:5,
                           background:lineageInfo.color+"15",color:lineageInfo.color}}>
                           {lineageInfo.emoji}{lineageInfo.name}
                         </span>}
                       </div>
                     </div>
-                    <div style={{textAlign:"right",fontSize:10,color:"var(--tx3)"}}>
-                      <div>❤️ {mon.hp}</div>
-                      <div>⚔️ {mon.atk}</div>
-                      <div>💨 {mon.spd}</div>
+                    <div style={{textAlign:"right",fontSize:9,color:"var(--tx3)"}}>
+                      <div>❤️{mon.hp} ⚔️{mon.atk}</div>
+                      <div>💨{mon.spd}</div>
                     </div>
                   </div>
-                  <div style={{fontSize:10,color:"var(--tx2)",lineHeight:1.5,marginBottom:4}}>{mon.desc}</div>
-                  {evo&&<div style={{fontSize:9,color:"var(--tx3)",padding:"4px 7px",
-                    background:"rgba(0,0,0,0.04)",borderRadius:6}}>
-                    📋 진화조건: {evo.condDesc}
+                  <div style={{fontSize:10,color:"var(--tx2)",lineHeight:1.5,marginBottom:evo?4:0}}>{mon.desc}</div>
+                  {evo&&<div style={{fontSize:8,color:"var(--tx3)",padding:"4px 6px",
+                    background:"rgba(0,0,0,0.04)",borderRadius:5}}>
+                    📋 {evo.condDesc}
+                    {evo.altTo&&<div style={{color:"var(--gold)",marginTop:1}}>
+                      ⭐ 비밀진화: {MONS.find(x=>x.id===evo.altTo)?.name||evo.altTo}
+                    </div>}
                   </div>}
                 </div>
-                {idx<chain.length-1&&<div style={{display:"flex",justifyContent:"center",
-                  padding:"4px 0",color:"var(--purple)",fontSize:18}}>↓</div>}
+                {idx<chain.length-1&&<div style={{textAlign:"center",padding:"3px 0",color:"var(--purple)",fontSize:16}}>↓</div>}
               </div>;
             })}
             {chain.length===0&&<div style={{textAlign:"center",color:"var(--tx3)",padding:"20px 0"}}>진화 정보 없음</div>}
@@ -7047,78 +7060,153 @@ function SideDex({myS,col,acHex,setMy}){
     const m=selectedMon;
     const owned=col.find(c=>c.id===m.id||(c.baseId&&c.baseId===m.id));
     const seen=(myS.dexSeen||[]).includes(m.id)||owned;
-    // 진화 체인 찾기
-    const chainEntry=EVO_CHAIN[m.id];
-    const prevEntry=Object.entries(EVO_CHAIN).find(([k,v])=>v.to===m.id||v.altTo===m.id);
     const lineageInfo=LINEAGES[m.lineage];
-    return <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",zIndex:500,
-      display:"flex",alignItems:"center",justifyContent:"center",padding:16}}
+
+    // 전체 진화트리 구성 - 루트부터 끝까지
+    const buildFullTree=(anyId)=>{
+      // 루트 찾기 (이 몬스터를 포함하는 체인의 시작점)
+      let rootId=anyId;
+      const visited=new Set();
+      while(true){
+        const parent=Object.entries(EVO_CHAIN).find(([k,v])=>v.to===rootId||v.altTo===rootId);
+        if(!parent||visited.has(parent[0]))break;
+        visited.add(parent[0]);
+        rootId=parent[0];
+      }
+      // 루트부터 순서대로 체인 구성
+      const chain=[];
+      let cur=rootId;
+      const seen2=new Set();
+      while(cur&&!seen2.has(cur)){
+        seen2.add(cur);
+        const mon=MONS.find(x=>x.id===cur);
+        const evo=EVO_CHAIN[cur];
+        chain.push({mon,evo,id:cur});
+        cur=evo?.to;
+      }
+      return chain;
+    };
+
+    const fullTree=buildFullTree(m.id);
+
+    return <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.65)",zIndex:500,
+      display:"flex",alignItems:"center",justifyContent:"center",padding:12}}
       onClick={()=>setSelectedMon(null)}>
-      <div style={{background:"white",borderRadius:20,padding:20,width:"100%",maxWidth:320,
-        boxShadow:"0 8px 32px rgba(0,0,0,0.2)"}} onClick={e=>e.stopPropagation()}>
-        <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:12}}>
-          <span style={{fontSize:44,filter:seen?`drop-shadow(0 0 8px ${m.color}88)`:"grayscale(1)"}}>
+      <div style={{background:"white",borderRadius:20,padding:18,width:"100%",maxWidth:340,
+        maxHeight:"88vh",overflowY:"auto",boxShadow:"0 8px 40px rgba(0,0,0,0.25)"}}
+        onClick={e=>e.stopPropagation()}>
+
+        {/* 헤더 */}
+        <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
+          <span style={{fontSize:40,filter:seen?`drop-shadow(0 0 8px ${m.color}88)`:"grayscale(1)"}}>
             {seen?m.emoji:"❓"}
           </span>
           <div style={{flex:1}}>
-            <div style={{fontSize:16,fontWeight:900,color:seen?m.color:"var(--tx3)"}}>
+            <div style={{fontSize:15,fontWeight:900,color:seen?m.color:"var(--tx3)"}}>
               {seen?m.name:"미발견"}
             </div>
-            <div style={{display:"flex",gap:4,marginTop:4,flexWrap:"wrap"}}>
-              <span style={{fontSize:10,fontWeight:800,padding:"2px 7px",borderRadius:8,
-                background:`${RCOL[m.rarity]||"#888"}18`,color:RCOL[m.rarity]||"#888",
-                border:`1px solid ${RCOL[m.rarity]||"#888"}30`}}>{m.rarity}</span>
-              {lineageInfo&&<span style={{fontSize:10,fontWeight:700,padding:"2px 7px",borderRadius:8,
-                background:lineageInfo.color+"15",color:lineageInfo.color,
-                border:`1px solid ${lineageInfo.color}30`}}>
+            <div style={{display:"flex",gap:3,marginTop:3,flexWrap:"wrap"}}>
+              <span style={{fontSize:9,fontWeight:800,padding:"2px 6px",borderRadius:6,
+                background:`${RCOL[m.rarity]||"#888"}18`,color:RCOL[m.rarity]||"#888"}}>
+                {m.rarity}
+              </span>
+              {lineageInfo&&<span style={{fontSize:9,fontWeight:700,padding:"2px 6px",borderRadius:6,
+                background:lineageInfo.color+"15",color:lineageInfo.color}}>
                 {lineageInfo.emoji}{lineageInfo.name}
               </span>}
             </div>
           </div>
-          <button onClick={()=>setSelectedMon(null)} style={{fontSize:18,background:"none",border:"none",cursor:"pointer",color:"var(--tx3)"}}>✕</button>
+          <button onClick={()=>setSelectedMon(null)}
+            style={{fontSize:18,background:"none",border:"none",cursor:"pointer",color:"var(--tx3)",padding:"4px"}}>✕</button>
         </div>
+
         {seen&&<>
           {/* 스탯 */}
-          <div style={{display:"flex",gap:6,marginBottom:10}}>
+          <div style={{display:"flex",gap:5,marginBottom:10}}>
             {[["❤️","HP",m.hp],["⚔️","ATK",m.atk],["💨","SPD",m.spd]].map(([e,l,v])=>(
-              <div key={l} style={{flex:1,textAlign:"center",padding:"6px 4px",borderRadius:10,
+              <div key={l} style={{flex:1,textAlign:"center",padding:"6px 4px",borderRadius:9,
                 background:"rgba(0,0,0,0.04)",border:"1px solid rgba(0,0,0,0.06)"}}>
-                <div style={{fontSize:14}}>{e}</div>
-                <div style={{fontSize:13,fontWeight:800,color:"var(--tx1)"}}>{v}</div>
-                <div style={{fontSize:9,color:"var(--tx3)"}}>{l}</div>
+                <div style={{fontSize:13}}>{e}</div>
+                <div style={{fontSize:14,fontWeight:900,color:"var(--tx1)"}}>{v}</div>
+                <div style={{fontSize:8,color:"var(--tx3)"}}>{l}</div>
               </div>
             ))}
           </div>
           {/* 설명 */}
-          <div style={{fontSize:11,color:"var(--tx2)",marginBottom:10,padding:"8px 10px",
+          <div style={{fontSize:11,color:"var(--tx2)",marginBottom:12,padding:"7px 10px",
             background:"rgba(0,0,0,0.03)",borderRadius:8,lineHeight:1.5}}>
             {m.desc}
           </div>
-          {/* 진화 정보 */}
-          {(prevEntry||chainEntry)&&<div style={{marginBottom:8}}>
-            <div style={{fontSize:10,fontWeight:700,color:"var(--tx2)",marginBottom:5}}>🔗 진화 경로</div>
-            <div style={{display:"flex",alignItems:"center",gap:6,fontSize:11}}>
-              {prevEntry&&<span style={{padding:"3px 8px",background:"rgba(0,0,0,0.05)",borderRadius:8}}>
-                {MONS.find(x=>x.id===prevEntry[0])?.emoji||"?"} {MONS.find(x=>x.id===prevEntry[0])?.name||prevEntry[0]}
-              </span>}
-              {prevEntry&&<span>→</span>}
-              <span style={{padding:"3px 8px",background:`${m.color}15`,borderRadius:8,fontWeight:700,color:m.color}}>
-                {m.emoji} {m.name}
-              </span>
-              {chainEntry&&<span>→</span>}
-              {chainEntry&&<span style={{padding:"3px 8px",background:"rgba(0,0,0,0.05)",borderRadius:8}}>
-                {MONS.find(x=>x.id===chainEntry.to)?.emoji||"?"} {chainEntry.name}
-              </span>}
-            </div>
-            {chainEntry?.condDesc&&<div style={{fontSize:9,color:"var(--tx3)",marginTop:4}}>
-              진화조건: {chainEntry.condDesc}
-            </div>}
+
+          {/* 전체 진화트리 */}
+          {fullTree.length>0&&<div style={{marginBottom:10}}>
+            <div style={{fontSize:10,fontWeight:800,color:"var(--tx2)",marginBottom:8}}>🔗 전체 진화 트리</div>
+            {fullTree.map(({mon,evo,id},idx)=>{
+              if(!mon)return null;
+              const isCurrent=id===m.id;
+              const monOwned=col.find(c=>c.id===mon.id||(c.baseId&&c.baseId===mon.id));
+              const monSeen=(myS.dexSeen||[]).includes(mon.id)||monOwned;
+              const lInfo=LINEAGES[mon.lineage];
+              return <div key={id}>
+                <div style={{
+                  borderRadius:12,padding:"10px 12px",
+                  border:`2px solid ${isCurrent?(mon.color||"#888"):"rgba(0,0,0,0.08)"}`,
+                  background:isCurrent?`${mon.color||"#888"}12`:"rgba(0,0,0,0.02)",
+                  boxShadow:isCurrent?`0 2px 12px ${mon.color||"#888"}30`:"none",
+                  opacity:monSeen?1:0.4,
+                }}>
+                  <div style={{display:"flex",alignItems:"center",gap:8}}>
+                    <span style={{fontSize:28}}>{monSeen?mon.emoji:"❓"}</span>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:isCurrent?14:12,fontWeight:isCurrent?900:600,
+                        color:isCurrent?(mon.color||"var(--tx1)"):"var(--tx1)"}}>
+                        {monSeen?mon.name:"???"}
+                        {isCurrent&&<span style={{fontSize:9,marginLeft:6,background:(mon.color||"#888")+"20",
+                          color:mon.color||"#888",padding:"1px 5px",borderRadius:5,fontWeight:700}}>현재</span>}
+                      </div>
+                      <div style={{display:"flex",gap:3,marginTop:2,flexWrap:"wrap"}}>
+                        <span style={{fontSize:8,padding:"1px 5px",borderRadius:5,
+                          background:`${RCOL[mon.rarity]||"#888"}15`,color:RCOL[mon.rarity]||"#888",fontWeight:700}}>
+                          {mon.rarity}
+                        </span>
+                        {lInfo&&<span style={{fontSize:8,padding:"1px 5px",borderRadius:5,
+                          background:lInfo.color+"12",color:lInfo.color,fontWeight:600}}>
+                          {lInfo.emoji}{lInfo.name}
+                        </span>}
+                        {monOwned&&<span style={{fontSize:8,padding:"1px 5px",borderRadius:5,
+                          background:"rgba(16,185,129,0.12)",color:"var(--green)",fontWeight:700}}>
+                          ✅ Lv.{monOwned.lv}
+                        </span>}
+                      </div>
+                      {monSeen&&<div style={{fontSize:9,color:"var(--tx3)",marginTop:2}}>
+                        ❤️{mon.hp} ⚔️{mon.atk} 💨{mon.spd}
+                      </div>}
+                    </div>
+                  </div>
+                  {/* 진화 조건 */}
+                  {evo&&<div style={{fontSize:8,color:"var(--tx3)",marginTop:6,padding:"4px 6px",
+                    background:"rgba(0,0,0,0.04)",borderRadius:6}}>
+                    📋 {evo.condDesc}
+                    {evo.altTo&&<div style={{marginTop:2,color:"var(--gold)"}}>
+                      ⭐ 비밀진화: {MONS.find(x=>x.id===evo.altTo)?.name||evo.altTo}
+                    </div>}
+                  </div>}
+                </div>
+                {/* 화살표 */}
+                {idx<fullTree.length-1&&<div style={{textAlign:"center",padding:"4px 0",
+                  fontSize:16,color:"var(--tx3)"}}>↓</div>}
+              </div>;
+            })}
           </div>}
+
           {/* 보유 여부 */}
-          <div style={{fontSize:10,color:owned?"var(--green)":"var(--tx3)",fontWeight:700,textAlign:"center",
-            padding:"6px",background:owned?"rgba(16,185,129,0.08)":"rgba(0,0,0,0.03)",borderRadius:8}}>
-            {owned?`✅ 보유중 (Lv.${owned.lv} +${owned.enhance||0}강 ${owned.gender||""})`:
-              "📦 미보유 (도감에서 발견됨)"}
+          <div style={{fontSize:10,fontWeight:700,textAlign:"center",padding:"7px",
+            borderRadius:8,
+            background:owned?"rgba(16,185,129,0.08)":"rgba(0,0,0,0.03)",
+            color:owned?"var(--green)":"var(--tx3)"}}>
+            {owned
+              ?`✅ 보유중 · Lv.${owned.lv} · +${owned.enhance||0}강 · ${owned.gender||""}`
+              :"📦 미보유"}
           </div>
         </>}
         {!seen&&<div style={{textAlign:"center",padding:"20px 0",color:"var(--tx3)",fontSize:12}}>
@@ -7438,10 +7526,7 @@ function SideHelpProb({acHex}){
       {q:"🏆 레전드 진화 (에픽 전용)",a:"진화증표 1개로 100% 확정 레전드 진화. 갓슬레이어→오메가 / 솔라리스→오로라 / 드래곤로드→원시신. 보이드킹/어비설/메카조드는 진화 루트 없음."},
       
       {q:"💠 각성",a:"몬스터의 2번째 속성을 랜덤 부여! 각성석 1개 소모, 최대 2회 (1회차=부여, 2회차=리롤). 합성/진화 시 각성 속성 리셋됨."},
-      {q:"🌿 COMMON 진화 트리",a:"탱귤이→네오탱귤→프라임탱귤 / 포멜로→메가포멜로→울트라포멜로 / 리피→실반→고대실반 / 로키→타이탄록키→콜로서스 / 브리지→폭풍브리지→템페스트 / 글리머→래디언트→루미노스"},
-      {q:"🔥 UNCOMMON 진화 트리",a:"블레이즈→인페르노→라그나로스 / 아쿠아→어비설→리바이어던 / 볼트→뇌신볼트→제우스 / 프로스티→글레이셔→퍼마프로스트 / 나가→코브라드라→나가로드 / 테로→보이드테로→어비스로드 / 샤이니→셀레스티아→디바이니티 / 드라코→카이저드라코→드래곤갓"},
-      {q:"🐺 합성체 진화 트리",a:"레어울프→SR키메라 / 레어피닉스→SR리바이어던 / 레어골렘→SR타이탄 (RARE→EPIC) / 유니크드래곤→에픽갓슬레이어 / 유니크크라켄→에픽보이드킹 / 유니크스핑크스→에픽솔라리스 (UNIQUE→EPIC)"},
-      {q:"🥚 교배 개요",a:"부모 몬스터의 스탯을 물려받은 새 몬스터 탄생. 스탯 뽑기용! 부모 평균 등급 기준 (올림/내림 50:50 랜덤)."},
+      {q:"🥚 교배 개요",a:"부모 스탯 우성유전(70:30). 등급=부모 최고등급에서 1단계(70%) 또는 2단계(30%) 아래. 진화트리 탭에서 진화 경로 확인!"},
     ],
     raid:[
       {q:"🌋 레이드 기본",a:"3종 레이드 보스. 보스 HP 700~800. 내 몬스터도 HP 소모! 몬스터가 죽으면 전사."},
