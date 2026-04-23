@@ -538,8 +538,6 @@ const EVO_CHAIN={
   draco:     {to:"kaiser_draco", altTo:"kaiser_god",  name:"드라코스",  altName:"카이저갓(비밀진화!)",    stone:"stone2", conds:[{type:"lv",val:12},{type:"enhance",val:3},{type:"pvp",val:3}],          condDesc:"Lv.12 + +3강 + 배틀 3승"},
   magmite:   {to:"pyrovant",     altTo:"magma_titan", name:"파이로반트",    altName:"마그마타이탄(비밀진화!)",                   stone:"stone1", conds:[{type:"lv",val:8},{type:"hunt",val:4}],                                 condDesc:"Lv.8 + 사냥 4승"},
   guster:    {to:"cyclonix",     altTo:"hurricane",   name:"사이클로닉스",  altName:"허리케인(비밀진화!)",                   stone:"stone1", conds:[{type:"lv",val:8},{type:"pvp",val:3}],                                  condDesc:"Lv.8 + 배틀 3승"},
-{type:"enhance",val:2},{type:"hunt",val:6}],          condDesc:"Lv.10 + +2강 + 사냥 6승"},
-{type:"pvp",val:4}],                                 condDesc:"Lv.10 + 배틀 4승"},
   phanty:    {to:"spectron",     altTo:"specter_king",name:"스펙트론",      altName:"스펙터킹(비밀진화!)",      stone:"stone2", conds:[{type:"lv",val:10},{type:"enhance",val:2},{type:"pvp",val:3}],          condDesc:"Lv.10 + +2강 + 배틀 3승"},
   thornia:   {to:"thornwall",    altTo:"thorn_queen", name:"쏜월",          altName:"쏜퀸(비밀진화!)",                   stone:"stone1", conds:[{type:"lv",val:8},{type:"dungeon",val:4}],                              condDesc:"Lv.8 + 던전 4회"},
   // ── UNCOMMON 2차 진화 ──
@@ -553,10 +551,8 @@ const EVO_CHAIN={
   kaiser_draco: {to:"dragon_god",  altTo:null, name:"드래곤로드",      altName:null, stone:"stone2", conds:[{type:"lv",val:18},{type:"enhance",val:7},{type:"pvp",val:10},{type:"tamerLv",val:20}],condDesc:"Lv.18 + +7강 + 배틀 10승 + 테이머 Lv.20"},
   spectron:     {to:"phantom_king",altTo:null, name:"팬텀킹",        altName:null, stone:"stone2", conds:[{type:"lv",val:16},{type:"enhance",val:6},{type:"pvp",val:8}],            condDesc:"Lv.16 + +6강 + 배틀 8승"},
   // ── 합성체 진화 RARE→SUPER ──
-{type:"enhance",val:5},{type:"hunt",val:10},{type:"tamerLv",val:15}],condDesc:"Lv.15 + +5강 + 사냥 10승 + 테이머 Lv.15"},
   rare_phoenix: {to:"sr_leviathan",altTo:null, name:"아비살리스",  altName:null, stone:"stone2", conds:[{type:"lv",val:15},{type:"enhance",val:5},{type:"pvp",val:10},{type:"tamerLv",val:15}], condDesc:"Lv.15 + +5강 + 배틀 10승 + 테이머 Lv.15"},
-  rare_golem:   {to:     altTo:null, name:"타이타노스",      altName:null, stone:"stone2", conds:[{type:"lv",val:15},{type:"enhance",val:6},{type:"dungeon",val:15},{type:"tamerLv",val:15}],condDesc:"Lv.15 + +6강 + 던전 15회 + 테이머 Lv.15"},
-{type:"enhance",val:5},{type:"pvp",val:8},{type:"tamerLv",val:15}],  condDesc:"Lv.15 + +5강 + 배틀 8승 + 테이머 Lv.15"},
+  rare_golem:   {to:"sr_mechanos",altTo:null, name:"메카니아스",   altName:null, stone:"stone2", conds:[{type:"lv",val:15},{type:"enhance",val:6},{type:"dungeon",val:15},{type:"tamerLv",val:15}],condDesc:"Lv.15 + +6강 + 던전 15회 + 테이머 Lv.15"},
   // ── 합성체 진화 UNIQUE→EPIC ──
   uniq_kraken:  {to:"epic_voidking",    altTo:null, name:"보이드킹",     altName:null, stone:"stone2", conds:[{type:"lv",val:20},{type:"enhance",val:8},{type:"hunt",val:20},{type:"tamerLv",val:25}], condDesc:"Lv.20 + +8강 + 사냥 20승 + 테이머 Lv.25"},
   uniq_sphinx:  {to:"epic_solaris",     altTo:null, name:"솔라리스",     altName:null, stone:"stone2", conds:[{type:"lv",val:20},{type:"enhance",val:8},{type:"dungeon",val:25},{type:"tamerLv",val:25}],condDesc:"Lv.20 + +8강 + 던전 25회 + 테이머 Lv.25"},
@@ -636,7 +632,6 @@ const MONS=[
   // ══════════════════════════════════════════
   {id:"venom",    name:"나가",     emoji:"🐍",color:"#7b1fa2",rarity:"UNCOMMON",lineage:"reptile",  hp:33,atk:20,spd:14,desc:"뱀 정령. 독 속성. 교활한 독액 공격."},
   {id:"draco",    name:"드라코",   emoji:"🐉",color:"#d32f2f",rarity:"UNCOMMON",lineage:"reptile",  hp:50,atk:22,spd:12,desc:"드래곤 계열. 불꽃 숨결 공격."},
-  {id:   name:"랩터",     emoji:"🦖",color:"#558b2f",rarity:"UNCOMMON",lineage:"reptile",  hp:38,atk:23,spd:20,desc:"속도의 포식자. 빠른 돌진 공격."},
   // ══════════════════════════════════════════
   // UNCOMMON - 신비계/혼돈계
   // ══════════════════════════════════════════
@@ -726,10 +721,8 @@ const MONS=[
   // RARE - 합성체
   // ══════════════════════════════════════════
   // ══════════════════════════════════════════
-  {id:   name:"레어울프",    emoji:"🐺",color:"#1565c0",rarity:"RARE",   lineage:"beast",  hp:80,atk:35,spd:28,desc:"합성 야수. 날카로운 발톱의 늑대."},
   {id:"rare_phoenix",name:"레어피닉스",  emoji:"🦅",color:"#1976d2",rarity:"RARE",   lineage:"avian", hp:75,atk:40,spd:32,desc:"합성 불사조. 화염 날개로 급습."},
   {id:"rare_golem",  name:"메카골렘",    emoji:"🦾",color:"#0d47a1",rarity:"RARE",   lineage:"machine",hp:100,atk:28,spd:10,desc:"합성 철갑 골렘."},
-  {id:name:"레어서펜트",  emoji:"🐊",color:"#00695c",rarity:"RARE",   lineage:"beast",  hp:90,atk:32,spd:20,desc:"합성 독룡."},
   {id:"rare_specter",name:"레어스펙터",  emoji:"🌫️",color:"#4527a0",rarity:"UNCOMMON",   lineage:"void",  hp:78,atk:42,spd:26,desc:"합성 유령체. 실체 없는 공포."},
   // ══════════════════════════════════════════
   // UNIQUE - 합성체
