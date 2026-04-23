@@ -2071,6 +2071,7 @@ function SidePanel({sideTabTop,setSideTabTop,
     ["dex","📖","도감"],
     ["ach","🏆","업적"],
     ["lab","🔬","연구소"],
+    ["evo","🌿","진화트리"],
     ["help","❓","도움말"],
   ];
 
@@ -2081,6 +2082,7 @@ function SidePanel({sideTabTop,setSideTabTop,
     if(sideTabTop==="dex") return <SideDex myS={myS} col={col} acHex={acHex} setMy={setMy}/>;
     if(sideTabTop==="ach") return <SideAch myS={myS} acHex={acHex} claimAchReward={claimAchReward}/>;
     if(sideTabTop==="lab") return <SideLab myS={myS} col={col} setMy={setMy} toast={toast} acHex={acHex} aliveCols={aliveCols}/>;
+    if(sideTabTop==="evo")  return <SideEvoTree acHex={acHex}/>;
     if(sideTabTop==="help") return <SideHelpProb acHex={acHex}/>;
     return null;
   };
@@ -3523,7 +3525,7 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
   const todayDay=new Date().getDate();
   const battleLeft=getBattleLeft();
   const MAIN_TABS=[["field","🗺","필드"],["collection","📦","몬스터"],["bag","🎒","가방"],["shop","🛒","상점"],["explore","⛏️","탐험"],["hunt","⚔️","사냥터"],["fusion","⚗️","제련소"],["pvp","👥","대전"]];
-  const MENU_TABS=[["monthly","📅","월간출석"],["tamer","🏅","테이머"],["dex","📖","도감"],["ach","🏆","업적"],["lab","🔬","연구소"],["help","❓","도움말"]];
+  const MENU_TABS=[["monthly","📅","월간출석"],["tamer","🏅","테이머"],["dex","📖","도감"],["ach","🏆","업적"],["lab","🔬","연구소"],["evo","🌿","진화트리"],["help","❓","도움말"]];
 
   const SIDE_TABS_TOP=[["tamer","🏅","테이머"],["monthly","📅","출석"],["breed","🥚","교배"],["dex","📖","도감"],["ach","🏆","업적"],["lab","🔬","연구소"],["help","❓","도움말"]];
 
@@ -3565,7 +3567,7 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
         <div style={{fontSize:11,color:"var(--tx3)",fontWeight:700,marginBottom:6}}>📋 정보 / 관리</div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:6}}>
           {[["tamer","🏅","테이머"],["monthly","📅","출석"],["breed","🥚","교배"],["dex","📖","도감"],
-            ["ach","🏆","업적"],["lab","🔬","연구소"],["help","❓","도움말"]].map(([k,icon,name])=>(
+            ["ach","🏆","업적"],["lab","🔬","연구소"],["evo","🌿","진화트리"],["help","❓","도움말"]].map(([k,icon,name])=>(
             <button key={k} onClick={()=>{setSideTabTop(k);setMenuOpen(false);}} style={{
               padding:"10px 0 8px",borderRadius:12,
               border:`2px solid ${sideTabTop===k?acHex:"rgba(139,92,246,0.1)"}`,
@@ -7585,6 +7587,176 @@ function SideProb(){
 }
 
 // ── 도움말 + 확률표 통합 ──
+
+function SideEvoTree({acHex}){
+  const [openGroup,setOpenGroup]=React.useState(null);
+  
+  const GROUPS=[
+    {id:"fruit",emoji:"🍎",name:"과일",color:"#e65100",chains:[
+      {name:"오렌지",color:"#e65100",main:[
+        {g:"COM",n:"탱귤이",e:"🍊"},{g:"UNC",n:"네오탱귤",e:"🍑"},{g:"RAR",n:"프라임탱귤",e:"🟠"},
+        {g:"UNI",n:"킹오렌지",e:"🍊"},{g:"EPI",n:"임페리얼오렌지",e:"🍊"},{g:"LEG",n:"오렌지아",e:"🍊",leg:true}
+      ],secret:[{from:"탱귤이",to:"골든탱귤",e:"🍯",g:"RAR"}]},
+      {name:"포멜로",color:"#f57f17",main:[
+        {g:"COM",n:"포멜로",e:"🍋"},{g:"UNC",n:"메가포멜로",e:"🫒"},{g:"RAR",n:"울트라포멜로",e:"🌕"},
+        {g:"UNI",n:"노바포멜로",e:"🌞"},{g:"EPI",n:"솔라포멜로",e:"🌞"}
+      ]},
+    ]},
+    {id:"nature",emoji:"🌿",name:"자연",color:"#2e7d32",chains:[
+      {name:"나무",color:"#2e7d32",main:[
+        {g:"COM",n:"리피",e:"🌿"},{g:"UNC",n:"실반",e:"🌳"},{g:"RAR",n:"고대실반",e:"🌲"},{g:"UNI",n:"월드트리",e:"🌳"}
+      ],secret:[{from:"리피",to:"베르단트",e:"🍀",g:"RAR"}]},
+      {name:"돌/바위",color:"#546e7a",main:[
+        {g:"COM",n:"페비",e:"🪨"},{g:"UNC",n:"로키",e:"🪨"},{g:"RAR",n:"타이탄록키",e:"⛰️"},{g:"UNI",n:"테라타이탄",e:"🗿"}
+      ],secret:[{from:"페비",to:"크리스탈페비",e:"💠",g:"RAR"}]},
+      {name:"폭풍",color:"#0277bd",main:[
+        {g:"COM",n:"거스터",e:"🌪️"},{g:"UNC",n:"폭풍브리지",e:"🌪️"},{g:"RAR",n:"사이클로닉스",e:"🌪️"},
+        {g:"UNI",n:"템페스트",e:"🌀"},{g:"EPI",n:"스톰갓",e:"⚡"}
+      ]},
+    ]},
+    {id:"reptile",emoji:"🐍",name:"파충류",color:"#1b5e20",chains:[
+      {name:"뱀",color:"#6a1b9a",main:[
+        {g:"UNC",n:"나가",e:"🐍"},{g:"UNC",n:"코브라드라",e:"🐍"},{g:"RAR",n:"나가렉스",e:"🐍"},{g:"UNI",n:"나가로드",e:"👑"}
+      ],secret:[{from:"나가렉스",to:"베놈로드",e:"🐍",g:"UNI"}]},
+      {name:"공룡",color:"#33691e",main:[
+        {g:"UNC",n:"서펜트",e:"🐊"},{g:"UNC",n:"벨로시킹",e:"🦖"},{g:"UNI",n:"아르칸드라",e:"🦖"},{g:"EPI",n:"아케인렉스",e:"🦖"}
+      ]},
+      {name:"드래곤",color:"#b71c1c",main:[
+        {g:"UNC",n:"드라코",e:"🐉"},{g:"UNC",n:"와이번",e:"🦕"},{g:"RAR",n:"드라코스",e:"🐉"},
+        {g:"UNI",n:"드라코리온",e:"🦕"},{g:"EPI",n:"드래곤로드",e:"🐲"},{g:"LEG",n:"바하무트",e:"⚜️",leg:true}
+      ]},
+    ]},
+    {id:"avian",emoji:"🐦",name:"조류",color:"#0277bd",chains:[
+      {name:"새",color:"#0277bd",main:[
+        {g:"COM",n:"처피",e:"🐥"},{g:"UNC",n:"이글렛",e:"🦅"},{g:"UNC",n:"스톰이글",e:"🦅"},
+        {g:"RAR",n:"레어피닉스",e:"🦅"},{g:"EPI",n:"피닉스로드",e:"🦅"}
+      ]},
+    ]},
+    {id:"marine",emoji:"🌊",name:"해양",color:"#006064",chains:[
+      {name:"물고기",color:"#006064",main:[
+        {g:"COM",n:"핀",e:"🐟"},{g:"UNC",n:"샤크",e:"🦈"},{g:"RAR",n:"그레이트샤크",e:"🦈"},
+        {g:"UNI",n:"아비살리스",e:"🐳"},{g:"EPI",n:"리바이어던",e:"🐋"}
+      ],secret:[{from:"샤크",to:"크라켄로스",e:"🐙",g:"UNI"}]},
+    ]},
+    {id:"light",emoji:"🌟",name:"빛",color:"#f9a825",chains:[
+      {name:"빛 메인",color:"#f9a825",main:[
+        {g:"COM",n:"글리머",e:"🌟"},{g:"UNC",n:"래디언트",e:"💫"},{g:"RAR",n:"샤이니",e:"✨"},
+        {g:"UNI",n:"디바이니티",e:"💫"},{g:"EPI",n:"솔라리스",e:"🌞"},{g:"LEG",n:"이터니아",e:"✨",leg:true}
+      ]},
+      {name:"빛 분기",color:"#7b1fa2",main:[
+        {g:"UNC",n:"프리즈마",e:"🔮"},{g:"RAR",n:"셀레스티아",e:"🌠"},{g:"UNI",n:"아우로라",e:"🌌"}
+      ],secret:[{from:"아우로라",to:"제우스",e:"⚡",g:"UNI"}]},
+    ]},
+    {id:"machine",emoji:"🤖",name:"기계",color:"#546e7a",chains:[
+      {name:"기계",color:"#546e7a",main:[
+        {g:"COM",n:"볼트봇",e:"🔩"},{g:"UNC",n:"기어드론",e:"⚙️"},{g:"RAR",n:"메카골렘",e:"🦾"},
+        {g:"UNI",n:"메카니아스",e:"⚙️"},{g:"EPI",n:"메카조드",e:"🤖"}
+      ]},
+    ]},
+    {id:"void",emoji:"💀",name:"보이드",color:"#212121",chains:[
+      {name:"보이드 메인",color:"#212121",main:[
+        {g:"COM",n:"테로",e:"🌑"},{g:"UNC",n:"스펙터",e:"🌫️"},{g:"RAR",n:"스펙트론",e:"👁️"},
+        {g:"UNI",n:"스펙터킹",e:"👻"},{g:"EPI",n:"보이드킹",e:"👑"}
+      ]},
+      {name:"보이드 분기",color:"#2d2d2d",main:[
+        {g:"UNC",n:"보이드",e:"🕳️"},{g:"RAR",n:"보이드테로",e:"🕳️"},{g:"UNI",n:"보이드소버린",e:"🕳️"}
+      ],secret:[{from:"보이드소버린",to:"어비스로드",e:"🌌",g:"UNI"}]},
+    ]},
+  ];
+
+  const GRADE_COL={"COM":"#607080","UNC":"#1565c0","RAR":"#00838f","UNI":"#e65100","EPI":"#6a1b9a","LEG":"#b71c1c"};
+
+  const renderChain=(chain)=>{
+    return <div key={chain.name} style={{marginBottom:10}}>
+      <div style={{fontSize:10,fontWeight:800,color:chain.color,marginBottom:4,paddingLeft:2}}>
+        {chain.name}
+      </div>
+      {/* 메인 진화 라인 */}
+      <div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:1,padding:"6px 6px",
+        background:"rgba(0,0,0,0.03)",borderRadius:8,border:`1px solid ${chain.color}22`}}>
+        {chain.main.map((m,i)=>(
+          <React.Fragment key={i}>
+            <div style={{display:"flex",flexDirection:"column",alignItems:"center",minWidth:36}}>
+              <div style={{fontSize:16,lineHeight:1}}>{m.e}</div>
+              <div style={{fontSize:7,fontWeight:700,color:GRADE_COL[m.g]||"#888",
+                background:`${GRADE_COL[m.g]}18`,borderRadius:3,padding:"1px 3px",marginTop:1}}>{m.g}</div>
+              <div style={{fontSize:8,color:m.leg?"#b71c1c":"var(--tx1)",fontWeight:m.leg?900:600,
+                textAlign:"center",lineHeight:1.2,marginTop:1,maxWidth:36,wordBreak:"keep-all"}}>
+                {m.n}
+                {m.leg&&<span style={{fontSize:7,color:"#b71c1c"}}> 🏆</span>}
+              </div>
+            </div>
+            {i<chain.main.length-1&&(
+              <span style={{fontSize:9,color:m.leg?"#b71c1c":"#b0a8cc",fontWeight:m.leg?900:400,
+                margin:"0 1px",marginBottom:12}}>→</span>
+            )}
+          </React.Fragment>
+        ))}
+      </div>
+      {/* 비밀진화 */}
+      {chain.secret&&chain.secret.map((s,i)=>(
+        <div key={i} style={{display:"flex",alignItems:"center",gap:4,marginTop:4,
+          padding:"4px 8px",background:"#f57f1708",borderRadius:6,
+          border:"1px dashed #d9770640"}}>
+          <span style={{fontSize:8,color:"#d97706",fontWeight:700}}>⭐비밀</span>
+          <span style={{fontSize:9,color:"var(--tx2)"}}>
+            <span style={{fontWeight:700,color:"var(--tx1)"}}>{s.from}</span>
+            <span style={{color:"#d97706",margin:"0 3px"}}>→</span>
+            <span style={{fontSize:12}}>{s.e}</span>
+            <span style={{fontWeight:700,color:"var(--tx1)",marginLeft:2}}>{s.to}</span>
+            <span style={{marginLeft:3,fontSize:7,fontWeight:700,
+              color:GRADE_COL[s.g],background:`${GRADE_COL[s.g]}18`,
+              borderRadius:3,padding:"1px 3px"}}>{s.g}</span>
+          </span>
+        </div>
+      ))}
+    </div>;
+  };
+
+  return <div>
+    <div style={{fontSize:11,fontWeight:800,color:"var(--tx1)",marginBottom:8}}>
+      🌿 진화 트리
+    </div>
+    {/* 범례 */}
+    <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:10,
+      padding:"6px 8px",background:"rgba(139,92,246,0.04)",borderRadius:8}}>
+      {[["COM","#607080"],["UNC","#1565c0"],["RAR","#00838f"],["UNI","#e65100"],["EPI","#6a1b9a"],["LEG","#b71c1c"]].map(([g,c])=>(
+        <span key={g} style={{fontSize:8,fontWeight:700,color:c,
+          background:`${c}18`,borderRadius:4,padding:"2px 5px"}}>{g}</span>
+      ))}
+      <span style={{fontSize:8,color:"#d97706",fontWeight:700}}>⭐비밀진화</span>
+      <span style={{fontSize:8,color:"#b71c1c",fontWeight:700}}>🏆레전드</span>
+    </div>
+    {/* 대계열 아코디언 */}
+    {GROUPS.map(group=>(
+      <div key={group.id} style={{marginBottom:6}}>
+        <button onClick={()=>setOpenGroup(openGroup===group.id?null:group.id)}
+          style={{width:"100%",display:"flex",alignItems:"center",gap:6,
+            padding:"7px 10px",border:`1.5px solid ${group.color}44`,
+            borderRadius:9,background:openGroup===group.id?`${group.color}12`:`${group.color}06`,
+            cursor:"pointer",fontFamily:"inherit",transition:"all 0.15s",
+            borderLeft:`4px solid ${group.color}`}}>
+          <span style={{fontSize:15}}>{group.emoji}</span>
+          <span style={{fontSize:11,fontWeight:800,color:group.color,flex:1,textAlign:"left"}}>{group.name}</span>
+          <span style={{fontSize:9,color:"var(--tx3)",fontWeight:600}}>
+            {group.chains.reduce((a,c)=>a+(c.main.length+(c.secret?.length||0)),0)}종
+          </span>
+          <span style={{fontSize:10,color:group.color,fontWeight:700}}>
+            {openGroup===group.id?"▲":"▼"}
+          </span>
+        </button>
+        {openGroup===group.id&&(
+          <div style={{padding:"10px 8px 4px",background:"rgba(0,0,0,0.01)",
+            border:`1px solid ${group.color}22`,borderTop:"none",
+            borderRadius:"0 0 8px 8px"}}>
+            {group.chains.map(chain=>renderChain(chain))}
+          </div>
+        )}
+      </div>
+    ))}
+  </div>;
+}
+
 function SideHelpProb({acHex}){
   const [tab,setTab]=React.useState("basic");
   const helps={
