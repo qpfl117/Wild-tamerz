@@ -238,7 +238,7 @@ const MON_BASE_TYPE={
   prime_tangy:"grass",ultra_pomelo:"grass",ancient_sylvan:"grass",colossus:"ground",tempest:"thunder",
   luminos:"light",
   // COMMON 비밀진화체
-  golden_tangy:"fire",king_orange:"fire",imperial_orange:"fire",orangia:"fire",solar_pomelo:"grass",storm_god:"thunder",phoenix_lord:"fire",archon_rex:"grass",nova_pomelo:"grass",verdant_leafy:"grass",
+  golden_tangy:"fire",king_orange:"fire",imperial_orange:"fire",orangia:"fire",world_tree:"grass",naga_rex:"dark",serpent:"grass",wyvern:"fire",fin:"water",shark:"water",great_shark:"water",voltbot:"thunder",gear_drone:"thunder",specter:"dark",void_unc:"dark",solar_pomelo:"grass",storm_god:"thunder",phoenix_lord:"fire",archon_rex:"grass",nova_pomelo:"grass",verdant_leafy:"grass",
   crystal_pebby:"ground",gale_breezy:"thunder",prisma:"light",
   // UNCOMMON 비밀진화체
   inferno_rex:"fire",abyssal_king:"water",storm_zeus:"thunder",
@@ -564,6 +564,20 @@ const EVO_CHAIN={
   tempest:        {to:"storm_god",     altTo:null, name:"스톰갓",      altName:null, stone:"stone2", conds:[{type:"lv",val:25},{type:"enhance",val:7},{type:"pvp",val:12},{type:"tamerLv",val:25}], condDesc:"Lv.25 + +7강 + 배틀 12승 + 테이머 Lv.25"},
   rare_phoenix:   {to:"phoenix_lord",  altTo:null, name:"피닉스로드",  altName:null, stone:"stone2", conds:[{type:"lv",val:25},{type:"enhance",val:7},{type:"hunt",val:15},{type:"tamerLv",val:25}], condDesc:"Lv.25 + +7강 + 사냥 15승 + 테이머 Lv.25"},
   uniq_dragon:    {to:"archon_rex",    altTo:null, name:"아케인렉스",  altName:null, stone:"stone2", conds:[{type:"lv",val:25},{type:"enhance",val:8},{type:"hunt",val:18},{type:"tamerLv",val:28}], condDesc:"Lv.25 + +8강 + 사냥 18승 + 테이머 Lv.28"},
+  // ── 누락 진화 경로 ──
+  ancient_sylvan: {to:"world_tree",  altTo:null, name:"월드트리",    altName:null, stone:"stone2", conds:[{type:"lv",val:20},{type:"enhance",val:5},{type:"tamerLv",val:20}], condDesc:"Lv.20 + +5강 + 테이머 Lv.20"},
+  toxicron:       {to:"naga_rex",    altTo:null, name:"나가렉스",    altName:null, stone:"stone2", conds:[{type:"lv",val:14},{type:"enhance",val:4},{type:"pvp",val:5}], condDesc:"Lv.14 + +4강 + 배틀 5승"},
+  naga_rex:       {to:"omega_venom", altTo:"venom_lord", name:"나가로드", altName:"베놈로드(비밀진화!)", stone:"stone2", conds:[{type:"lv",val:18},{type:"enhance",val:6},{type:"pvp",val:8}], condDesc:"Lv.18 + +6강 + 배틀 8승"},
+  serpent:        {to:"velociking",  altTo:null, name:"벨로시킹",    altName:null, stone:"stone2", conds:[{type:"lv",val:10},{type:"enhance",val:3},{type:"hunt",val:5}], condDesc:"Lv.10 + +3강 + 사냥 5승"},
+  wyvern:         {to:"kaiser_draco",altTo:null, name:"드라코스",    altName:null, stone:"stone2", conds:[{type:"lv",val:10},{type:"enhance",val:3},{type:"pvp",val:3}], condDesc:"Lv.10 + +3강 + 배틀 3승"},
+  fin:            {to:"shark",       altTo:null, name:"샤크",        altName:null, stone:"stone1", conds:[{type:"lv",val:5},{type:"feed",val:3}], condDesc:"Lv.5 + 먹이 3회"},
+  shark:          {to:"great_shark", altTo:null, name:"그레이트샤크",altName:null, stone:"stone2", conds:[{type:"lv",val:10},{type:"enhance",val:2},{type:"hunt",val:4}], condDesc:"Lv.10 + +2강 + 사냥 4승"},
+  great_shark:    {to:"uniq_kraken", altTo:null, name:"아비살리스",  altName:null, stone:"stone2", conds:[{type:"lv",val:15},{type:"enhance",val:5},{type:"dungeon",val:10}], condDesc:"Lv.15 + +5강 + 던전 10회"},
+  voltbot:        {to:"gear_drone",  altTo:null, name:"기어드론",    altName:null, stone:"stone1", conds:[{type:"lv",val:5},{type:"hunt",val:2}], condDesc:"Lv.5 + 사냥 2승"},
+  gear_drone:     {to:"rare_golem",  altTo:null, name:"메카골렘",    altName:null, stone:"stone2", conds:[{type:"lv",val:10},{type:"enhance",val:2},{type:"dungeon",val:3}], condDesc:"Lv.10 + +2강 + 던전 3회"},
+  terro:          {to:"specter",     altTo:"void_sovereign", name:"스펙터", altName:"보이드소버린(비밀진화!)", stone:"stone1", conds:[{type:"lv",val:8},{type:"pvp",val:2}], condDesc:"Lv.8 + 배틀 2승"},
+  specter:        {to:"spectron",    altTo:null, name:"스펙트론",    altName:null, stone:"stone2", conds:[{type:"lv",val:12},{type:"enhance",val:3},{type:"pvp",val:5}], condDesc:"Lv.12 + +3강 + 배틀 5승"},
+  void_unc:       {to:"void_terro",  altTo:null, name:"보이드테로",  altName:null, stone:"stone2", conds:[{type:"lv",val:10},{type:"enhance",val:2},{type:"hunt",val:4}], condDesc:"Lv.10 + +2강 + 사냥 4승"},
   // ── 레전드 공식 진화 루트 (진화증표 필요) ──
   epic_godslayer:  {to:"transcend_omega", altTo:null, name:"트랜센드",    altName:null, stone:"legend_proof", conds:[{type:"lv",val:30},{type:"enhance",val:10},{type:"hunt",val:30},{type:"tamerLv",val:35}], condDesc:"Lv.30 + +10강 + 사냥 30승 + 테이머 Lv.35 + 🏆진화증표"},
   epic_solaris:    {to:"legend_aurora",   altTo:null, name:"이터니아",    altName:null, stone:"legend_proof", conds:[{type:"lv",val:30},{type:"enhance",val:10},{type:"dungeon",val:50},{type:"tamerLv",val:35}], condDesc:"Lv.30 + +10강 + 던전 50회 + 테이머 Lv.35 + 🏆진화증표"},
@@ -779,6 +793,18 @@ const MONS=[
   {id:"mutant_solaris",  name:"뮤턴트)솔라리스",  emoji:"💠",color:"#00acc1",rarity:"MUTANT",lineage:"light", hp:242,atk:99, spd:39,desc:"에픽솔라리스의 돌연변이. (에픽+15%)"},
   {id:"mutant_abyssal",  name:"뮤턴트)어비설",    emoji:"💠",color:"#00acc1",rarity:"MUTANT",lineage:"marine",hp:247,atk:97, spd:32,desc:"에픽어비설의 돌연변이. (에픽+15%)"},
   {id:"mutant_dragonlord",name:"뮤턴트)드래곤로드",emoji:"💠",color:"#00acc1",rarity:"MUTANT",lineage:"reptile", hp:282,atk:113,spd:32,desc:"드래곤로드 돌연변이. (에픽+15%)"},
+  // ── 진화표 누락분 추가 ──
+  {id:"world_tree",  name:"월드트리",    emoji:"🌳",color:"#1b5e20",rarity:"UNIQUE", lineage:"nature",  hp:175,atk:80,spd:22,desc:"고대실반 진화체. 세상의 모든 생명과 연결된 신성한 나무."},
+  {id:"naga_rex",    name:"나가렉스",    emoji:"🐍",color:"#4a148c",rarity:"RARE",   lineage:"reptile", hp:92,atk:52,spd:28,desc:"코브라드라 진화체. 독을 결정화시키는 거대 나가."},
+  {id:"serpent",     name:"서펜트",      emoji:"🐊",color:"#2e7d32",rarity:"UNCOMMON",lineage:"reptile",hp:55,atk:28,spd:18,desc:"고대 파충류 정령. 공룡 계열의 시초."},
+  {id:"wyvern",      name:"와이번",      emoji:"🦕",color:"#880e4f",rarity:"UNCOMMON",lineage:"reptile",hp:52,atk:30,spd:20,desc:"드래곤 계열. 독날개를 가진 아룡."},
+  {id:"fin",         name:"핀",          emoji:"🐟",color:"#0288d1",rarity:"COMMON",  lineage:"marine",  hp:18,atk:10,spd:18,desc:"작은 물고기 정령. 빠른 헤엄으로 적을 혼란시킨다."},
+  {id:"shark",       name:"샤크",        emoji:"🦈",color:"#1565c0",rarity:"UNCOMMON",lineage:"marine",  hp:45,atk:24,spd:20,desc:"상어 정령. 날카로운 이빨로 먹이를 물어뜯는다."},
+  {id:"great_shark", name:"그레이트샤크",emoji:"🦈",color:"#0d47a1",rarity:"RARE",   lineage:"marine",  hp:85,atk:48,spd:26,desc:"샤크 진화체. 바다의 최상위 포식자."},
+  {id:"voltbot",     name:"볼트봇",      emoji:"🔩",color:"#546e7a",rarity:"COMMON",  lineage:"machine", hp:22,atk:11,spd:14,desc:"작은 기계 정령. 전기로 작동하는 나사 로봇."},
+  {id:"gear_drone",  name:"기어드론",    emoji:"⚙️",color:"#455a64",rarity:"UNCOMMON",lineage:"machine", hp:42,atk:22,spd:20,desc:"볼트봇 진화체. 톱니바퀴로 구동하는 전투 드론."},
+  {id:"specter",     name:"스펙터",      emoji:"🌫️",color:"#37474f",rarity:"UNCOMMON",lineage:"void",   hp:40,atk:18,spd:16,desc:"테로 진화체. 형체를 흐릿하게 만드는 어둠 정령."},
+  {id:"void_unc",    name:"보이드",      emoji:"🕳️",color:"#212121",rarity:"UNCOMMON",lineage:"void",   hp:38,atk:16,spd:12,desc:"허공에서 태어난 정령. 차원의 틈을 자유롭게 드나든다."},
   // ══════════════════════════════════════════
   // BOSS (레이드 전용)
   // ══════════════════════════════════════════
@@ -829,9 +855,10 @@ function _checkDivineConditions(myS){
 // EPIC/LEGEND/MUTANT는 합성·진화 전용 - 야생 출현 없음
 const WILD_IDS=[
   // COMMON (11종)
-  "tangy","pomelo","leafy","glimmer","pebby","breezy","sprouty","bubby","floppy","chirpy",
-  // UNCOMMON (14종)
+  "tangy","pomelo","leafy","glimmer","pebby","breezy","sprouty","bubby","floppy","chirpy","fin","voltbot",
+  // UNCOMMON (20종)
   "blaze","aqua","bolt","frostie","magmite","guster","venom","draco","shiny","terro","thornia","phanty",
+  "serpent","wyvern","shark","gear_drone","specter","void_unc",
   // RARE (5종 - Lv16+ 야생 출현)
   "rare_phoenix","rare_golem","rare_specter",
 ];
