@@ -263,7 +263,7 @@ const FUSION_TABLE={
   "RARE":     [{g:"UNIQUE",  r:0.45},{g:"EPIC",    r:0.15},{g:"fail",r:0.40}],
   "UNIQUE":   [{g:"EPIC",    r:0.40},{g:"LEGEND",  r:0.10},{g:"fail",r:0.50}],
   "EPIC":     [{g:"LEGEND",  r:0.25},{g:"fail",r:0.75}],
-}
+};
 const FUSION_POOL={
   "UNCOMMON":["blaze","aqua","bolt","frostie","venom","terro","shiny","draco","thornia"],
   "RARE":["rare_wolf","rare_phoenix","rare_golem","rare_serpent","rare_specter"],
@@ -719,11 +719,11 @@ const MONS=[
   // 각성체
   // MUTANT
   // ══════════════════════════════════════════
-  {id:"mutant_godslayer",name:"뮤턴트)갓슬레이어",emoji:"💠",color:"#00acc1",rarity:"MUTANT",lineage:"chaos",  hp:260,atk:120,spd:45,desc:"에픽갓슬레이어의 돌연변이. 이로치 형태."},
-  {id:"mutant_voidking", name:"뮤턴트)보이드킹",  emoji:"💠",color:"#00acc1",rarity:"MUTANT",lineage:"chaos",  hp:285,atk:105,spd:38,desc:"에픽보이드킹의 돌연변이. 이로치 형태."},
-  {id:"mutant_solaris",  name:"뮤턴트)솔라리스",  emoji:"💠",color:"#00acc1",rarity:"MUTANT",lineage:"mystic", hp:275,atk:115,spd:42,desc:"에픽솔라리스의 돌연변이. 이로치 형태."},
-  {id:"mutant_abyssal",  name:"뮤턴트)어비설",    emoji:"💠",color:"#00acc1",rarity:"MUTANT",lineage:"element",hp:280,atk:110,spd:36,desc:"에픽어비설의 돌연변이. 이로치 형태."},
-  {id:"mutant_dragonlord",name:"뮤턴트)드래곤로드",emoji:"💠",color:"#00acc1",rarity:"MUTANT",lineage:"beast", hp:295,atk:118,spd:34,desc:"에픽드래곤로드의 돌연변이. 이로치 형태."},
+  {id:"mutant_godslayer",name:"뮤턴트)갓슬레이어",emoji:"💠",color:"#00acc1",rarity:"MUTANT",lineage:"chaos",  hp:230,atk:104,spd:44,desc:"에픽갓슬레이어의 돌연변이. (에픽+15%)"},
+  {id:"mutant_voidking", name:"뮤턴트)보이드킹",  emoji:"💠",color:"#00acc1",rarity:"MUTANT",lineage:"chaos",  hp:253,atk:94, spd:35,desc:"에픽보이드킹의 돌연변이. (에픽+15%)"},
+  {id:"mutant_solaris",  name:"뮤턴트)솔라리스",  emoji:"💠",color:"#00acc1",rarity:"MUTANT",lineage:"mystic", hp:242,atk:99, spd:39,desc:"에픽솔라리스의 돌연변이. (에픽+15%)"},
+  {id:"mutant_abyssal",  name:"뮤턴트)어비설",    emoji:"💠",color:"#00acc1",rarity:"MUTANT",lineage:"element",hp:247,atk:97, spd:32,desc:"에픽어비설의 돌연변이. (에픽+15%)"},
+  {id:"mutant_dragonlord",name:"뮤턴트)드래곤로드",emoji:"💠",color:"#00acc1",rarity:"MUTANT",lineage:"beast", hp:282,atk:113,spd:32,desc:"에픽드래곤로드의 돌연변이. (에픽+15%)"},
   // ══════════════════════════════════════════
   // BOSS (레이드 전용)
   // ══════════════════════════════════════════
@@ -769,12 +769,18 @@ function _checkDivineConditions(myS){
 }
 
 // 야생 출현 풀 (피라미드: COMMON 가중치 높음, MUTANT/뮤턴트는 제외 - 합성 전용)
-// 가중치: COMMON 60 / UNCOMMON 20~50(테이머Lv 따라) / RARE 낮음
+// 테이머 Lv 기반 단계적 등급 분포 (spawnWild 참고)
+// Lv 1~5: COMMON 95% | Lv 6~15: +UNCOMMON 28% | Lv 16~30: +RARE 12% | Lv 31~50: +UNIQUE 10%
+// EPIC/LEGEND/MUTANT는 합성·진화 전용 - 야생 출현 없음
 const WILD_IDS=[
-  // COMMON (11종 - 가중치 60)
+  // COMMON (11종)
   "tangy","pomelo","leafy","glimmer","pebby","breezy","sprouty","bubby","floppy","whelpy","chirpy",
-  // UNCOMMON (14종 - 가중치 변동)
+  // UNCOMMON (14종)
   "blaze","aqua","bolt","frostie","magmite","guster","venom","draco","tigrex","raptor","shiny","terro","thornia","phanty",
+  // RARE (5종 - Lv16+ 야생 출현)
+  "rare_wolf","rare_phoenix","rare_golem","rare_serpent","rare_specter",
+  // UNIQUE (5종 - Lv31+ 야생 출현)
+  "uniq_dragon","uniq_kraken","uniq_sphinx","uniq_wyvern","uniq_golemech",
 ];
 const BOSS_IDS=["boss_titan","boss_void","boss_storm"];
 
@@ -2509,11 +2515,22 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
       return;
     }
     const pool=WILD_IDS.map(id=>MONS.find(m=>m.id===id)).filter(Boolean);
-    // 가중치: COMMON=60 / UNCOMMON=테이머Lv 따라 20~50 (낮은 레벨은 UNCOMMON 적음)
-    const uncommonW=Math.min(50,15+tLv*2);
-    const w=pool.map(m=>m.rarity==="UNCOMMON"?uncommonW:60);
-    const t=w.reduce((a,b)=>a+b,0);let r=Math.random()*t;
-    for(let i=0;i<pool.length;i++){r-=w[i];if(r<=0){setWild(pool[i]);break;}}
+    // 테이머 Lv 기반 단계적 등급 분포
+    let gDist;
+    if(tLv<=5)       gDist={COMMON:95, UNCOMMON:5,  RARE:0,  UNIQUE:0};
+    else if(tLv<=15) gDist={COMMON:70, UNCOMMON:28, RARE:2,  UNIQUE:0};
+    else if(tLv<=30) gDist={COMMON:45, UNCOMMON:40, RARE:12, UNIQUE:3};
+    else             gDist={COMMON:25, UNCOMMON:40, RARE:25, UNIQUE:10};
+    // 등급 선택
+    const gRoll=Math.random()*100;
+    let acc=0,selG="COMMON";
+    for(const g of ["COMMON","UNCOMMON","RARE","UNIQUE"]){
+      acc+=(gDist[g]||0);
+      if(gRoll<acc){selG=g;break;}
+    }
+    const gPool=pool.filter(m=>m.rarity===selG);
+    const spawnPool=gPool.length>0?gPool:pool.filter(m=>m.rarity==="COMMON");
+    if(spawnPool.length>0)setWild(spawnPool[Math.floor(Math.random()*spawnPool.length)]);
     setCr(null);
   },[wildFixed,tLv,myS]);
 
@@ -2875,12 +2892,22 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
       return;
     }
     const pool=WILD_IDS.map(id=>MONS.find(m=>m.id===id)).filter(Boolean);
-    // 사냥터도 가중치 적용 (COMMON 60, UNCOMMON 테이머Lv 따라)
-    const uncWhunt=Math.min(50,15+tLv*2);
-    const wHunt=pool.map(m=>m.rarity==="UNCOMMON"?uncWhunt:60);
-    const totW=wHunt.reduce((a,b)=>a+b,0);let rHunt=Math.random()*totW;
-    let eb=pool[0];
-    for(let i=0;i<pool.length;i++){rHunt-=wHunt[i];if(rHunt<=0){eb=pool[i];break;}}
+    // 사냥터도 필드와 동일한 테이머 Lv 기반 단계적 분포
+    let gDistH;
+    if(tLv<=5)       gDistH={COMMON:95, UNCOMMON:5,  RARE:0,  UNIQUE:0};
+    else if(tLv<=15) gDistH={COMMON:70, UNCOMMON:28, RARE:2,  UNIQUE:0};
+    else if(tLv<=30) gDistH={COMMON:45, UNCOMMON:40, RARE:12, UNIQUE:3};
+    else             gDistH={COMMON:25, UNCOMMON:40, RARE:25, UNIQUE:10};
+    const gRollH=Math.random()*100;
+    let accH=0,selGH="COMMON";
+    for(const g of ["COMMON","UNCOMMON","RARE","UNIQUE"]){
+      accH+=(gDistH[g]||0);
+      if(gRollH<accH){selGH=g;break;}
+    }
+    const gPoolH=pool.filter(m=>m.rarity===selGH);
+    const eb=(gPoolH.length>0?gPoolH:pool.filter(m=>m.rarity==="COMMON"))[
+      Math.floor(Math.random()*(gPoolH.length>0?gPoolH.length:pool.filter(m=>m.rarity==="COMMON").length))
+    ]||pool[0];
     const lv=Math.max(1,Math.floor(tLv*(0.5+Math.random()*0.5)));
     const m2={...eb,lv,maxHp:eb.hp+(lv-1)*5,curHp:eb.hp+(lv-1)*5,atk:eb.atk+(lv-1)*2};
     setBs({m1,m2,m1idx:myPick,turn:"m1",over:false,winner:null,mode:"hunt"});
