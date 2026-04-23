@@ -3279,20 +3279,20 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
     const resultGrade=rollFusion(bmA.rarity,bmB.rarity,useCrystal);
     setFusRes(null);setFusAnim(null);
     if(!resultGrade){
-      // 합성 실패: A는 항상 소멸, B는 50% 확률로 생존
+      // 합성 실패: A는 무조건 생존, B는 50% 확률로 소멸
       const bSurvives=Math.random()<0.5;
+      const capturedFb=fb;
       setFusAnim("fail");
       setTimeout(()=>setFusAnim(null),2200);
       setMy(s=>{
         let nc=[...(s.collection||[])];
         if(bSurvives){
-          const removeIdx=fa;
-          nc=nc.filter((_,i)=>i!==removeIdx);
-          toast(`💥 합성 실패! A 몬스터 소멸 · B는 살아남았습니다!`,"var(--orange)");
+          // A, B 둘 다 생존
+          setTimeout(()=>toast(`💥 합성 실패! 다행히 두 몬스터 모두 살아남았습니다!`,"var(--orange)"),0);
         }else{
-          const sortedRemove=[fa,fb].sort((a,b)=>b-a);
-          sortedRemove.forEach(ri=>{nc.splice(ri,1);});
-          toast(`💥 합성 실패! 두 몬스터 모두 소멸...`,"var(--red)");
+          // B만 소멸, A는 무조건 유지
+          if(capturedFb!==null&&capturedFb<nc.length) nc.splice(capturedFb,1);
+          setTimeout(()=>toast(`💥 합성 실패! B 몬스터 소멸...`,"var(--red)"),0);
         }
         return addTamerExp({...s,collection:nc},5);
       });
@@ -4483,7 +4483,7 @@ function Game({player,myS,oppS,setMy,setOpp,onBack,dim,sideTabTop,setSideTabTop,
         <div style={{fontSize:13,color:"var(--tx3)",marginBottom:10,padding:"7px 10px",
           background:"rgba(139,92,246,0.04)",borderRadius:10,lineHeight:1.6,border:"1px solid rgba(139,92,246,0.1)"}}>
           ⚠️ <b>두 마리 모두 +10강 필요</b> · 같은 등급끼리<br/>
-          실패 시 A 소멸, B는 50% 생존 · 🔴크리스탈로 등급UP<br/>
+          실패 시 A 생존, B는 50% 확률 소멸 · 🔴크리스탈로 등급UP<br/>
           💡 MUTANT+EPIC = 랜덤 레전드 70%!
         </div>
         {col.length<2?<div style={{textAlign:"center",padding:"24px 0",color:"var(--tx3)"}}>몬스터 2마리 이상 필요!</div>:<>
@@ -7574,7 +7574,7 @@ function SideHelpProb({acHex}){
       {q:"🎒 가방",a:"볼/먹이/진화석/강화석/특수아이템/레이드보상 확인."},
       {q:"🛒 상점",a:"일반볼(🟠)로 다양한 아이템 교환. 일부 아이템은 일일 구매 제한. 성별교환권(🔄) 1일 1회 구매 가능."},
       {q:"⚔️ 사냥터",a:"내 몬스터로 야생 몬스터와 전투. 승리 시 강화석·볼 획득 + 진화 조건 달성."},
-      {q:"⚗️ 제련소 합성",a:"+10강 몬스터 2마리 합성 → 더 강한 등급 생성. 실패 시 A 소멸, B는 50% 생존. 💠뮤턴트+EPIC → 레전드 70%."},
+      {q:"⚗️ 제련소 합성",a:"+10강 몬스터 2마리 합성 → 더 강한 등급 생성. 실패 시 A 무조건 생존, B는 50% 확률 소멸. 💠뮤턴트+EPIC → 레전드 70%."},
       {q:"👥 대전",a:"배틀: 온라인 유저와 실시간 대결 하루 15회. 레이드: 협력 레이드 참전 가능, Firebase 실시간 공유."},
     ],
     enhance:[
@@ -7621,7 +7621,7 @@ function SideHelpProb({acHex}){
     fusion:[
       {q:"🔮 합성 기본",a:"+10강 몬스터 2마리를 합성 → 더 높은 등급의 새 소환수 탄생. 두 마리 모두 반드시 +10강이어야 합니다."},
       {q:"📊 합성 결과 등급",a:"같은 등급끼리 합성 시 한 단계 위 등급이 주 결과. 예) COMMON+COMMON → 주로 UNCOMMON. 낮은 확률로 2단계 위 등급도 가능."},
-      {q:"💥 합성 실패",a:"등급이 높을수록 실패 확률 증가. EPIC+EPIC는 실패 98%! 실패 시 A 소환수는 무조건 소멸, B 소환수는 50% 확률로 생존."},
+      {q:"💥 합성 실패",a:"등급이 높을수록 실패 확률 증가. EPIC+EPIC는 실패 98%! 실패 시 A 소환수는 무조건 생존, B 소환수는 50% 확률로 소멸."},
       {q:"⚠️ 실패 시 B 생존",a:"실패해도 B 소환수가 50% 확률로 살아남을 수 있습니다! 운이 좋으면 한 마리만 잃고 끝날 수도 있어요."},
       {q:"🧬 MUTANT 합성",a:"EPIC+ 합성 시 3% 확률로 뮤턴트 등장. 에픽 대비 +15% 스탯. 방생 시 🏆진화증표 획득."},
       {q:"💎 레이드 크리스탈",a:"합성 시 레이드 크리스탈(🔴) 사용 가능. 결과 등급 UP 확률 +30% 보너스. 자동 사용됩니다."},
